@@ -1,0 +1,35 @@
+# Correlation ID: tying logs / metrics / traces together
+direction: down
+
+Title: "CORRELATION ID: a single ID per user request, propagated everywhere,\nlogged with every record so you can find ALL the activity for ONE request\nacross logs, metrics, and traces." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+UR: "USER REQUEST" {
+  style: { fill: "#fff" } }
+
+GW: "API GATEWAY\n  generates correlation_id = UUID (or uses incoming one)\n  injects header: X-Request-ID: req-7f3a-bc12\n  also = trace_id (with OpenTelemetry)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+}
+
+Svcs: "DOWNSTREAM SERVICES\n  read X-Request-ID from incoming request\n  put it in MDC / async context / logger context\n  EVERY log line includes it automatically:\n     2024-01-15T10:23:45 INFO  [req-7f3a-bc12] checkout: user=alice\n     2024-01-15T10:23:46 ERROR [req-7f3a-bc12] payment: stripe timeout\n     2024-01-15T10:23:46 WARN  [req-7f3a-bc12] inventory: low stock\n  propagate header to ALL outgoing calls" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+Sinks: "OBSERVABILITY SINKS" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Logs: "Log aggregator\n(ELK / Loki / Splunk / Datadog Logs)" { style: { fill: "#fff" } }
+  Traces: "Tracing backend\n(Jaeger / Tempo / Honeycomb / Datadog APM)" { style: { fill: "#fff" } }
+  Metrics: "Metrics with exemplars\n(Prometheus + exemplar links \u2192 trace)" { style: { fill: "#fff" } }
+}
+
+Investigator: "ENGINEER INVESTIGATING AN ALERT\n  user alice reports 'checkout failed at 10:23'\n  \u2192 find that request's correlation_id (from app log)\n  \u2192 search logs: filter [req-7f3a-bc12] \u2192 see EVERY log line for that request\n  \u2192 click trace ID \u2192 see the span waterfall, find Stripe timeout\n  \u2192 click metric exemplar \u2192 see correlated latency spike\nALL THREE PILLARS (logs / traces / metrics) STITCHED TOGETHER" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+UR -> GW
+GW -> Svcs: "X-Request-ID propagated"
+Svcs -> Logs
+Svcs -> Traces
+Svcs -> Metrics
+Sinks -> Investigator: "queryable by correlation_id"

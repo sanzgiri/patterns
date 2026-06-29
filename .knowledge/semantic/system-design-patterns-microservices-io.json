@@ -1,0 +1,69 @@
+{
+  "id": "system-design-patterns-microservices-io",
+  "topic": "system design patterns",
+  "subtopic": "Microservices-specific pattern language",
+  "source": {
+    "title": "A pattern language for microservices",
+    "author": "Chris Richardson",
+    "publisher": "microservices.io",
+    "url": "https://microservices.io/patterns/index.html",
+    "fetched": "2026-06-25",
+    "copyright": "© 2026"
+  },
+  "provenance": "verified_by_fetch",
+  "confidence": 0.95,
+  "framing": "Microservices-specific pattern language, grouped by problem area. Complements the Microsoft Azure catalog (which is broader cloud) by going deeper on service decomposition, distributed data, and inter-service communication.",
+  "patterns_by_group": {
+    "architectural_style": ["Monolithic architecture", "Microservice architecture"],
+    "service_boundaries": ["Decompose by business capability", "Decompose by subdomain", "Self-contained Service", "Service per team"],
+    "refactoring_to_services": ["Strangler Application", "Anti-corruption layer"],
+    "service_collaboration_data": [
+      "Database per Service", "Shared database", "Saga",
+      "Command-side replica", "API Composition", "CQRS",
+      "Domain event", "Event sourcing"
+    ],
+    "transactional_messaging": ["Transactional outbox", "Transaction log tailing", "Polling publisher"],
+    "testing": ["Consumer-driven contract test", "Consumer-side contract test", "Service component test"],
+    "deployment": [
+      "Multiple service instances per host", "Service instance per host",
+      "Service instance per VM", "Service instance per Container",
+      "Serverless deployment", "Service deployment platform"
+    ],
+    "cross_cutting": ["Microservice chassis", "Externalized configuration", "Service Template"],
+    "communication_styles": ["Remote Procedure Invocation", "Messaging", "Domain-specific protocol", "Idempotent Consumer"],
+    "external_api": ["API gateway", "Backend for front-end"],
+    "service_discovery": ["Client-side discovery", "Server-side discovery", "Service registry", "Self registration", "3rd party registration"],
+    "reliability": ["Circuit Breaker"],
+    "security": ["Access Token"],
+    "observability": [
+      "Log aggregation", "Application metrics", "Audit logging",
+      "Distributed tracing", "Exception tracking", "Health check API",
+      "Log deployments and changes"
+    ],
+    "ui_design": ["Server-side page fragment composition", "Client-side UI composition"]
+  },
+  "approximate_pattern_count": 50,
+  "overlap_with_azure_catalog": [
+    "Strangler Application ↔ Strangler Fig",
+    "Anti-corruption layer ↔ Anti-Corruption Layer",
+    "Saga ↔ Saga",
+    "CQRS ↔ CQRS",
+    "Event Sourcing ↔ Event Sourcing",
+    "API gateway ↔ API Gateway patterns (Aggregation/Offloading/Routing)",
+    "Circuit Breaker ↔ Circuit Breaker",
+    "Backend for front-end ↔ Backends for Frontends",
+    "Externalized configuration ↔ External Configuration Store",
+    "Health check API ↔ Health Endpoint Monitoring"
+  ],
+  "unique_to_microservices_io": [
+    "Decompose by business capability / subdomain (DDD-based decomposition)",
+    "Database per Service",
+    "Transactional outbox / Transaction log tailing / Polling publisher",
+    "Consumer-driven contract test",
+    "Service registry + Self-registration",
+    "Microservice chassis",
+    "Distributed tracing"
+  ],
+  "created": "2026-06-25T00:00:00Z",
+  "updated": "2026-06-25T00:00:00Z"
+}

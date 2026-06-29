@@ -1,0 +1,35 @@
+# Polyglot Persistence: different stores for different workloads
+direction: down
+
+Title: "POLYGLOT PERSISTENCE: 'use the right tool for each job'\nInstead of one DB for everything, choose specialized stores for each workload's characteristics." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Example: "EXAMPLE: a single application's data layer" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+
+  App: "E-commerce application" { style: { fill: "#fff" } }
+
+  RDBMS: "POSTGRES (RDBMS)\nOrders, customers, payments\n\u2192 ACID transactions\n\u2192 strong consistency\n\u2192 complex joins" { style: { fill: "#a5d6a7" } }
+
+  Doc: "MONGODB / DynamoDB\nProduct catalog\n\u2192 flexible schema per category\n\u2192 nested attributes\n\u2192 high read throughput" { style: { fill: "#bbdefb" } }
+
+  KV: "REDIS\nSessions, cache, leaderboards\n\u2192 sub-ms reads\n\u2192 ephemeral data\n\u2192 specialized data types" { style: { fill: "#fff59d" } }
+
+  Search: "ELASTICSEARCH\nProduct search, faceting\n\u2192 inverted index\n\u2192 relevance ranking\n\u2192 fuzzy matching" { style: { fill: "#ffe0b2" } }
+
+  Graph: "NEO4J\nRecommendation graph\n\u2192 relationship traversals\n\u2192 'customers also bought'\n\u2192 fraud detection rings" { style: { fill: "#e1bee7" } }
+
+  TS: "INFLUXDB / PROMETHEUS\nMetrics, monitoring\n\u2192 time-series compression\n\u2192 downsampling rollups\n\u2192 retention policies" { style: { fill: "#ffcdd2" } }
+
+  Warehouse: "SNOWFLAKE / BIGQUERY\nAnalytics, BI dashboards\n\u2192 columnar storage\n\u2192 massively parallel queries\n\u2192 separate compute and storage" { style: { fill: "#c8e6c9" } }
+
+  Blob: "S3\nImages, videos, logs, backups\n\u2192 cheap object storage\n\u2192 11 9s durability\n\u2192 lifecycle policies" { style: { fill: "#bbdefb" } }
+
+  App -> RDBMS; App -> Doc; App -> KV; App -> Search; App -> Graph; App -> TS; App -> Warehouse; App -> Blob
+}
+
+Cost: "TRADE-OFFS\n+ each workload runs on optimal store \u2192 better perf, lower cost\n+ avoid the 'square peg, round hole' from forcing one DB to do everything\n\u2212 operational complexity (8 DBs to monitor, back up, upgrade)\n\u2212 transactional boundaries can't cross stores (need [saga](../data/saga.md))\n\u2212 talent breadth: team needs to know N technologies\n\u2212 data movement / sync between stores ([CDC](../data/cdc.md), [outbox](../data/outbox.md))" {
+  shape: rectangle
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}

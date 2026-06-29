@@ -1,0 +1,41 @@
+# SWIM-style gossip: ping, ping-req, suspicion
+shape: sequence_diagram
+
+A: "Node A (suspicious)"
+B: "Node B (target)"
+C: "Node C (witness)"
+D: "Node D (witness)"
+Cluster: "Rest of cluster"
+
+phase1: "Periodic ping" {
+  style: { fill: "#bbdefb"; font-color: "#0d47a1" }
+  A -> B: "PING"
+  B -> A: "ACK"
+}
+
+phase2: "Ping missed \u2014 ask K random nodes to ping B indirectly" {
+  style: { fill: "#fff4c2"; font-color: "#bf360c" }
+  A -> B: "PING"
+  A -> A: "timeout (no ACK)"
+  A -> C: "PING-REQ to B"
+  A -> D: "PING-REQ to B"
+  C -> B: "PING"
+  D -> B: "PING"
+  B -> C: "ACK \u2014 (network blip on A\u2192B path?)"
+  C -> A: "ACK (B alive)"
+}
+
+phase3: "If B truly dead, all witness PING-REQs also fail" {
+  style: { fill: "#ffcdd2"; font-color: "#b71c1c" }
+  A -> A: "no acks from C or D \u2192 mark B suspect"
+  A -> Cluster: "gossip: B is suspect (incarnation=5)"
+  Cluster -> Cluster: "after suspect-timeout: B is FAILED"
+}
+
+phase4: "If B is actually alive (false suspicion), B refutes" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  B -> Cluster: "gossip: 'I'm alive, incarnation=6 (higher)'"
+  Cluster -> Cluster: "drop suspect; B back to alive"
+}
+
+Note: "SWIM (Das, Gupta, Motivala 2002):\nScalable Weakly-consistent Infection-style\nProcess Group Membership protocol.\nUsed in HashiCorp Consul/Serf, Apache Cassandra (variant),\nUber's Ringpop, ScyllaDB, and many service-discovery layers."

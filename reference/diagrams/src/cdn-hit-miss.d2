@@ -1,0 +1,25 @@
+# CDN cache hit vs miss flow
+shape: sequence_diagram
+
+User
+DNS
+Edge: "Edge POP"
+Origin: "Origin"
+
+User -> DNS: "1. resolve cdn.example.com"
+DNS -> User: "2. IP of nearest Edge POP\n(GeoDNS / Anycast)"
+
+hit: "CACHE HIT (most requests, fast)" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20"; bold: true }
+  User -> Edge: "3a. GET /image.jpg"
+  Edge -> User: "4a. cached bytes\n(few ms, no origin hit)" { style: { stroke: "#2e7d32" } }
+}
+
+miss: "CACHE MISS (first request or expired)" {
+  style: { fill: "#ffe0b2"; font-color: "#bf360c"; bold: true }
+  User -> Edge: "3b. GET /image.jpg"
+  Edge -> Origin: "4b. fetch from origin" { style: { stroke: "#f57c00"; stroke-dash: 3 } }
+  Origin -> Edge: "5b. bytes + Cache-Control headers"
+  Edge -> Edge: "6b. store in cache\n(respect TTL)"
+  Edge -> User: "7b. bytes\n(slow first time, fast for everyone after)"
+}

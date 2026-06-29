@@ -1,0 +1,41 @@
+{
+  "id": "llm-patterns-12-factor-agents",
+  "topic": "llm patterns",
+  "subtopic": "12-Factor Agents — principles for production-grade LLM apps",
+  "source": {
+    "title": "12-Factor Agents — Principles for building reliable LLM applications",
+    "author": "Dexter Horthy (HumanLayer)",
+    "url": "https://github.com/humanlayer/12-factor-agents",
+    "first_published": "2025-04 (approx)",
+    "fetched": "2026-06-25",
+    "license": "CC BY-SA 4.0 (content), Apache 2.0 (code)"
+  },
+  "provenance": "verified_by_fetch",
+  "confidence": 0.9,
+  "framing": "Inspired by 12factor.net. Argues that production-grade agents are 'mostly just software with LLM steps sprinkled in,' not the naive 'prompt + tools + loop' pattern. Targets engineers who got to 70-80% with a framework and need to go past that.",
+  "factors": [
+    { "n": 1,  "name": "Natural Language to Tool Calls", "summary": "Convert user intent to structured tool calls — the irreducible LLM step." },
+    { "n": 2,  "name": "Own your prompts", "summary": "Don't let a framework hide them; prompts are core IP and need version control." },
+    { "n": 3,  "name": "Own your context window", "summary": "Context engineering — explicitly curate what goes into each LLM call." },
+    { "n": 4,  "name": "Tools are just structured outputs", "summary": "A 'tool call' is just JSON the LLM emits; no magic — treat as structured output." },
+    { "n": 5,  "name": "Unify execution state and business state", "summary": "Don't keep separate 'agent state' and 'app state' — collapse them." },
+    { "n": 6,  "name": "Launch/Pause/Resume with simple APIs", "summary": "Agents must be pausable and resumable, like any long-running job." },
+    { "n": 7,  "name": "Contact humans with tool calls", "summary": "Human-in-the-loop is just another tool the agent can call." },
+    { "n": 8,  "name": "Own your control flow", "summary": "Don't outsource the main loop to a framework; write it yourself." },
+    { "n": 9,  "name": "Compact errors into context window", "summary": "Surface and summarize errors back to the LLM so it can recover." },
+    { "n": 10, "name": "Small, focused agents", "summary": "Prefer many small agents over one large one — they're easier to reason about." },
+    { "n": 11, "name": "Trigger from anywhere, meet users where they are", "summary": "Agents should be invocable from Slack, email, cron, webhook — not just chat." },
+    { "n": 12, "name": "Make your agent a stateless reducer", "summary": "next_state = f(current_state, event) — pure-function semantics enable replay, testing, distribution." }
+  ],
+  "honorable_mention": [
+    { "n": 13, "name": "Pre-fetch all the context you might need", "summary": "Front-load retrieval so the agent doesn't pay tool-call round-trips for known context." }
+  ],
+  "core_agent_loop_from_source": "initial_event = {'message': '...'}\\ncontext = [initial_event]\\nwhile True:\\n  next_step = await llm.determine_next_step(context)\\n  context.append(next_step)\\n  if next_step.intent == 'done':\\n    return next_step.final_answer\\n  result = await execute_step(next_step)\\n  context.append(result)",
+  "key_insight": "Most products billed as 'AI agents' are mostly deterministic code with LLM steps inserted at the right points — and the good ones intentionally avoid the naive 'prompt + tools + loop until done' pattern.",
+  "complements": [
+    "llm-patterns-anthropic.json (Building Effective Agents) — they agree on simple > complex",
+    "llm-agent-orchestration-microsoft.json — 12-factor is single-agent engineering; MS is multi-agent coordination"
+  ],
+  "created": "2026-06-25T00:00:00Z",
+  "updated": "2026-06-25T00:00:00Z"
+}

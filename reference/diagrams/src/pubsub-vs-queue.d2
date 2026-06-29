@@ -1,0 +1,30 @@
+# Pub-Sub vs Message Queue: fan-out vs work-distribution
+direction: right
+
+PubSub: "PUB-SUB (fan-out)\nevery subscriber gets every message" {
+  style: { fill: "#e8f5e9"; stroke: "#2e7d32"; border-radius: 10 }
+
+  P_PS: "Publisher" { style: { fill: "#bbdefb" } }
+  Topic: "Topic" { shape: queue; style: { fill: "#fff4c2"; stroke: "#f57c00" } }
+  S1: "Sub A" { style: { fill: "#c8e6c9" } }
+  S2: "Sub B" { style: { fill: "#c8e6c9" } }
+  S3: "Sub C" { style: { fill: "#c8e6c9" } }
+
+  P_PS -> Topic: "msg M"
+  Topic -> S1: "M"
+  Topic -> S2: "M"
+  Topic -> S3: "M"
+}
+
+Queue: "MESSAGE QUEUE (work)\nexactly one consumer gets each message" {
+  style: { fill: "#e3f2fd"; stroke: "#1565c0"; border-radius: 10 }
+
+  P_Q: "Producer" { style: { fill: "#bbdefb" } }
+  Q: "Queue" { shape: queue; style: { fill: "#fff4c2"; stroke: "#f57c00" } }
+  W1: "Worker 1" { style: { fill: "#c5cae9" } }
+  W2: "Worker 2" { style: { fill: "#c5cae9" } }
+  W3: "Worker 3" { style: { fill: "#c5cae9" } }
+
+  P_Q -> Q: "msg M"
+  Q -> W1: "M (only one worker picks it up)"
+}

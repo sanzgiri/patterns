@@ -1,0 +1,30 @@
+# Wide-column storage: row layout vs column families
+direction: down
+
+Title: "WIDE-COLUMN: a hybrid between row-store and column-store" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Concept: "DATA MODEL:\n  table is a SPARSE map: row_key -> column_family -> column_qualifier -> value\n\n  Rows can have MILLIONS of columns; different rows can have different columns.\n  Columns are GROUPED into 'column families' that are stored together physically." {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+}
+
+Example: "EXAMPLE: USER TIMELINE TABLE" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  Detail: "row_key: user_id 'alice'\n  column family 'profile':\n    'name'  -> 'Alice', 'email' -> 'alice@...', 'joined' -> '2020-01-01'\n  column family 'tweets' (with timestamp as part of qualifier):\n    'tweet:2024-01-15T10:23:00' -> 'Hello world!'\n    'tweet:2024-01-15T11:00:00' -> 'second tweet'\n    'tweet:2024-01-15T11:30:00' -> 'third tweet'\n    ... thousands more\n  column family 'follows':\n    'bob' -> '', 'carol' -> '', ... thousands more\n\nNo two users have the same set of columns. That's fine."
+}
+
+Why: "WHY USE WIDE-COLUMN" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+  Detail: "\u2022 MASSIVE WRITE THROUGHPUT (LSM-based engines)\n  Cassandra clusters routinely sustain 100K\u20131M writes/sec/node\n\n\u2022 LINEAR HORIZONTAL SCALE \u2014 just add nodes\n\n\u2022 TUNABLE CONSISTENCY per query (Cassandra: ONE, QUORUM, ALL)\n\n\u2022 TIME-SERIES-FRIENDLY \u2014 wide rows with timestamp columns are natural\n  for clickstreams, IoT, telemetry, message timelines\n\n\u2022 EFFICIENT RANGE QUERIES within a row (clustering columns)\n\n\u2022 SPARSE STORAGE \u2014 missing columns cost nothing"
+}
+
+Tools: "MAJOR WIDE-COLUMN STORES" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+  Detail: "\u2022 Google Bigtable \u2014 the original (2006); foundation for many others\n\u2022 Apache HBase    \u2014 open-source Bigtable; on Hadoop\n\u2022 Apache Cassandra \u2014 Bigtable-inspired but with Dynamo's consistent hashing\n\u2022 ScyllaDB         \u2014 C++ rewrite of Cassandra; very fast\n\u2022 DynamoDB         \u2014 Amazon's; wide-column underneath KV API\n\u2022 Azure Cosmos DB (wide-column API)"
+}
+
+Title -> Concept
+Concept -> Example
+Example -> Why
+Why -> Tools

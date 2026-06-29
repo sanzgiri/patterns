@@ -1,0 +1,35 @@
+# Segmented log: structure and retention
+direction: down
+
+ActiveSeg: "ACTIVE SEGMENT\n(being written to)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  S1: "segment-000042.log\nbase=10001  records=1300\nsize=85 MB / 1 GB limit"
+}
+
+Sealed: "SEALED SEGMENTS\n(closed, read-only, immutable)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  S2: "segment-000041.log\nbase=8001  size=1 GB"
+  S3: "segment-000040.log\nbase=6001  size=1 GB"
+  S4: "segment-000039.log\nbase=4001  size=1 GB"
+  S5: "segment-000038.log\nbase=2001  size=1 GB"
+}
+
+Eligible: "TRUNCATION CANDIDATES\n(below LWM / older than retention)" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+  S6: "segment-000037.log\nbase=1\nDELETE entire file"
+}
+
+Indexes: "Index files (one per segment)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  I1: "segment-XXXX.index\n(offset \u2192 byte-position)\n\u2192 O(log n) random read"
+}
+
+Rotation: "SEGMENT ROTATION POLICIES (any combination)\n\u2022 size-based: roll when active reaches N MB\n\u2022 time-based: roll every N hours\n\u2022 count-based: roll every N records\n\nRETENTION (which sealed segments to KEEP)\n\u2022 size: keep last N GB total\n\u2022 time: keep last N days\n\u2022 LWM: keep until snapshot covers them (Raft)\n\u2022 compaction: per-key retention (Kafka log compaction)" {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}
+
+ActiveSeg -> Sealed: "roll when size/time threshold hit" { style: { stroke: "#1b5e20" } }
+Sealed -> Eligible: "below retention" { style: { stroke: "#b71c1c" } }
+
+Indexes -> Sealed: "co-located with each segment"

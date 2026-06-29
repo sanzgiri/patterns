@@ -1,0 +1,41 @@
+# Identity adjuncts: SCIM, FIDO2/passkeys, Kerberos
+direction: down
+
+Title: "IDENTITY ADJUNCTS: three orthogonal pieces of the modern identity puzzle.\nSCIM = user lifecycle. FIDO2/Passkeys = phishing-resistant auth.\nKerberos = enterprise SSO inside the perimeter." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+SCIM: "SCIM (System for Cross-domain Identity Management) \u2014 RFC 7644" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Problem1: "Problem: 50 SaaS apps \u00d7 1000 employees \u00d7 onboard/offboard/role-change\n= manual chaos + ex-employees with active accounts (security risk)" { style: { fill: "#fff" } }
+  Flow1: "FLOW (provisioning)\n  HR system (Workday/SAP) hires/fires user\n  \u2193\n  IdP (Okta/Azure AD/Google) updates user store\n  \u2193 SCIM\n  IdP pushes to every SaaS app via SCIM REST API:\n    POST /Users   {userName, name, email, groups, role}\n    PATCH /Users/{id}   {active: false}      \u2190 deprovision\n    PUT /Groups/{id}/members   ...\n  \u2193\n  SaaS apps (Slack/Zoom/GitHub/Salesforce/...) update their user lists" { style: { fill: "#fff" } }
+  Outcome1: "OUTCOME\n  - day 1: new hire has all accounts before they sit down\n  - day N: termination removes ALL access in minutes\n  - role change: permissions update across all apps\n  - audit: one place to query 'who has access to what'" { style: { fill: "#fff" } }
+  Problem1 -> Flow1 -> Outcome1
+}
+
+Passkey: "FIDO2 / WEBAUTHN / PASSKEYS \u2014 W3C + FIDO Alliance" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  Problem2: "Problem: passwords = phishing-vulnerable, leaked, reused, shared.\nSMS 2FA = SIM-swappable. TOTP = phishable (real-time relay).\nNeed: auth that CANNOT be phished even if user is tricked." { style: { fill: "#fff" } }
+  Flow2: "FLOW (registration)\n  user creates passkey for 'github.com'\n  authenticator (phone/Yubikey/TPM/Touch ID) generates KEY PAIR\n  PUBLIC KEY \u2192 sent to github.com (stored on user record)\n  PRIVATE KEY \u2192 STAYS ON DEVICE, NEVER LEAVES\n\nFLOW (login)\n  github.com sends a CHALLENGE bound to 'github.com'\n  authenticator signs ONLY IF site origin == 'github.com'\n  user authorizes with biometric / PIN (local; no secret transmitted)\n  signed challenge \u2192 github.com\n  github.com verifies signature with stored public key" { style: { fill: "#fff" } }
+  Outcome2: "OUTCOME\n  - phishing-resistant: signature is bound to origin; attacker site can't get one\n  - no shared secret to leak in a breach\n  - device-bound: stealing the password file doesn't help\n  - SYNCED PASSKEYS (Apple/Google/MS): roam across user's devices via cloud sync (a usability trade-off)" { style: { fill: "#fff" } }
+  Problem2 -> Flow2 -> Outcome2
+}
+
+Kerberos: "KERBEROS \u2014 RFC 4120 (1993, still ubiquitous)" {
+  style: { fill: "#ffe0b2"; stroke: "#e65100"; stroke-width: 2; border-radius: 10 }
+  Problem3: "Problem: inside an enterprise, every user uses many services every day.\nDon't want to type password 50x. Don't want password sent to each service.\nNeed: prove identity once; get short-lived tickets for each service." { style: { fill: "#fff" } }
+  Flow3: "FLOW (simplified)\n  1. user logs in \u2192 AS (Authentication Server) issues TGT (Ticket-Granting Ticket)\n     TGT encrypted with user's key; user decrypts; proves identity\n  2. user wants to access fileserver \u2192 asks TGS (Ticket-Granting Server) for a service ticket\n     TGS issues service ticket encrypted with fileserver's key\n  3. user presents service ticket to fileserver \u2192 access granted\n     fileserver never sees password; never talks to AS\n\nKDC = AS + TGS = Key Distribution Center" { style: { fill: "#fff" } }
+  Outcome3: "OUTCOME\n  - SSO inside the realm (one login)\n  - mutual auth (services prove identity to user too)\n  - foundation of Active Directory authentication\n  - works offline-from-internet (great for corporate LAN)\n  - LIMITATIONS: time sync critical (clock skew breaks tickets);\n    cross-realm trust complex; not internet-scale (use OIDC for that)" { style: { fill: "#fff" } }
+  Problem3 -> Flow3 -> Outcome3
+}
+
+Combo: "MODERN ENTERPRISE STACK\n  \u2022 Workday \u2192 SCIM \u2192 IdP \u2192 SCIM \u2192 SaaS apps   (lifecycle)\n  \u2022 IdP login uses PASSKEYS (or hardware key)              (phishing-resistant)\n  \u2022 IdP issues OIDC tokens for SaaS apps                    (web SSO)\n  \u2022 IdP issues Kerberos tickets for AD-joined resources     (LAN SSO)\n  All four work together; none replaces the others." {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> SCIM
+Title -> Passkey
+Title -> Kerberos
+SCIM -> Combo
+Passkey -> Combo
+Kerberos -> Combo

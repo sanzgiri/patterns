@@ -1,0 +1,17 @@
+# Emergent Leader: leader 'emerges' from existing protocol
+direction: down
+
+Approach1: "TRADITIONAL: explicit election" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "1. Followers detect leader missing\n2. Candidate increments term\n3. RequestVote RPCs\n4. Collect majority votes\n5. Win \u2192 announce as leader\n\nUsed by: Raft, Multi-Paxos, ZAB"
+}
+
+Approach2: "EMERGENT LEADER: leadership IS the outcome\nof the protocol \u2014 not a separate election" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "1. Every node runs the same operation\n2. Whoever 'wins' the operation becomes leader\n   for that operation\n3. Leadership rotates implicitly per operation\n\nExamples:\n\u2022 Basic Paxos: whoever's proposal wins phase 1\n  is implicitly 'leader' for that instance\n\u2022 EPaxos: command leader = whoever proposed first\n\u2022 SWIM / gossip: 'highest ID alive' implicitly leads\n\u2022 Single-Decree Paxos sequence: leader changes per slot"
+}
+
+Tradeoffs: "TRADE-OFFS\n\nExplicit election:\n+ stable: one leader for many operations\n+ fast: amortizes phase-1 cost (Multi-Paxos)\n+ predictable for clients\n\u2212 election storms during partitions\n\u2212 leader is a bottleneck\n\nEmergent leader:\n+ no leader = no bottleneck\n+ no election overhead during stable operation\n+ naturally tolerates leader churn\n\u2212 each operation pays full coordination cost\n\u2212 can be hard to optimize reads (no stable leader to ask)\n\u2212 conflict resolution per operation" {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}

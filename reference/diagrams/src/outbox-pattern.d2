@@ -1,0 +1,41 @@
+# Transactional Outbox: write business data + event in one DB transaction
+direction: down
+
+Service: "SERVICE handling 'PlaceOrder'" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  Code: "BEGIN;\n  INSERT INTO orders (id, customer_id, total, ...)\n         VALUES (...);\n\n  INSERT INTO outbox\n    (id, aggregate_id, event_type, payload, created_at)\n    VALUES (UUID(), :order_id, 'OrderPlaced', :json, NOW());\nCOMMIT;\n\u2192 ATOMIC: both rows commit or neither does." {
+    style: { fill: "#fff" }
+  }
+}
+
+DB: "DATABASE (the service's own)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Tab1: "orders table\n  | id | customer_id | total | ... |" { style: { fill: "#fff" } }
+  Tab2: "outbox table\n  | id | aggregate | event_type | payload | sent_at |\n  e.g.: (UUID, ord_42, OrderPlaced, {...}, NULL)" { style: { fill: "#fff" } }
+}
+
+Publisher: "PUBLISHER (separate process / cron / CDC)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+  Code2: "loop:\n  rows = SELECT * FROM outbox\n         WHERE sent_at IS NULL\n         ORDER BY id\n         LIMIT 100;\n  for r in rows:\n    kafka.publish(r.event_type, r.payload);\n    UPDATE outbox SET sent_at = NOW() WHERE id = r.id;\n  sleep(short);" {
+    style: { fill: "#fff" }
+  }
+}
+
+Kafka: "KAFKA / MESSAGE BUS" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 10 }
+}
+
+Downstream: "Downstream consumers\n(shipping, billing, analytics)" {
+  style: { fill: "#c5e1a5"; stroke: "#33691e"; border-radius: 8 }
+}
+
+Service -> DB: "1. atomic write\n   (orders + outbox)"
+Publisher -> DB: "2. poll outbox for\n   unpublished rows"
+Publisher -> Kafka: "3. publish event"
+Publisher -> DB: "4. mark sent_at"
+Kafka -> Downstream: "5. delivered"
+
+Guarantee: "GUARANTEE: AT-LEAST-ONCE DELIVERY\n  \u2022 if publisher crashes after publishing but before UPDATE,\n    the same event publishes again on next poll\n  \u2022 consumers MUST be IDEMPOTENT (see Idempotent Consumer)\n  \u2022 each outbox row has a stable ID consumers use for dedup\n\nNEVER LOSES MESSAGES: as long as DB transaction commits,\nthe event WILL eventually reach Kafka." {
+  shape: rectangle
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+}

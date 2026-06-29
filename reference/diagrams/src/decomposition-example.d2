@@ -1,0 +1,37 @@
+# A worked decomposition example for an e-commerce site
+direction: down
+
+Bad: "BAD: DECOMPOSE BY TECHNICAL LAYER" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 10 }
+  Web: "Web Frontend Team" { style: { fill: "#fff" } }
+  Api: "API Team" { style: { fill: "#fff" } }
+  Biz: "Business Logic Team" { style: { fill: "#fff" } }
+  Data: "Database Team" { style: { fill: "#fff" } }
+
+  Web -> Api -> Biz -> Data
+  Note1: "Problem: adding a feature 'show order discounts' requires changes\nin EVERY team. Coordination meeting. Long lead time. Conway's-Law disaster." {
+    style: { fill: "#ffe0b2" }
+  }
+}
+
+Good: "GOOD: DECOMPOSE BY BUSINESS CAPABILITY / SUBDOMAIN" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+
+  Orders: "ORDERS SVC\n  \u2022 owns: orders, line items\n  \u2022 team: Orders\n  \u2022 own DB" { style: { fill: "#a5d6a7" } }
+
+  Catalog: "CATALOG SVC\n  \u2022 owns: products, SKUs\n  \u2022 team: Catalog\n  \u2022 own DB" { style: { fill: "#a5d6a7" } }
+
+  Inventory: "INVENTORY SVC\n  \u2022 owns: stock levels\n  \u2022 team: Supply Chain\n  \u2022 own DB" { style: { fill: "#a5d6a7" } }
+
+  Customer: "CUSTOMERS SVC\n  \u2022 owns: profiles, prefs\n  \u2022 team: CX\n  \u2022 own DB" { style: { fill: "#a5d6a7" } }
+
+  Payments: "PAYMENTS SVC\n  \u2022 owns: txn records\n  \u2022 team: Payments\n  \u2022 own DB" { style: { fill: "#a5d6a7" } }
+
+  Shipping: "SHIPPING SVC\n  \u2022 owns: shipments, tracking\n  \u2022 team: Logistics\n  \u2022 own DB" { style: { fill: "#a5d6a7" } }
+
+  Note2: "Each team owns its slice end-to-end: API, business logic, DB, deploy.\n'Add discount field' \u2192 only the Orders team changes anything.\nFeatures ship in days instead of weeks." {
+    style: { fill: "#e8f5e9" }
+  }
+}
+
+Bad -> Good: "evolve to"

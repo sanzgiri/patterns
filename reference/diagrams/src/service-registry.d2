@@ -1,0 +1,32 @@
+# Service Registry: the source of truth for "what's running where"
+direction: down
+
+Registry: "SERVICE REGISTRY\n(Consul, Eureka, etcd, ZooKeeper, K8s API,\nAWS Cloud Map, DNS+SRV records, etc.)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 3; border-radius: 10 }
+  Contents: "Stores per service:\n  \u2022 name (e.g. 'orders-svc')\n  \u2022 list of instances:\n      - host:port\n      - health status (alive/sick/dead)\n      - metadata (version, region, zone)\n      - last heartbeat timestamp\n  \u2022 changes are watchable\n  \u2022 typically replicated for HA" {
+    style: { fill: "#fff" }
+  }
+}
+
+Reg: "REGISTRATION FLOW (services tell the registry they exist)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  Sv1: "Service instance starts\n  \u2192 self-registers: 'I am orders-svc at 10.0.0.5:8080'" { style: { fill: "#fff" } }
+  Sv2: "Heartbeats every 10s\n  \u2192 'still alive'" { style: { fill: "#fff" } }
+  Sv3: "On shutdown (SIGTERM) deregisters\n  \u2192 'orders-svc 10.0.0.5:8080 leaving'" { style: { fill: "#fff" } }
+  Sv4: "If heartbeat missed for 30s\n  \u2192 registry marks instance unhealthy\n  \u2192 removes from rotation" { style: { fill: "#fff" } }
+}
+
+Lookup: "LOOKUP FLOW (callers find healthy instances)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  L1: "Caller: 'where is orders-svc?'" { style: { fill: "#fff" } }
+  L2: "Registry returns:\n  [(10.0.0.5:8080, healthy),\n   (10.0.0.6:8080, healthy),\n   (10.0.0.9:8080, healthy)]" { style: { fill: "#fff" } }
+  L3: "Caller picks one (load balancing)\n  \u2022 round-robin\n  \u2022 random\n  \u2022 least-loaded\n  \u2022 latency-based" { style: { fill: "#fff" } }
+}
+
+Reg -> Registry
+Lookup -> Registry
+
+Patterns: "TWO MAIN PATTERNS for HOW THE LOOKUP HAPPENS:\n  1. CLIENT-SIDE DISCOVERY \u2014 caller queries registry directly,\n     does its own load balancing. (Eureka, Consul + DNS)\n  2. SERVER-SIDE DISCOVERY \u2014 caller calls a fixed proxy/LB address;\n     proxy queries registry and forwards. (K8s Service, AWS ALB,\n     Envoy + control plane)" {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}

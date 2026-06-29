@@ -1,0 +1,38 @@
+# Bulkhead at multiple levels: threads, connections, tenants, instances
+direction: down
+
+Top: "BULKHEAD ISOLATION LEVELS" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Thread: "1. THREAD-POOL BULKHEAD (within one process)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "Separate thread / connection pool per downstream dependency or per tenant.\nLibraries: Resilience4j Bulkhead, Hystrix (legacy), Polly (.NET), Failsafe (Java).\n\nUSE: most common form; per-dependency thread pools in HTTP clients."
+}
+
+Sema: "2. SEMAPHORE BULKHEAD (same thread, count limit)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "Limit how many in-flight requests for a dependency, without dedicated threads.\nLighter than thread pools (no context switch); only limits concurrency.\n\nUSE: async/reactive code where threads are virtual; cheaper isolation."
+}
+
+Process: "3. PROCESS BULKHEAD (separate processes per role)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Split risky workloads into separate processes \u2014 a misbehaving one OOMs or crashes\nwithout taking the others down.\n\nUSE: legacy systems where you can't refactor; security isolation."
+}
+
+Tenant: "4. TENANT / WORKLOAD BULKHEAD" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Separate compute/resources per tenant (or per customer-tier).\nNoisy-neighbor tenant can't exhaust resources of others.\n\nUSE: multi-tenant SaaS; Kafka quotas; database connection limits per user."
+}
+
+Cluster: "5. CLUSTER / DEPLOYMENT BULKHEAD" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "Separate clusters/regions per workload class.\nProduction segregated from staging; critical from non-critical.\n\nUSE: deployment stamps (Microsoft pattern); cell-based architecture (Slack, AWS)."
+}
+
+AZ: "6. AVAILABILITY-ZONE / REGION BULKHEAD" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Distinct AZ/regions, with no shared blast radius.\nAWS S3 outage in us-east-1 doesn't affect us-west-2 services.\n\nUSE: high-availability designs; the standard recommendation from AWS/GCP/Azure."
+}
+
+Top -> Thread; Top -> Sema; Top -> Process; Top -> Tenant; Top -> Cluster; Top -> AZ

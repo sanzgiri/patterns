@@ -1,0 +1,37 @@
+# Compute resource consolidation: pack many small workloads into one
+direction: down
+
+Title: "COMPUTE RESOURCE CONSOLIDATION: pack many small workloads into a\nsingle compute unit (container, VM, function) to amortize cost &\noverhead. The opposite of 'one tiny service per VM'." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Bad: "BAD: ONE TINY THING PER VM\n  10 microservices \u00d7 dedicated VM each \u00d7 idle 90% of time\n  = paying for 10 mostly-idle VMs\n  = OS overhead per VM (RAM, patch surface, monitoring agents)\n  = poor utilization of CPU/RAM\n  = orchestration complexity for tiny things" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+}
+
+Approaches: "CONSOLIDATION APPROACHES (lighter \u2192 heavier coupling)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+
+  Bin: "BIN PACKING (orchestrator)\n  Kubernetes / Nomad packs many pods onto fewer nodes\n  workloads stay in separate containers (isolation)\n  but nodes are well-utilized\n  resource requests/limits drive packing" { style: { fill: "#fff" } }
+
+  Multi: "MULTI-WORKLOAD CONTAINER\n  small daemons/cron jobs combined into one container\n  with supervisord / s6 / monit\n  good for utility processes; weakens single-responsibility" { style: { fill: "#fff" } }
+
+  Shared: "SHARED PROCESS / IN-PROC PLUGINS\n  several lightweight services as plugins/modules in one process\n  shared OS, shared runtime, shared memory\n  highest density; weakest isolation\n  e.g. Envoy filters, Nginx modules" { style: { fill: "#fff" } }
+
+  Serverless: "SERVERLESS (Lambda/Cloud Run/Functions)\n  PLATFORM does the consolidation transparently\n  many functions share the underlying fleet\n  cost only for invocations" { style: { fill: "#fff" } }
+
+  Bin -> Multi -> Shared -> Serverless: "increasing density / decreasing isolation"
+}
+
+When: "WHEN TO CONSOLIDATE\n  \u2022 services have similar SLAs (scaling them together is fine)\n  \u2022 services have COMPLEMENTARY load patterns (peaks at different times)\n  \u2022 services share trust boundary (don't co-locate untrusted code)\n  \u2022 operational overhead per service is high\n  \u2022 cost-sensitive workloads (small companies, dev environments)\n\nWHEN NOT TO CONSOLIDATE\n  \u2022 services have very different scaling needs\n  \u2022 different security/compliance domains\n  \u2022 noisy-neighbor risk (one service can starve others)\n  \u2022 different language/runtime constraints\n  \u2022 fault isolation matters more than density" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+}
+
+Pitfalls: "PITFALLS\n  \u2022 NOISY NEIGHBOR: one service spikes; co-tenants suffer\n  \u2022 FAULT BLAST RADIUS: container/VM crash takes down N services\n  \u2022 DEPLOY COUPLING: harder to deploy services independently\n  \u2022 RESOURCE STARVATION: without good limits, one hog wins\n  \u2022 OBSERVABILITY: harder to attribute resource usage per service" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; border-radius: 8 }
+}
+
+Title -> Bad
+Title -> Approaches
+Approaches -> When
+Approaches -> Pitfalls

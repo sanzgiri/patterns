@@ -1,0 +1,39 @@
+# Feature flag: decouples deploy from release
+direction: down
+
+Title: "FEATURE FLAG: code is deployed but the new feature is OFF by default;\na runtime config service enables it for chosen users." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+App: "APPLICATION" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+
+  Code: "Code (both branches deployed)\n\nif featureFlag('new_checkout', user).isEnabled():\n  newCheckoutFlow(user)\nelse:\n  oldCheckoutFlow(user)" { style: { fill: "#fff" } }
+
+  SDK: "Flag SDK\n(local cache + listener)" { style: { fill: "#fff" } }
+
+  Code -> SDK: "ask: is new_checkout on for user X?"
+}
+
+Service: "FLAG MANAGEMENT SERVICE\n(LaunchDarkly, Unleash, Split, ConfigCat, GrowthBook, ...)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+
+  Rules: "Targeting rules:\n  \u2022 ON for internal employees\n  \u2022 ON for 5% of traffic in EU\n  \u2022 OFF in JP region\n  \u2022 ON for beta-tester segment\n  \u2022 A/B test: 50/50 variant A vs B\nEvaluated PER REQUEST with user context" { style: { fill: "#fff" } }
+
+  Dashboard: "Dashboard\n  \u2022 Toggle on/off instantly\n  \u2022 Adjust % rollout\n  \u2022 View metrics per variant\n  \u2022 Audit log of changes" { style: { fill: "#fff" } }
+}
+
+Stream: "REAL-TIME CONFIG STREAM\n(WebSocket / SSE / poll)" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+Service -> Stream
+Stream -> SDK: "push flag changes\n(seconds, not redeploys)"
+
+Benefit: "KEY PROPERTY: DEPLOY \u2260 RELEASE\n  \u2022 deploy code anytime (with feature off)\n  \u2022 turn feature on without redeploy\n  \u2022 turn it back off in seconds if broken\n  \u2022 progressive rollout (5%, 10%, 50%, 100%)\n  \u2022 different rollout per region / segment / user group" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> App
+App -> Service: "evaluate"
+Service -> Benefit

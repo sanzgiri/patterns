@@ -1,0 +1,32 @@
+# Replicated Log: deterministic apply across replicas
+shape: sequence_diagram
+
+Client
+L: "Leader log"
+F1: "Follower 1 log"
+F2: "Follower 2 log"
+S1: "State machine 1"
+S2: "State machine 2"
+S3: "State machine 3"
+
+Client -> L: "1. SET x = 5"
+Client -> L: "2. APPEND list 'a'"
+Client -> L: "3. INC counter"
+
+phase_replicate: "Leader writes ordered log + replicates byte-identical entries" {
+  style: { fill: "#bbdefb"; font-color: "#0d47a1" }
+  L -> F1: "log entries [(1,SETx=5), (2,APPEND a), (3,INC)]"
+  L -> F2: "(same)"
+}
+
+phase_apply: "Each replica APPLIES entries in log order \u2014 produces identical state" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  L -> S1: "apply 1 \u2192 2 \u2192 3"
+  F1 -> S2: "apply 1 \u2192 2 \u2192 3"
+  F2 -> S3: "apply 1 \u2192 2 \u2192 3"
+  S1 -> S1: "x=5, list=[a], counter=1"
+  S2 -> S2: "x=5, list=[a], counter=1"
+  S3 -> S3: "x=5, list=[a], counter=1"
+}
+
+Note: "State-Machine Replication theorem (Schneider 1990):\nIF every replica starts in the same state\nAND every replica applies the same operations in the same order\nAND every operation is deterministic\nTHEN every replica ends in the same state.\n\nReplicated Log provides the 'same order' part.\nConsensus (Raft/Paxos) is how replicas agree on that order."

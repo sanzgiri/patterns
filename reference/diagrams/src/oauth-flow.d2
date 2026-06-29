@@ -1,0 +1,33 @@
+# OAuth 2.0 / OIDC authorization code flow
+direction: down
+
+Title: "OAUTH 2.0 + OPENID CONNECT (OIDC) authorization-code flow with PKCE\nthe modern standard for federated auth on web and mobile" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Step1: "1. USER clicks 'Sign in with Google' in your app\n2. APP generates code_verifier (random) + code_challenge = SHA256(verifier)\n3. APP redirects browser to IdP authorize endpoint:\n   https://accounts.google.com/o/oauth2/auth?\n     client_id=YOUR_APP_ID\n     redirect_uri=https://yourapp.com/callback\n     response_type=code\n     scope=openid email profile\n     code_challenge=...\n     state=...  (CSRF protection)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+}
+
+Step2: "4. IDP authenticates user (password + MFA + risk checks)\n5. IDP asks user to consent (if first time): 'allow YourApp to access your email?'" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+Step3: "6. IDP redirects browser BACK to your app's callback with an authorization code:\n   https://yourapp.com/callback?code=AUTH_CODE&state=...\n   (the auth code is short-lived, ~1 min, single-use, useless without verifier)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+Step4: "7. APP backend exchanges code for tokens (server-to-server, NOT in browser):\n   POST https://oauth2.googleapis.com/token\n     grant_type=authorization_code\n     code=AUTH_CODE\n     code_verifier=...  (proves we are the one that started the flow)\n     client_id=YOUR_APP_ID  + client_secret\n     redirect_uri=https://yourapp.com/callback\n\n   Response:\n     id_token   (OIDC: signed JWT proving user identity)\n     access_token (OAuth 2.0: lets you call APIs as user)\n     refresh_token (long-lived, get new access tokens)" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+Step5: "8. APP verifies id_token signature against IdP's public key (JWKS)\n9. APP creates its own session for the user (cookie / app token)\n10. User is logged in.\n\nLater: if access_token expires, use refresh_token to get a new one\n         (without re-prompting the user)" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+KeyPoints: "KEY PROPERTIES\n  \u2022 password NEVER touches your app \u2014 only the IdP sees it\n  \u2022 authorization code is exchanged server-side, not in the browser\n  \u2022 PKCE protects against code interception (mandatory for mobile, recommended for web SPAs)\n  \u2022 state parameter prevents CSRF on the callback\n  \u2022 id_token = OIDC authentication; access_token = OAuth 2.0 API authorization\n  \u2022 OAuth 2.0 alone is authorization; OIDC adds authentication on top\nIMPLICIT FLOW IS DEPRECATED (token in URL was bad). Authorization code + PKCE only." {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Step1 -> Step2 -> Step3 -> Step4 -> Step5
+Step5 -> KeyPoints

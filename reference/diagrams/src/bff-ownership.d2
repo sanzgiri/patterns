@@ -1,0 +1,31 @@
+# BFF ownership: which team owns each gateway
+direction: down
+
+Org: "ORG STRUCTURE: each client team owns its BFF" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+WebTeam: "WEB TEAM\n\u2022 frontend (React/Vue)\n\u2022 web BFF (Node/Go)\n\u2022 deploys both together\n\u2022 controls latency, payload shape" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+}
+
+MobileTeam: "MOBILE TEAM\n\u2022 iOS app + Android app\n\u2022 mobile BFF (Node/Go)\n\u2022 owns offline-sync logic\n\u2022 binary protocol decisions" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+}
+
+PartnerTeam: "PARTNER / 3rd-PARTY TEAM\n\u2022 partner B2B APIs\n\u2022 partner BFF (Java)\n\u2022 enforces contracts, SLAs\n\u2022 versioning policy" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}
+
+CoreTeams: "PLATFORM / BACKEND TEAMS\n  Customers svc | Orders svc | Inventory svc | Catalog svc\n  \u2022 don't think about clients\n  \u2022 provide stable internal APIs\n  \u2022 each owns its own data" {
+  style: { fill: "#a5d6a7"; stroke: "#2e7d32"; border-radius: 8 }
+}
+
+WebTeam -> CoreTeams
+MobileTeam -> CoreTeams
+PartnerTeam -> CoreTeams
+
+Why: "WHY this ORG SHAPE works (Conway's Law)\n  \u2022 each client team owns the slice it ships to its users\n  \u2022 changes to mobile experience don't require coordination with web\n  \u2022 BFF lives in same repo as client \u2192 atomic changes possible\n  \u2022 backend teams have STABLE consumers (the BFFs), not 100 features\n  \u2022 partner integrations isolated from internal apps (security, versioning)\n\nORIGIN: SoundCloud (2015) \u2014 'Backends For Frontends' essay by\nSam Newman + Phil Calcado, after extracting from one shared API." {
+  shape: rectangle
+  style: { fill: "#ffe0b2"; stroke: "#e65100"; border-radius: 8 }
+}

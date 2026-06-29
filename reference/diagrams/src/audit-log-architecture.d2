@@ -1,0 +1,37 @@
+# Audit log architecture: separate pipeline for tamper evidence
+direction: down
+
+Title: "AUDIT LOG ARCHITECTURE: separate pipeline, separate store, separate access control" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+App: "APPLICATION\n  performs a sensitive action\n  emits AuditEvent record\n  ATOMIC with the business write (via outbox) so they cannot diverge" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+}
+
+Outbox: "OUTBOX in app DB\n(same transaction as business write)\nguarantees audit event IS emitted whenever the action succeeds" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+Relay: "AUDIT RELAY\nreads outbox \u2192 publishes to audit pipeline\n(CDC or polling)" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+Bus: "AUDIT EVENT BUS\n(Kafka / Kinesis / Pub-Sub)\nALL audit events from ALL services" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+}
+
+Storage: "AUDIT STORE (separate, locked-down)\n  Append-only, immutable storage\n  Options: WORM S3, Azure Immutable Blob, Postgres with revoked DELETE,\n           dedicated SIEM (Splunk, Sumo Logic, Datadog Cloud SIEM,\n           Elastic SIEM, AWS Security Lake)\n  Hash chain or signed records for tamper evidence (similar to git)\n  Retention by policy: 7+ years for financial (SOX), 6+ for healthcare (HIPAA)" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+Auditors: "AUDITORS / COMPLIANCE / INVESTIGATORS\n  separate ACL: only auditors / security read\n  no engineer can edit or delete\n  every query itself logged (meta-audit)\n  often required to be SEPARATE from prod ops team\n  used for:\n    \u2022 regulatory audits (SOC2, ISO27001, PCI, HIPAA, SOX, GDPR)\n    \u2022 security incident investigation\n    \u2022 access reviews\n    \u2022 forensic timelines" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+}
+
+Title -> App
+App -> Outbox: "atomic write"
+Outbox -> Relay
+Relay -> Bus
+Bus -> Storage
+Storage -> Auditors

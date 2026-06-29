@@ -1,0 +1,32 @@
+# Test pyramid for microservices
+direction: down
+
+Pyramid: "MICROSERVICES TEST PYRAMID (Mike Cohn, adapted)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 3; border-radius: 10 }
+}
+
+E2E: "END-TO-END / UI TESTS  (few, slow, brittle)\n   spin up the WHOLE SYSTEM \u2014 all services + their DBs + external mocks\n   \u2022 minutes per run, full of timing flakes\n   \u2022 hard to debug failures (which service broke?)\n   \u2022 hard to keep stable across many teams\n   USE SPARINGLY \u2014 only critical happy-path business flows" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; border-radius: 8 }
+}
+
+Contract: "CONTRACT TESTS  (one per consumer\u2194producer pair)\n   verify that 'I send X, I get Y back' agreement holds\n   \u2022 consumer-driven: consumer publishes its expectations\n   \u2022 producer runs them as part of CI\n   \u2022 fast \u2014 no integrated environment needed\n   \u2022 catches breaking API changes BEFORE merge\n   THE KEY MICROSERVICES TEST" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Component: "SERVICE COMPONENT TESTS  (one set per service)\n   spin up THE SERVICE PROCESS in isolation\n   stub or in-memory all its dependencies\n   \u2022 black-box: test the service via its real API\n   \u2022 white-box: full code path inside\n   \u2022 fast \u2014 seconds per test\n   \u2022 catches integration bugs (DB, framework, serialization)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+}
+
+Integ: "INTEGRATION TESTS  (per side adapter)\n   test service \u2194 real DB, service \u2194 real Kafka, service \u2194 real cache\n   \u2022 verifies adapters work against real dependencies\n   \u2022 docker-compose / testcontainers is the standard tool" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+}
+
+Unit: "UNIT TESTS  (many, fast, focused)\n   pure functions, domain logic, no I/O\n   \u2022 milliseconds per test, thousands per service\n   \u2022 high coverage, fast feedback loop" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}
+
+Pyramid -> E2E
+Pyramid -> Contract
+Pyramid -> Component
+Pyramid -> Integ
+Pyramid -> Unit

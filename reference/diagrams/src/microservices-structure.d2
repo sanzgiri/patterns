@@ -1,0 +1,32 @@
+# Microservices architecture: independent services, own DBs, communicate via API or events
+direction: down
+
+Client: { shape: person }
+Gateway: "API Gateway" { shape: rectangle; style: { fill: "#fff4c2"; stroke: "#f57c00"; stroke-width: 2; border-radius: 8 } }
+
+Orders: "Orders\nService" { style: { fill: "#e3f2fd"; stroke: "#1565c0"; border-radius: 8; stroke-width: 2 } }
+Orders_DB: "Orders DB" { shape: cylinder; style: { fill: "#bbdefb"; stroke: "#0d47a1" } }
+
+Inv: "Inventory\nService" { style: { fill: "#e8f5e9"; stroke: "#2e7d32"; border-radius: 8; stroke-width: 2 } }
+Inv_DB: "Inventory DB" { shape: cylinder; style: { fill: "#c8e6c9"; stroke: "#1b5e20" } }
+
+Bill: "Billing\nService" { style: { fill: "#fce4ec"; stroke: "#ad1457"; border-radius: 8; stroke-width: 2 } }
+Bill_DB: "Billing DB" { shape: cylinder; style: { fill: "#f8bbd0"; stroke: "#880e4f" } }
+
+Users: "Users\nService" { style: { fill: "#ede7f6"; stroke: "#4527a0"; border-radius: 8; stroke-width: 2 } }
+Users_DB: "Users DB" { shape: cylinder; style: { fill: "#d1c4e9"; stroke: "#311b92" } }
+
+Bus: "Event Bus (e.g., Kafka)" { shape: queue; style: { fill: "#fff4c2"; stroke: "#f57c00"; stroke-width: 2 } }
+
+Client -> Gateway
+Gateway -> Orders: "/orders/*"
+Gateway -> Users: "/users/*"
+
+Orders -> Orders_DB
+Inv -> Inv_DB
+Bill -> Bill_DB
+Users -> Users_DB
+
+Orders -> Bus: "OrderPlaced"
+Bus -> Inv: "consume"
+Bus -> Bill: "consume"

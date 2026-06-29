@@ -1,0 +1,37 @@
+# Partitioning strategies side-by-side
+direction: down
+
+Top: "FOUR WAYS TO PICK 'WHICH SHARD HOLDS THIS KEY?'" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Modulo: "1. MODULO / HASH-MOD-N" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+  Detail: "server = hash(key) % N\n\n+ trivial to compute\n+ perfectly balanced when N stable\n\u2212 nearly every key moves when N changes\n\u2212 cannot add/remove nodes gracefully\nUSE: never in production; pedagogical only"
+}
+
+Consistent: "2. CONSISTENT HASHING (RING + VNODES)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "place servers on a ring (vnodes); key goes to next server clockwise\n\n+ adding/removing N nodes moves O(K/N) keys\n+ supports weighted servers via vnode count\n\u2212 vnodes use memory for routing tables\n\u2212 still hotspot risk on sequential keys (mitigated by salting)\nUSE: caches (Memcached client-side), DynamoDB, Cassandra, Riak"
+}
+
+Rendezvous: "3. RENDEZVOUS / HIGHEST RANDOM WEIGHT (HRW)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "for each server, compute hash(key, server); pick highest\n\n+ same key-movement properties as consistent hashing\n+ NO vnodes / no ring data structure\n+ very even distribution (no hotspots)\n\u2212 O(N) per lookup (vs O(log N) for ring); fine for moderate N\nUSE: GitHub Spokes, some video/CDN systems, gRPC client load balancing"
+}
+
+Range: "4. RANGE PARTITIONING" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "partition by key range (e.g. user-id 1..1000 -> shard 0, 1001..2000 -> shard 1)\n\n+ supports efficient RANGE QUERIES (scan a contiguous range)\n+ data locality \u2014 related keys live together\n\u2212 HOTSPOT RISK: hot range (e.g. recent timestamps) overwhelms one shard\n\u2212 requires manual or automatic split/merge to rebalance\nUSE: HBase, Bigtable, Spanner, CockroachDB, MongoDB (with shard key)"
+}
+
+Geo: "5. GEOHASH (special case: spatial / geographic keys)" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+  Detail: "encode (lat, lon) into a string where prefix = nearby region\n  e.g. 9q8yyk = San Francisco, 9q8yyu = a few blocks away\n\n+ supports proximity queries via prefix matching\n+ uniform 2D grid; works with range partitioning\n\u2212 NOT uniform load (cities are hotspots)\n\u2212 boundary cases need neighbor lookups\nUSE: Uber (H3 is similar), Lyft, restaurant finders, geo-spatial DBs"
+}
+
+Top -> Modulo
+Top -> Consistent
+Top -> Rendezvous
+Top -> Range
+Top -> Geo

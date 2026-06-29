@@ -1,0 +1,22 @@
+# Self-registration vs Third-party registration
+direction: down
+
+Self: "1. SELF-REGISTRATION\n   service registers ITSELF on startup; deregisters on shutdown" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Sv: "Service instance" { style: { fill: "#fff" } }
+  R: "Service registry" { style: { fill: "#fff" } }
+  Sv -> R: "1. POST /register\n   { name: orders-svc, host: 10.0.0.5:8080 }"
+  Sv -> R: "2. heartbeat /every 10s"
+  Sv -> R: "3. DELETE /register on SIGTERM (best effort)"
+  Note1: "PROS:\n  \u2022 service has direct control\n  \u2022 simple in homogeneous environments\nCONS:\n  \u2022 each service needs registration client code\n  \u2022 hard to enforce: services can lie or forget\n  \u2022 missed deregistration \u2192 stale entries (cured by heartbeat timeout)\nUSED BY: Eureka clients, Consul agent, Spring Cloud" { style: { fill: "#e3f2fd" } }
+}
+
+Third: "2. THIRD-PARTY REGISTRATION\n   a separate REGISTRAR component watches deployments and registers on the service's behalf" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  Sv2: "Service instance\n(unaware of registry)" { style: { fill: "#fff" } }
+  Reg2: "REGISTRAR\n(watches orchestrator events:\n pod created \u2192 register\n pod terminated \u2192 deregister\n health check fails \u2192 deregister)" { style: { fill: "#ffe0b2" } }
+  R2: "Service registry" { style: { fill: "#fff" } }
+  Sv2 -> Reg2: "(observed by\n orchestrator/agent)"
+  Reg2 -> R2: "register / heartbeat\n on behalf of service"
+  Note2: "PROS:\n  \u2022 service code is free of registration logic\n  \u2022 polyglot-friendly (one registrar serves all languages)\n  \u2022 enforces deregistration via orchestrator visibility\n  \u2022 no protocol coupling between service and registry\nCONS:\n  \u2022 extra moving piece to operate\n  \u2022 registrar is a new dependency for correctness\nUSED BY: Kubernetes (kube-proxy + endpoints controller),\n  AWS ECS service-discovery integration, Nomad's built-in registration" { style: { fill: "#e8f5e9" } }
+}

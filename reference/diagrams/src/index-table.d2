@@ -1,0 +1,31 @@
+# Index Table / Secondary Index: trading write cost for read speed
+direction: down
+
+Problem: "PROBLEM: 'orders' table has 100M rows; primary key = order_id.\nQuery: 'SELECT * FROM orders WHERE customer_id = 42' \u2192 FULL TABLE SCAN \u2192 painful." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Solution: "SECONDARY INDEX: a separate sorted structure that maps\n   non-primary-key columns -> primary keys.\n\nlogically: dict[customer_id] -> [list of order_ids with that customer_id]\nphysically: a B-tree (or LSM, or inverted list) keyed on the indexed column" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+}
+
+Local: "LOCAL SECONDARY INDEX (LSI)\nIndex lives WITH the partition.\n  \u2022 each shard has its own LSI over its rows\n  \u2022 query by indexed column \u2192 hits ONE shard if you know partition key\n  \u2022 query by indexed column ONLY \u2192 must FAN OUT to all shards\n  \u2022 cheap to maintain (no cross-shard writes)\nUSED: DynamoDB LSI, Cassandra secondary indexes, MongoDB shard-local indexes" {
+  shape: rectangle
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+}
+
+Global: "GLOBAL SECONDARY INDEX (GSI)\nIndex is its OWN partitioned table, partitioned by the indexed column.\n  \u2022 query by indexed column \u2192 ONE shard lookup, no fan-out\n  \u2022 writes are now DUAL: write to base table + write to index table\n  \u2022 dual write is eventually consistent (in most NoSQL systems)\n  \u2022 strongly consistent GSIs require distributed transactions\nUSED: DynamoDB GSI, Cassandra MV, Spanner secondary indexes" {
+  shape: rectangle
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Tradeoff: "FUNDAMENTAL TRADE-OFF:\n  +1 index = +1 write amplification (every UPDATE/INSERT writes the index too)\n  but \u2014\n  +1 index can turn O(N) scan into O(log N) lookup\n\nRule of thumb: index columns you frequently filter / sort by; don't index every column\n(some systems' workloads end up with index size > data size)" {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}
+
+Problem -> Solution
+Solution -> Local
+Solution -> Global
+Local -> Tradeoff
+Global -> Tradeoff

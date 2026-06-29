@@ -1,0 +1,30 @@
+# Inverted Index: the core data structure of full-text search
+direction: down
+
+Forward: "FORWARD INDEX (the natural representation):\n  doc1: 'the quick brown fox'\n  doc2: 'the lazy brown dog'\n  doc3: 'quick fox jumps'\n\nQuery 'fox' \u2192 SCAN every doc \u2192 O(docs \u00d7 terms_per_doc). For 1B docs: hopeless." {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 10 }
+}
+
+Inverted: "INVERTED INDEX (rotate the relationship):\n  term -> list of (doc_id, position, frequency, ...)\n\n  'the'   -> [doc1, doc2]\n  'quick' -> [doc1, doc3]\n  'brown' -> [doc1, doc2]\n  'fox'   -> [doc1, doc3]\n  'lazy'  -> [doc2]\n  'dog'   -> [doc2]\n  'jumps' -> [doc3]\n\nQuery 'fox' \u2192 ONE lookup \u2192 [doc1, doc3]. O(1) for the term.\nQuery 'quick AND fox' \u2192 intersect [doc1, doc3] AND [doc1, doc3] = [doc1, doc3]." {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+}
+
+Postings: "POSTINGS LISTS \u2014 the 'list of doc_ids' part is rich:\n  \u2022 doc_id (which document)\n  \u2022 term frequency (for relevance ranking: TF-IDF, BM25)\n  \u2022 positions (for phrase queries: 'quick brown')\n  \u2022 offsets (for highlighting matches in results)\n\nPostings are stored sorted; intersected via merge-join for AND queries.\nCompressed heavily (delta encoding, variable-byte, simd-bp128) \u2014 inverted\nindexes are often 10\u201340% the size of the original text." {
+  shape: rectangle
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+}
+
+Pipeline: "DOCUMENT INDEXING PIPELINE:\n  1. TOKENIZE: split text into terms ('Don't' \u2192 'don', 't')\n  2. LOWERCASE: normalize case\n  3. STOPWORD REMOVAL: drop 'the', 'a', 'of' (optional)\n  4. STEMMING/LEMMATIZATION: 'running' \u2192 'run'\n  5. SYNONYM EXPANSION (optional)\n  6. UPDATE postings lists" {
+  shape: rectangle
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Engines: "USED BY: Lucene/Elasticsearch/OpenSearch/Solr, Postgres FTS,\nMySQL FULLTEXT, MongoDB text index, Algolia, Meilisearch, Tantivy,\nGoogle's index (much fancier but same idea), Bing, Baidu, every search engine ever." {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}
+
+Forward -> Inverted
+Inverted -> Postings
+Postings -> Pipeline
+Pipeline -> Engines

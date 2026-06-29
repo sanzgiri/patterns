@@ -1,0 +1,41 @@
+# LSM read path: check memtable, then each level, with Bloom filters
+shape: sequence_diagram
+
+Client
+Engine: "LSM engine"
+Memtable
+L0_Bloom: "L0 Bloom filter"
+L0: "L0 SSTables"
+L1_Bloom: "L1 Bloom filter"
+L1: "L1 SSTables"
+L2: "L2 SSTables"
+
+Client -> Engine: "GET key=42"
+
+phase1: "1. Check memtable (in-memory, fast)" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  Engine -> Memtable: "lookup key=42"
+  Memtable -> Engine: "not found"
+}
+
+phase2: "2. Check each L0 SSTable (recent, may overlap)" {
+  style: { fill: "#bbdefb"; font-color: "#0d47a1" }
+  Engine -> L0_Bloom: "may contain 42?"
+  L0_Bloom -> Engine: "definitely NOT \u2192 skip this SSTable\n(Bloom filter \u2014 false positives only)"
+}
+
+phase3: "3. Check L1 (sorted, non-overlapping \u2014 only 1 SST to check)" {
+  style: { fill: "#fff4c2"; font-color: "#bf360c" }
+  Engine -> L1_Bloom: "may contain 42?"
+  L1_Bloom -> Engine: "maybe yes"
+  Engine -> L1: "find SST containing key range with 42\nbinary-search within block index\nread block from disk (1 random I/O)"
+  L1 -> Engine: "found: key=42, value=v_old (but check if newer exists?)"
+}
+
+phase4: "Important: must check shallower levels first!" {
+  style: { fill: "#ffcdd2"; font-color: "#b71c1c" }
+  Engine -> Engine: "L0 already checked \u2014 nothing newer.\nMemtable already checked \u2014 nothing newer.\nL1 result is the latest \u2192 return v_old"
+  Engine -> Client: "v_old"
+}
+
+Note: "Read amplification:\n\u2022 1 memtable check + 1 lookup per level\n\u2022 Bloom filters eliminate most disk hits\n\u2022 Block cache reduces I/O on hot data\n\u2022 But: still slower than B-tree for random point reads\n  (which is why LSM trades read speed for write speed)"

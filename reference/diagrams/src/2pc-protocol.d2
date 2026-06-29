@@ -1,0 +1,31 @@
+# Two-Phase Commit: prepare phase + commit phase
+shape: sequence_diagram
+
+Client
+Coord: "TX Coordinator"
+P1: "Participant 1\n(DB A)"
+P2: "Participant 2\n(DB B)"
+P3: "Participant 3\n(MQ)"
+
+phase1: "PHASE 1 \u2014 PREPARE" {
+  style: { fill: "#fff4c2"; font-color: "#bf360c"; bold: true }
+  Client -> Coord: "commit txn"
+  Coord -> P1: "PREPARE"
+  Coord -> P2: "PREPARE"
+  Coord -> P3: "PREPARE"
+  P1 -> Coord: "VOTE-YES (locked + WAL written)"
+  P2 -> Coord: "VOTE-YES (locked + WAL written)"
+  P3 -> Coord: "VOTE-YES (locked + WAL written)"
+}
+
+phase2: "PHASE 2 \u2014 COMMIT (all voted yes)" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20"; bold: true }
+  Coord -> Coord: "decision = COMMIT\n(persist to coord log)"
+  Coord -> P1: "COMMIT" { style: { stroke: "#2e7d32" } }
+  Coord -> P2: "COMMIT" { style: { stroke: "#2e7d32" } }
+  Coord -> P3: "COMMIT" { style: { stroke: "#2e7d32" } }
+  P1 -> Coord: "ack"
+  P2 -> Coord: "ack"
+  P3 -> Coord: "ack"
+  Coord -> Client: "committed"
+}

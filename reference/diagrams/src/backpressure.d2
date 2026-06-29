@@ -1,0 +1,33 @@
+# Backpressure: pushing back when downstream can't keep up
+direction: down
+
+Title: "BACKPRESSURE: when a downstream component is SLOWER than upstream,\nupstream must slow down too \u2014 or queues grow without bound \u2014 leading to OOM or timeout cascade." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+NoBP: "WITHOUT BACKPRESSURE: unbounded queue" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 10 }
+
+  Prod: "Producer (1000 events/s)" { style: { fill: "#fff" } }
+  Queue: "Queue (unbounded)\n\u2192 grows forever" { style: { fill: "#ffcdd2" } }
+  Cons: "Consumer (500 events/s)\n\u2192 SLOWER than producer" { style: { fill: "#fff" } }
+
+  Prod -> Queue -> Cons
+
+  Result: "RESULT:\n  \u2022 Queue depth grows linearly\n  \u2022 Memory exhausted \u2192 OOM\n  \u2022 OR latency for queued events grows past timeouts\n  \u2022 OR upstream timeouts fire \u2192 retries \u2192 even more load\n  \u2022 OR the queue is so deep that recovery requires draining for hours" { style: { fill: "#ffcdd2"; stroke-dash: 4 } }
+}
+
+WithBP: "WITH BACKPRESSURE: signal upstream to slow down" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+
+  ProdBP: "Producer\n(throttled when downstream signals SLOW)" { style: { fill: "#fff" } }
+  BQueue: "Queue (BOUNDED, e.g. 1000 items)" { style: { fill: "#fff" } }
+  ConsBP: "Consumer" { style: { fill: "#fff" } }
+
+  ProdBP -> BQueue: "send"
+  BQueue -> ConsBP: "consume"
+  BQueue -> ProdBP: "BACKPRESSURE SIGNAL\nqueue full \u2192 producer blocks / sheds / slows"
+  style: { stroke: "#bf360c" }
+
+  Result2: "RESULT: producer's rate is GOVERNED by consumer's capacity.\nQueue depth bounded. Latency bounded. No OOM. No retry storm." { style: { fill: "#c8e6c9"; stroke-dash: 4 } }
+}

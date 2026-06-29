@@ -1,0 +1,35 @@
+# Generation clock: stale-leader / fencing token use
+shape: sequence_diagram
+
+OldLeader: "Old Leader (term 5)"
+F1: "Follower"
+NewLeader: "New Leader (term 6, just elected)"
+Storage: "Replicated storage"
+
+OldLeader -> F1: "AppendEntries(term=5, entries=[X])"
+F1 -> F1: "currentTerm = 5\naccept entry X"
+F1 -> OldLeader: "ack"
+
+note1: "(Network partition isolates OldLeader from majority)" {
+  style: { fill: "#ffe0b2" }
+  NewLeader -> F1: "VoteRequest(term=6)"
+  F1 -> F1: "6 > 5 \u2192 update currentTerm = 6"
+  F1 -> NewLeader: "VoteGranted"
+  NewLeader -> F1: "AppendEntries(term=6, entries=[Y])"
+  F1 -> F1: "accept Y at term 6"
+}
+
+note2: "Partition heals \u2014 OldLeader doesn't know about election" {
+  style: { fill: "#ffcdd2" }
+  OldLeader -> F1: "AppendEntries(term=5, entries=[Z])"
+  F1 -> OldLeader: "REJECT \u2014 my term is 6, you're stale"
+  OldLeader -> OldLeader: "see term 6 > 5\ndemote to Follower"
+}
+
+note3: "Storage-level use: fencing token to prevent stale writes" {
+  style: { fill: "#c8e6c9" }
+  OldLeader -> Storage: "write(value, token=5)"
+  Storage -> OldLeader: "REJECT \u2014 highest token seen = 6"
+  NewLeader -> Storage: "write(value, token=6)"
+  Storage -> NewLeader: "ACCEPT"
+}

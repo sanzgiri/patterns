@@ -1,0 +1,45 @@
+# MVCC: readers don't block writers (and vice versa)
+shape: sequence_diagram
+
+R: "Reader txn R (snapshot=t0)"
+W: "Writer txn W"
+Engine: "MVCC engine"
+
+start: "Both transactions begin at t0" {
+  style: { fill: "#bbdefb"; font-color: "#0d47a1" }
+  R -> Engine: "BEGIN; take snapshot at LSN=t0"
+  W -> Engine: "BEGIN; assign txn_id=W"
+}
+
+read: "Reader reads (sees t0 snapshot)" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  R -> Engine: "SELECT * FROM accounts WHERE id=1"
+  Engine -> R: "balance=100 (version visible at t0)"
+}
+
+write: "Writer writes (NEW version, doesn't touch old)" {
+  style: { fill: "#fff4c2"; font-color: "#bf360c" }
+  W -> Engine: "UPDATE accounts SET balance=50 WHERE id=1"
+  Engine -> Engine: "create new version:\n  v_old: balance=100, txn_max=W (pending)\n  v_new: balance=50, txn_min=W"
+  Engine -> W: "OK"
+}
+
+read2: "Reader reads AGAIN \u2014 STILL sees t0 snapshot (no W effect)" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  R -> Engine: "SELECT * FROM accounts WHERE id=1"
+  Engine -> R: "balance=100 \u2190 SAME as before!\n(W hasn't committed, and even after it does,\nR's snapshot is fixed at t0)"
+}
+
+commit: "Writer commits at t1" {
+  style: { fill: "#e1bee7"; font-color: "#4a148c" }
+  W -> Engine: "COMMIT \u2192 txn_max of v_old finalized, v_new visible from t1"
+}
+
+newreader: "New reader (snapshot=t1) sees W's effect" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  R2: "Reader R2 (snapshot=t1+)"
+  R2 -> Engine: "SELECT * FROM accounts WHERE id=1"
+  Engine -> R2: "balance=50"
+}
+
+Note: "Property: readers and writers NEVER BLOCK EACH OTHER.\nThis is the killer feature of MVCC.\nLong-running analytical queries don't lock OLTP writes.\nWrites don't wait for readers to release locks."

@@ -1,0 +1,33 @@
+# Consistent Core: small Raft/ZK cluster brokers a large data cluster
+direction: down
+
+Core: "CONSISTENT CORE\n3 or 5 nodes running Raft/Paxos\nholds metadata: topology, leadership, configuration" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 3; border-radius: 10 }
+  C1: "etcd / ZK / Consul\nnode 1" { style: { fill: "#a5d6a7" } }
+  C2: "etcd / ZK / Consul\nnode 2" { style: { fill: "#a5d6a7" } }
+  C3: "etcd / ZK / Consul\nnode 3" { style: { fill: "#a5d6a7" } }
+  C1 <-> C2 { style: { stroke: "#1b5e20" } }
+  C2 <-> C3 { style: { stroke: "#1b5e20" } }
+  C1 <-> C3 { style: { stroke: "#1b5e20" } }
+}
+
+Data: "DATA CLUSTER\nhundreds or thousands of nodes\nuse eventually-consistent / leaderless replication\nfor the data itself" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  D1: "node" { style: { fill: "#90caf9" } }
+  D2: "node" { style: { fill: "#90caf9" } }
+  D3: "node" { style: { fill: "#90caf9" } }
+  D4: "node" { style: { fill: "#90caf9" } }
+  D5: "node" { style: { fill: "#90caf9" } }
+  D6: "node" { style: { fill: "#90caf9" } }
+  D7: "..." { style: { fill: "#90caf9" } }
+  D8: "(1000s)" { style: { fill: "#90caf9" } }
+}
+
+Core -> Data: "stores:\n\u2022 which node owns which shard\n\u2022 current leader of each replication group\n\u2022 cluster membership\n\u2022 config (e.g., replication factor)\n\u2022 leases (for atomic lock acquisition)"
+
+Data -> Core: "queries:\n\u2022 who's leader of shard X?\n\u2022 acquire lease on resource Y\n\u2022 register myself as a member\n\u2022 watch for config changes"
+
+Why: "Why this split?\n\u2022 Consensus (Raft/Paxos) is SLOW \u2014 every write costs an RTT to majority.\n  You can't afford it on every data write.\n\u2022 But you DO need strong consistency for METADATA \u2014 must not split-brain\n  on 'who owns this shard.'\n\u2022 Solution: small consensus core for metadata only;\n  large eventually-consistent data layer that consults the core occasionally.\n\u2022 The metadata change rate is low (cluster events) vs the data rate (per request),\n  so the consensus overhead is amortized." {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}

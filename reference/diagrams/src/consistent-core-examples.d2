@@ -1,0 +1,32 @@
+# Consistent core: examples in real systems
+direction: down
+
+Kafka: "APACHE KAFKA (pre-KRaft era)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Core: "Consistent core: ZooKeeper (3-5 nodes)\n  \u2022 holds broker membership\n  \u2022 holds partition\u2192leader mapping\n  \u2022 holds controller election"
+  Data: "Data layer: 100s of Kafka brokers\n  \u2022 partition replication is per-partition (not via ZK)\n  \u2022 brokers consult ZK only on metadata events\n\nKRaft (Kafka 3.3+) replaced ZK with embedded Raft \u2014\nstill the same pattern."
+}
+
+Bigtable: "GOOGLE BIGTABLE + HBASE" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Core: "Consistent core: Chubby / ZooKeeper (5 nodes)\n  \u2022 stores tablet \u2192 server assignment\n  \u2022 master election"
+  Data: "Data layer: thousands of tablet servers\n  \u2022 actually serve data, sometimes consult ZK for tablet info\n  \u2022 client caches tablet \u2192 server map; refreshes on miss"
+}
+
+Mesos: "APACHE MESOS / KUBERNETES" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Core: "Consistent core: etcd (3-5 nodes)\n  \u2022 stores cluster state: pods, services, configmaps, secrets\n  \u2022 controller election"
+  Data: "Data layer: thousands of worker nodes (kubelet)\n  \u2022 actually run containers, consult API server (\u2192 etcd) for assignments\n  \u2022 watch API server for changes"
+}
+
+CRDB: "COCKROACHDB / TIKV / YUGABYTEDB" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+  Core: "Consistent core: 'meta ranges' (the first few Raft groups\nstoring the descriptor of all other ranges)"
+  Data: "Data layer: thousands of per-range Raft groups"
+}
+
+Helix: "APACHE HELIX (LinkedIn)" {
+  style: { fill: "#cfd8dc"; stroke: "#37474f"; stroke-width: 2; border-radius: 8 }
+  Core: "Consistent core: ZooKeeper for resource/partition assignment"
+  Data: "Data layer: Espresso, Pinot, Voldemort, others"
+}

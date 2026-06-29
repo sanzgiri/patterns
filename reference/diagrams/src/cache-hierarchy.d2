@@ -1,0 +1,38 @@
+# Cache hierarchy: every layer caches its slower neighbor
+direction: down
+
+Title: "CACHE HIERARCHY: every layer caches its slower neighbor.\nLatency drops by 10\u20131000x at each tier.\nThe same architectural principle from CPU to global web." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Tiers: "THE HIERARCHY (with typical latencies)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  CPU: "CPU REGISTER ........... 0.3 ns" { style: { fill: "#fff" } }
+  L1: "L1 CACHE ............... 1 ns       (KB; per-core)" { style: { fill: "#fff" } }
+  L2: "L2 CACHE ............... 4 ns       (MB; per-core)" { style: { fill: "#fff" } }
+  L3: "L3 CACHE ............... 10 ns      (MBs; shared)" { style: { fill: "#fff" } }
+  RAM: "RAM (DDR5) ............. 100 ns     (GBs)" { style: { fill: "#fff" } }
+  Browser: "BROWSER CACHE .......... 0 ms (local disk)" { style: { fill: "#fff" } }
+  CDN: "CDN EDGE ............... 5\u201350 ms    (global PoP)" { style: { fill: "#fff" } }
+  AppCache: "APP CACHE (Redis/Memcached) ........ 0.5\u20132 ms (same region)" { style: { fill: "#fff" } }
+  Local: "LOCAL DISK (NVMe) ...... 100 \u00b5s" { style: { fill: "#fff" } }
+  SSD: "DATA CENTER SSD ........ 0.5 ms     (across rack)" { style: { fill: "#fff" } }
+  RDB: "RDBMS .................. 1\u201310 ms     (DB roundtrip)" { style: { fill: "#fff" } }
+  S3: "OBJECT STORE (S3) ...... 30\u2013100 ms" { style: { fill: "#fff" } }
+  XRegion: "CROSS-REGION ........... 80\u2013200 ms" { style: { fill: "#fff" } }
+  Tape: "ARCHIVAL (S3 Glacier) .. minutes\u2013hours" { style: { fill: "#fff" } }
+
+  CPU -> L1 -> L2 -> L3 -> RAM -> Browser -> CDN -> AppCache -> Local -> SSD -> RDB -> S3 -> XRegion -> Tape: "slower & cheaper \u2193"
+}
+
+Patterns: "PATTERNS APPLIED AT EVERY TIER\n  \u2022 cache-aside (lazy fill) \u2014 see [page](cache-aside.md)\n  \u2022 read-through / write-through / write-behind \u2014 see [page](cache-managed-strategies.md)\n  \u2022 TTL + LRU eviction\n  \u2022 cache invalidation on writes (the hard problem)\n  \u2022 stampede protection ([thundering herd](../res/thundering-herd.md))\n  \u2022 negative caching (cache the 'not found' too)\n  \u2022 cache warming on deploy\n\nDESIGN PRINCIPLES\n  \u2022 hot data fits in higher tier; cold data lives lower\n  \u2022 size of each tier shrinks as latency drops\n  \u2022 hit rate at upper tier determines effective latency\n  \u2022 working set << total set (this is why caches work at all)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+}
+
+Math: "THE MATH OF HIERARCHY\n  effective_latency = hit_rate \u00d7 cache_latency + (1 - hit_rate) \u00d7 backing_latency\n\n  Example: 95% Redis hit (1ms), 5% RDBMS (10ms)\n     = 0.95 \u00d7 1 + 0.05 \u00d7 10 = 1.45 ms effective\n  Without cache: 10 ms (7x improvement)\n  Bump hit to 99%: 0.99 \u00d7 1 + 0.01 \u00d7 10 = 1.09 ms\n\n  HIT RATE MATTERS MORE THAN CACHE SPEED at high hit rates" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Tiers
+Tiers -> Patterns
+Patterns -> Math

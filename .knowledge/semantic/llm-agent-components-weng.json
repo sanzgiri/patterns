@@ -1,0 +1,68 @@
+{
+  "id": "llm-agent-components-weng",
+  "topic": "llm patterns",
+  "subtopic": "LLM-powered autonomous agents — components and techniques",
+  "source": {
+    "title": "LLM-powered Autonomous Agents",
+    "author": "Lilian Weng",
+    "publisher": "Lil'Log",
+    "url": "https://lilianweng.github.io/posts/2023-06-23-agent/",
+    "published": "2023-06-23",
+    "fetched": "2026-06-25"
+  },
+  "provenance": "verified_by_fetch",
+  "confidence": 0.9,
+  "framing": "In an LLM-powered autonomous agent, the LLM is the brain, complemented by three components: Planning, Memory, and Tool use. This post catalogs the techniques used inside each component.",
+  "components": {
+    "planning": {
+      "subgoal_and_decomposition": [
+        { "technique": "Chain of Thought (CoT)", "citation": "Wei et al. 2022", "summary": "Prompt the model to think step-by-step, decomposing hard tasks into simpler intermediate steps." },
+        { "technique": "Tree of Thoughts (ToT)", "citation": "Yao et al. 2023", "summary": "Extends CoT by exploring multiple reasoning branches per step (BFS/DFS), evaluated by classifier or majority vote." },
+        { "technique": "LLM+P", "citation": "Liu et al. 2023", "summary": "LLM translates the problem into PDDL, hands it to an external classical planner, then translates the plan back to natural language." }
+      ],
+      "self_reflection": [
+        { "technique": "ReAct", "citation": "Yao et al. 2023", "summary": "Interleaves explicit Thought / Action / Observation steps so the LLM reasons in language while acting via discrete tool actions." },
+        { "technique": "Reflexion", "citation": "Shinn & Labash 2023", "summary": "Adds dynamic memory and self-reflection: after each trajectory the agent generates a verbal reflection that is injected into working memory for future attempts." },
+        { "technique": "Chain of Hindsight (CoH)", "citation": "Liu et al. 2023", "summary": "Fine-tunes a model on sequences of past outputs annotated with feedback so it learns to self-improve in subsequent generations." },
+        { "technique": "Algorithm Distillation (AD)", "citation": "Laskin et al. 2023", "summary": "Distills the learning history of an RL algorithm into a long history-conditioned policy via behavioral cloning." }
+      ]
+    },
+    "memory": {
+      "types": [
+        { "name": "Sensory memory", "llm_analog": "Embedding representations of raw inputs (text, image, etc.)" },
+        { "name": "Short-term / working memory", "llm_analog": "In-context learning — bounded by Transformer context window" },
+        { "name": "Long-term memory", "llm_analog": "External vector store accessed via fast retrieval (MIPS)" }
+      ],
+      "fast_retrieval_algorithms_MIPS": [
+        { "name": "LSH (Locality-Sensitive Hashing)", "summary": "Hash function maps similar items to the same bucket with high probability." },
+        { "name": "ANNOY", "summary": "Random projection trees; each non-leaf splits the space with a hyperplane." },
+        { "name": "HNSW (Hierarchical Navigable Small World)", "summary": "Hierarchical small-world graphs; navigates from coarse top layers to fine bottom layers." },
+        { "name": "FAISS", "summary": "Vector quantization with cluster partitioning, then refined quantization within clusters." },
+        { "name": "ScaNN", "summary": "Anisotropic vector quantization optimized for inner-product similarity preservation." }
+      ]
+    },
+    "tool_use": [
+      { "technique": "MRKL", "citation": "Karpas et al. 2022", "summary": "Neuro-symbolic architecture: a general LLM routes queries to expert modules (neural or symbolic: calculator, currency, weather, etc.)." },
+      { "technique": "TALM", "citation": "Parisi et al. 2022", "summary": "Fine-tunes an LM to learn to use external tool APIs." },
+      { "technique": "Toolformer", "citation": "Schick et al. 2023", "summary": "Self-supervised: the model learns which APIs to call by checking whether the API call improves output likelihood." },
+      { "technique": "ChatGPT Plugins / OpenAI function calling", "summary": "Practical LLM-tool augmentation with developer- or self-defined tool APIs." },
+      { "technique": "HuggingGPT", "citation": "Shen et al. 2023", "summary": "Four stages — task planning, model selection, task execution, response generation — using ChatGPT to orchestrate HuggingFace models." },
+      { "technique": "API-Bank", "citation": "Li et al. 2023", "summary": "Benchmark with 53 APIs and 264 dialogues; evaluates whether to call, which API, and multi-step API planning." }
+    ]
+  },
+  "case_studies": [
+    { "name": "ChemCrow", "citation": "Bran et al. 2023", "summary": "Domain LLM agent augmented with 13 chemistry tools for organic synthesis, drug discovery, materials design." },
+    { "name": "Boiko et al. 2023", "summary": "LLM agents that browse the web, read docs, run code, call lab robotics APIs for autonomous scientific experiments." },
+    { "name": "Generative Agents", "citation": "Park et al. 2023", "summary": "25 LLM-powered virtual characters with memory stream, retrieval (recency/importance/relevance), reflection, and planning — produce emergent social behavior." },
+    { "name": "AutoGPT", "summary": "Proof-of-concept autonomous agent with goal-driven loop; mostly format-parsing code." },
+    { "name": "GPT-Engineer", "summary": "Generates entire code repositories from a natural-language task; asks for clarification, then writes files." }
+  ],
+  "challenges_called_out_by_source": [
+    "Finite context length limits historical info, instructions, and tool context.",
+    "Long-term planning and task decomposition: LLMs struggle to adjust plans when faced with unexpected errors.",
+    "Reliability of natural-language interfaces: LLMs make formatting errors and may refuse instructions, forcing heavy output-parsing code."
+  ],
+  "note_on_recency": "This post is from June 2023. Many of its techniques (ReAct, CoT, ToT, function calling) are now standard. The component decomposition (Planning / Memory / Tool use) remains the most-cited mental model for LLM agents.",
+  "created": "2026-06-25T00:00:00Z",
+  "updated": "2026-06-25T00:00:00Z"
+}

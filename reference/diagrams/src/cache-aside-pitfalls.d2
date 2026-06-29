@@ -1,0 +1,27 @@
+# Cache-Aside pitfalls: stale reads, stampede, negative caching
+direction: down
+
+Title: "WHAT GOES WRONG WITH CACHE-ASIDE (and how to mitigate)" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 10 }
+}
+
+Stale: "1. STALE READS during the small window between\n   DB write and cache invalidation\n\n   T0: ReaderA  GET key \u2192 MISS \u2192 SELECT \u2192 (in-flight: value=v1)\n   T1: Writer   UPDATE row to v2; DELETE cache key\n   T2: ReaderA  SET key=v1   \u2190 OOPS, just wrote stale value!\n\n   FIX: small TTL bounds the damage; or use versioned keys;\n        or a separate invalidation log; or write-through" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Stampede: "2. CACHE STAMPEDE (thundering herd)\n   Hot key TTL expires; 1000 requests all MISS at once;\n   1000 concurrent SELECTs slam the DB.\n\n   FIX: single-flight (one request fetches, others wait);\n        probabilistic early expiration; locking; request coalescing" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Negative: "3. NEGATIVE CACHING / KEY ENUMERATION\n   Attacker requests 1M random IDs that don't exist.\n   Each request MISSes cache, SELECTs DB, returns nothing.\n   DB is overwhelmed by misses.\n\n   FIX: cache the 'not found' result too (short TTL);\n        Bloom filter to short-circuit known-absent keys" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Inconsistency: "4. DUAL-WRITE INCONSISTENCY\n   Crash between 'UPDATE DB' and 'DELETE cache' \u2192 cache holds stale value\n   until TTL expires (could be hours).\n\n   FIX: TTL bound + accept eventual consistency;\n        or use CDC on the DB to drive invalidations;\n        or switch to write-through (cache + DB updated atomically)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Stale
+Title -> Stampede
+Title -> Negative
+Title -> Inconsistency

@@ -1,0 +1,25 @@
+# Client-side vs Server-side discovery: comparison
+direction: down
+
+Side: "WHICH STYLE FITS WHICH ORG?" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 3; border-radius: 10 }
+}
+
+CSD: "CLIENT-SIDE DISCOVERY" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Best: "BEST FIT:\n  \u2022 single-language org (one discovery client suffices)\n  \u2022 latency-sensitive (no extra hop)\n  \u2022 want smart LB (zone-aware, latency-aware)\n  \u2022 willing to put logic in apps\nEXAMPLES:\n  \u2022 Netflix circa Eureka + Ribbon (Java-heavy)\n  \u2022 Spring Cloud LoadBalancer\n  \u2022 gRPC with name-resolution + LB plugin"
+}
+
+SSD: "SERVER-SIDE DISCOVERY" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  Best: "BEST FIT:\n  \u2022 polyglot org (Python, Go, Java, Node, ...)\n  \u2022 want centralized LB policy\n  \u2022 OK paying one network hop\n  \u2022 want zero discovery code in apps\nEXAMPLES:\n  \u2022 Kubernetes Service / ingress\n  \u2022 AWS ALB / NLB\n  \u2022 Envoy + control plane (= service mesh)"
+}
+
+Hybrid: "HYBRID (service mesh)" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 10 }
+  Best: "EVOLUTION (typical mature org):\n  \u2022 sidecar Envoy per pod (server-side from app's view)\n  \u2022 Envoy itself does client-side LB to upstream pods\n  \u2022 control plane (Istio, Linkerd) keeps Envoys in sync\nRESULT:\n  \u2022 apps see DNS-based 'just call this name' (server-side simplicity)\n  \u2022 Envoy does zone-aware, latency-aware LB (client-side smarts)\n  \u2022 control plane abstracts the registry from both"
+}
+
+Side -> CSD
+Side -> SSD
+Side -> Hybrid

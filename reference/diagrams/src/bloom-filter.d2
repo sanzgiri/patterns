@@ -1,0 +1,28 @@
+# Bloom Filter: approximate set membership in tiny memory
+direction: down
+
+Title: "BLOOM FILTER: 'is X probably in this set?'\n\u2192 NO FALSE NEGATIVES, but small chance of FALSE POSITIVE" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Structure: "STRUCTURE: a bit array of m bits + k hash functions" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Detail: "bit array (m=20 bits, k=3 hashes):  [0|1|0|0|1|1|0|0|1|0|1|1|0|0|1|0|0|1|1|0]\n                                       0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19"
+}
+
+Insert: "INSERT(x):\n  hash1(x) = 3\n  hash2(x) = 7\n  hash3(x) = 13\n  \u2192 set bits 3, 7, 13 to 1" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+}
+
+Query: "QUERY(y):\n  hash1(y) = 3\n  hash2(y) = 7\n  hash3(y) = 13\n  Are all 3 bits set?\n    YES \u2192 'possibly in set' (could be false positive)\n    NO  \u2192 'definitely NOT in set' (guaranteed)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Math: "FALSE POSITIVE RATE:\n  fpr \u2248 (1 - e^(-kn/m))^k\n  where n = items inserted, m = bits, k = hashes\n\n  Example: n=1M items, m=10M bits, k=7 \u2192 fpr \u2248 0.8%\n           uses ~1.25 MB total\n\nCompare: storing 1M strings of 30 chars each = 30 MB exact set.\nBloom filter: 1.25 MB at 0.8% false positive rate \u2192 24\u00d7 smaller." {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}
+
+Structure -> Insert
+Insert -> Query
+Query -> Math

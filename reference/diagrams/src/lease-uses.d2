@@ -1,0 +1,27 @@
+# Lease uses: leader, lock, cache, range ownership
+direction: down
+
+Leader: "LEADER LEASE\nused by: Raft (optional), Spanner, CockroachDB" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "+ Leader holds a time-bounded lease on the role\n+ Within the lease, leader can serve LINEARIZABLE reads\n  WITHOUT going through consensus \u2014 huge latency win\n+ On expiry, must renew or step down\n+ Followers won't accept other leaders until lease expires"
+}
+
+Lock: "DISTRIBUTED LOCK\nused by: ZooKeeper, etcd, Redis RedLock (controversial), Chubby" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "+ Client acquires a lease on a named resource\n+ Lease auto-expires if client crashes \u2014 no deadlock\n+ Must pair with fencing token (see generation-clock.md)\n+ Without fencing: GC pause + lease expiry + late write = corruption"
+}
+
+Cache: "CACHE LEASE\nused by: Bigtable tablet leases, GCS metadata leases" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "+ Client caches data with a lease \u2192 reads are local\n+ Within lease, no need to re-validate with server\n+ Server invalidates by withholding renewal\n+ Lease length = staleness budget"
+}
+
+Range: "RANGE OWNERSHIP LEASE\nused by: CockroachDB ranges, TiKV regions, Bigtable tablets, Spanner" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+  Detail: "+ One replica holds the lease on a key range\n+ All reads & writes for that range route to the lease-holder\n+ On node failure, after lease expires, another replica takes over\n+ Underlies single-row linearizability + fast local reads\n  in CockroachDB and Spanner"
+}
+
+Note: "All four are the same pattern at different scopes:\nshort-lived auto-expiring permission to act,\nwith fencing to make stale holders harmless." {
+  shape: rectangle
+  style: { fill: "#e3f2fd"; stroke: "#0d47a1"; border-radius: 8 }
+}

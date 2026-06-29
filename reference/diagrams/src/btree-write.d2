@@ -1,0 +1,39 @@
+# B-tree write: in-place update + WAL + occasional split
+shape: sequence_diagram
+
+Client
+Engine: "Storage engine"
+WAL
+PageCache: "Page cache (memory)"
+Disk: "Data file (random I/O)"
+
+Client -> Engine: "INSERT key=55"
+
+phase1: "STEP 1 \u2014 Find the leaf page" {
+  style: { fill: "#bbdefb"; font-color: "#0d47a1" }
+  Engine -> PageCache: "load root page (cache hit)"
+  Engine -> PageCache: "load internal page (cache hit)"
+  Engine -> PageCache: "load leaf page [50\u201359]\n(may be cache miss \u2192 random disk read)"
+}
+
+phase2: "STEP 2 \u2014 Write to WAL FIRST" {
+  style: { fill: "#fff4c2"; font-color: "#bf360c" }
+  Engine -> WAL: "append: page=L6 insert key=55 at slot 5"
+  WAL -> WAL: "fsync()"
+}
+
+phase3: "STEP 3 \u2014 Modify the leaf page in-place (in memory)" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  Engine -> PageCache: "modify leaf [50,51,55,55,...] \u2192 mark dirty"
+  Engine -> Client: "OK"
+}
+
+phase4: "STEP 4 \u2014 Background checkpoint flushes dirty page to disk" {
+  style: { fill: "#e1bee7"; font-color: "#4a148c" }
+  PageCache -> Disk: "(later) write 8KB page to its on-disk location\n\u2192 RANDOM I/O (cost amortized by batching)"
+}
+
+split: "OCCASIONAL: if leaf overflows, SPLIT" {
+  style: { fill: "#ffcdd2"; font-color: "#b71c1c" }
+  Engine -> Engine: "allocate new page, redistribute keys,\nupdate parent (which may also split, recursively)\n\u2192 more WAL entries + more page modifications"
+}

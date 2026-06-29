@@ -1,0 +1,35 @@
+# Heartbeat: keep-alive between nodes
+shape: sequence_diagram
+
+L: "Leader / Coordinator"
+F1: "Follower 1"
+F2: "Follower 2"
+F3: "Follower 3"
+
+normal: "Normal operation \u2014 heartbeats every 50ms" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  L -> F1: "heartbeat (t=0)"
+  L -> F2: "heartbeat (t=0)"
+  L -> F3: "heartbeat (t=0)"
+  F1 -> L: "ack"
+  F2 -> L: "ack"
+  F3 -> L: "ack"
+  L -> F1: "heartbeat (t=50ms)"
+  L -> F2: "heartbeat (t=50ms)"
+  L -> F3: "heartbeat (t=50ms)"
+}
+
+failure: "Leader crashes at t=100ms" {
+  style: { fill: "#ffcdd2"; font-color: "#b71c1c" }
+  L -> L: "CRASH"
+}
+
+detection: "Followers detect after election-timeout (e.g., 150-300ms randomized)" {
+  style: { fill: "#fff4c2"; font-color: "#bf360c" }
+  F1 -> F1: "no heartbeat for 200ms\n\u2192 timeout, become Candidate"
+  F1 -> F2: "RequestVote(term=N+1)"
+  F1 -> F3: "RequestVote(term=N+1)"
+  F2 -> F1: "VoteGranted"
+  F3 -> F1: "VoteGranted"
+  F1 -> F1: "won majority \u2192 new Leader"
+}

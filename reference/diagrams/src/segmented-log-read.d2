@@ -1,0 +1,32 @@
+# Segmented log: read path with index lookup
+shape: sequence_diagram
+
+Client
+Broker: "Log reader"
+Cache: "Open file handles\n(LRU)"
+Index: "segment .index file"
+Data: "segment .log file"
+
+Client -> Broker: "fetch from offset = 7500"
+
+phase1: "STEP 1 \u2014 find which segment contains offset 7500" {
+  style: { fill: "#bbdefb"; font-color: "#0d47a1" }
+  Broker -> Broker: "segments = [..., {base:6001, file:040.log},\n             {base:8001, file:041.log}, ...]\nbinary-search base offsets\n\u2192 segment 040 (base 6001 \u2264 7500 < 8001)"
+}
+
+phase2: "STEP 2 \u2014 use sparse index to find byte position" {
+  style: { fill: "#fff4c2"; font-color: "#bf360c" }
+  Broker -> Cache: "get handle for 040.index"
+  Cache -> Index: "(mmap)"
+  Broker -> Index: "binary search for offset 7500"
+  Index -> Broker: "nearest indexed offset = 7480 at byte 12,800,432"
+}
+
+phase3: "STEP 3 \u2014 seek + scan a few records to find exact offset" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  Broker -> Data: "seek to byte 12,800,432"
+  Broker -> Data: "scan records: 7480 \u2192 7481 \u2192 ... \u2192 7500"
+  Broker -> Client: "return record(s) from 7500 onwards (zero-copy sendfile)"
+}
+
+Note: "Properties of segmented logs:\n\u2022 O(log n) lookup by binary-searching segment bases + sparse index\n\u2022 O(1) append (active segment, sequential)\n\u2022 Zero-copy network send (sendfile()) for popular reads\n\u2022 Deletion is just unlink() of whole segment files \u2014 free, no compaction needed"

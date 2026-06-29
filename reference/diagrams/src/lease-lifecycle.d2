@@ -1,0 +1,50 @@
+# Lease: time-bounded grant + renewal
+shape: sequence_diagram
+
+Client
+Service: "Lease service\n(ZooKeeper, etcd, Redis)"
+Resource: "Shared resource\n(file, leader role, lock)"
+
+acquire: "Acquire lease (TTL = 10s)" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  Client -> Service: "acquire('file-X', ttl=10s)"
+  Service -> Service: "grant: lease_id=42, expires=t0+10s,\nfencing_token=7"
+  Service -> Client: "OK { lease_id=42, token=7 }"
+}
+
+use: "Use the resource while lease is valid" {
+  style: { fill: "#bbdefb"; font-color: "#0d47a1" }
+  Client -> Resource: "write data (token=7)"
+  Resource -> Resource: "check token \u2265 highest seen \u2192 OK"
+  Resource -> Client: "OK"
+}
+
+renew: "Heartbeat / renew BEFORE expiry" {
+  style: { fill: "#fff4c2"; font-color: "#bf360c" }
+  Client -> Service: "heartbeat(lease_id=42)\n(at t0+5s, well before 10s expires)"
+  Service -> Service: "extend expires = now+10s"
+  Service -> Client: "OK"
+}
+
+fail: "Client crashes / GC pauses / loses network" {
+  style: { fill: "#ffcdd2"; font-color: "#b71c1c" }
+  Client -> Client: "STALLED (no heartbeat sent)"
+}
+
+expire: "Service expires the lease automatically" {
+  style: { fill: "#e1bee7"; font-color: "#4a148c" }
+  Service -> Service: "now > expires \u2192 release lease 42\nready to grant to next client"
+}
+
+new: "New client takes the lease with NEW token" {
+  style: { fill: "#c5e1a5"; font-color: "#33691e" }
+  Client2: "Other client"
+  Client2 -> Service: "acquire('file-X')"
+  Service -> Client2: "OK { lease_id=99, token=8 }   \u2190 higher token"
+}
+
+stale: "Old client recovers and tries to write" {
+  style: { fill: "#ffcdd2"; font-color: "#b71c1c" }
+  Client -> Resource: "write data (token=7) \u2014 stale!"
+  Resource -> Client: "REJECT \u2014 highest token seen = 8"
+}

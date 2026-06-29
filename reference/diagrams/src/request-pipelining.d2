@@ -1,0 +1,43 @@
+# Request Pipelining: don't wait for one response before sending next
+shape: sequence_diagram
+
+C: "Client"
+S: "Server"
+
+Sequential: "WITHOUT PIPELINING \u2014 strictly sequential request/response" {
+  style: { fill: "#ffcdd2"; font-color: "#b71c1c" }
+  C -> S: "req 1"
+  S -> C: "resp 1"
+  C -> S: "req 2"
+  S -> C: "resp 2"
+  C -> S: "req 3"
+  S -> C: "resp 3"
+}
+
+note1: "Total time = 3 RTTs (one per request)"
+
+Pipelined: "WITH PIPELINING \u2014 send all requests, then receive all responses" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  C -> S: "req 1"
+  C -> S: "req 2 (without waiting)"
+  C -> S: "req 3 (without waiting)"
+
+  S -> C: "resp 1"
+  S -> C: "resp 2"
+  S -> C: "resp 3"
+}
+
+note2: "Total time = 1 RTT for the burst + serial server work\n\u2192 N requests cost 1 RTT, not N RTTs"
+
+Combined: "BATCHING + PIPELINING (most production systems)" {
+  style: { fill: "#e1bee7"; font-color: "#4a148c" }
+  C -> S: "BATCH 1 (1,000 ops)"
+  C -> S: "BATCH 2 (1,000 ops, immediately after)"
+  C -> S: "BATCH 3 (1,000 ops)"
+
+  S -> C: "BATCH 1 result"
+  S -> C: "BATCH 2 result"
+  S -> C: "BATCH 3 result"
+}
+
+note3: "Total: 1 RTT + server processing time for ALL 3,000 ops.\nUsed by: Kafka producer (with acks=all + in-flight batches),\nHTTP/2 multiplexing, Redis pipelining, gRPC bidi streaming,\nKafka follower fetch (continuous in-flight fetches)."

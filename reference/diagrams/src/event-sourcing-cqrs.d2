@@ -1,0 +1,42 @@
+# Event sourcing + CQRS + projections
+direction: down
+
+Title: "EVENT SOURCING + CQRS: events are written; projections are read.\nThe natural marriage of two patterns." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Write: "WRITE SIDE (Command)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Cmd: "Command\n'DepositMoney {id=42, amount=200}'" { style: { fill: "#fff" } }
+  Handler: "Command handler\n  1. load aggregate (replay events for id=42)\n  2. validate command against current state\n  3. apply command \u2192 new events\n  4. APPEND events to log (atomic)" { style: { fill: "#fff" } }
+  EventLog: "EVENT LOG (the source of truth)\nKafka / EventStoreDB / Postgres append-only table\nAccount-42:\n  AccountOpened\n  MoneyDeposited(1000)\n  MoneyDeposited(500)\n  MoneyWithdrawn(200)\n  MoneyDeposited(200)  \u2190 newly appended" { style: { fill: "#fff" } }
+  Cmd -> Handler -> EventLog
+}
+
+Bus: "EVENT BUS\n(events published as they're appended; CDC or built-in)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Read: "READ SIDE (Query)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  P1: "PROJECTION: current_balance\n(updated by event subscriber)\nKV: {42: 1500}\n\nQUERY: GET /accounts/42/balance \u2192 1500 (fast)" { style: { fill: "#fff" } }
+  P2: "PROJECTION: monthly_statement\nSQL view: rows per month per account\n\nQUERY: GET /accounts/42/statement/2024-01" { style: { fill: "#fff" } }
+  P3: "PROJECTION: fraud_dashboard\nElasticsearch: anomalies indexed\n\nQUERY: complex search over events for analysts" { style: { fill: "#fff" } }
+  P4: "PROJECTION: ML feature store\nFeatures derived from event patterns\n\nQUERY: get_features(user_id)" { style: { fill: "#fff" } }
+}
+
+EventLog -> Bus
+Bus -> P1
+Bus -> P2
+Bus -> P3
+Bus -> P4
+
+Rebuild: "REBUILD ANY PROJECTION at any time:\n  1. delete the projection\n  2. replay event log from beginning\n  3. projection now contains correct data\n\nNew projection? Replay events to populate. Bug in projection? Fix code, replay to repair.\nThe event log is the only thing that must be backed up." {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+EventLog -> Rebuild: "REBUILD"
+Rebuild -> P1
+Rebuild -> P2
+Rebuild -> P3
+Rebuild -> P4

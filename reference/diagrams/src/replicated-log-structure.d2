@@ -1,0 +1,41 @@
+# Replicated Log: structure showing committed vs uncommitted entries
+direction: down
+
+LeaderLog: "LEADER LOG" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  E1: "idx=1 term=1\nSET x=1\nCOMMITTED" { style: { fill: "#a5d6a7" } }
+  E2: "idx=2 term=1\nSET y=2\nCOMMITTED" { style: { fill: "#a5d6a7" } }
+  E3: "idx=3 term=2\nDEL x\nCOMMITTED" { style: { fill: "#a5d6a7" } }
+  E4: "idx=4 term=3\nSET z=3\nCOMMITTED" { style: { fill: "#a5d6a7" } }
+  E5: "idx=5 term=3\nSET x=9\n*** uncommitted ***" { style: { fill: "#fff4c2"; stroke: "#f57c00"; stroke-dash: 3 } }
+  E1 -> E2 -> E3 -> E4 -> E5
+
+  commit: "commitIndex = 4" { style: { fill: "#ffe082"; stroke: "#bf360c"; bold: true } }
+}
+
+F1Log: "FOLLOWER 1 LOG" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  G1: "idx=1\nSET x=1" { style: { fill: "#90caf9" } }
+  G2: "idx=2\nSET y=2" { style: { fill: "#90caf9" } }
+  G3: "idx=3\nDEL x" { style: { fill: "#90caf9" } }
+  G4: "idx=4\nSET z=3" { style: { fill: "#90caf9" } }
+  G5: "(none yet)" { style: { fill: "#ffffff"; stroke-dash: 4 } }
+  G1 -> G2 -> G3 -> G4 -> G5
+
+  commitF1: "commitIndex = 4" { style: { fill: "#90caf9"; bold: true } }
+}
+
+F2Log: "FOLLOWER 2 LOG (lagging)" {
+  style: { fill: "#e0e0e0"; stroke: "#424242"; stroke-width: 2; border-radius: 8 }
+  H1: "idx=1\nSET x=1" { style: { fill: "#bdbdbd" } }
+  H2: "idx=2\nSET y=2" { style: { fill: "#bdbdbd" } }
+  H3: "(not yet)" { style: { fill: "#ffffff"; stroke-dash: 4 } }
+  H1 -> H2 -> H3
+
+  commitF2: "commitIndex = 2\n(catching up via\nAppendEntries)" { style: { fill: "#bdbdbd"; bold: true } }
+}
+
+Invariant: "Replicated-log invariant:\nfor any committed entry (idx, term, cmd),\n** every** non-failed replica's log will eventually contain it\nat the same idx with the same term and cmd.\n\nCommit-index can vary across replicas (followers learn lazily)\nbut committed entries are durable and identical." {
+  shape: rectangle
+  style: { fill: "#fce4ec"; stroke: "#ad1457"; border-radius: 10 }
+}

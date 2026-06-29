@@ -1,0 +1,30 @@
+# Rate limiter sits between clients and the API
+direction: down
+
+C1: "Free-tier client" { shape: person }
+C2: "Free-tier client" { shape: person }
+C3: "Paid client" { shape: person }
+Abuser: "Abuser (bot)" { shape: person; style: { fill: "#ffcdd2"; stroke: "#b71c1c" } }
+
+RL: "Rate Limiter" {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#f57c00"; stroke-width: 3; border-radius: 10 }
+
+  Identify: "Identify caller\n(API key / user / IP)"
+  Lookup: "Look up policy"
+  Bucket: "Check bucket\n(allowed?)"
+  Decide: "Allow / Reject"
+}
+
+State: "Counter Store\n(Redis / memcached)" { shape: cylinder; style: { fill: "#c5cae9"; stroke: "#283593"; stroke-width: 2 } }
+
+API: "API Service" { shape: rectangle; style: { fill: "#e8f5e9"; stroke: "#2e7d32"; border-radius: 8; stroke-width: 2 } }
+
+C1 -> RL
+C2 -> RL
+C3 -> RL
+Abuser -> RL
+
+RL -> State: "read & increment counter"
+RL -> API: "allowed \u2192 forward" { style: { stroke: "#2e7d32" } }
+RL -> Abuser: "429 Too Many Requests\nRetry-After: 30s" { style: { stroke: "#c62828"; stroke-dash: 3 } }

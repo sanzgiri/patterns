@@ -1,0 +1,60 @@
+# Geode pattern: geographically distributed full deployments
+direction: down
+
+Title: "GEODE PATTERN: deploy the SAME service in MULTIPLE GEOGRAPHIC REGIONS;\neach geode handles requests from nearby users;\nactive-active replication keeps shared data in sync." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Users: "USERS WORLDWIDE" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+
+  UserUS: "user in NYC" { style: { fill: "#fff" } }
+  UserEU: "user in Paris" { style: { fill: "#fff" } }
+  UserAP: "user in Tokyo" { style: { fill: "#fff" } }
+}
+
+GeoDNS: "GEO-DNS / ANYCAST\n(route to nearest geode)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+GeoUS: "GEODE US-EAST" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  AppUS: "Full app stack" { style: { fill: "#fff" } }
+  DBUS: "DB replica (active)" { style: { fill: "#fff" } }
+  AppUS -> DBUS
+}
+
+GeoEU: "GEODE EU-WEST" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  AppEU: "Full app stack" { style: { fill: "#fff" } }
+  DBEU: "DB replica (active)" { style: { fill: "#fff" } }
+  AppEU -> DBEU
+}
+
+GeoAP: "GEODE AP-NORTHEAST" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  AppAP: "Full app stack" { style: { fill: "#fff" } }
+  DBAP: "DB replica (active)" { style: { fill: "#fff" } }
+  AppAP -> DBAP
+}
+
+Replication: "ACTIVE-ACTIVE REPLICATION between geodes\n(CRDT, multi-master, vector clocks, conflict resolution, etc.)" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+DBUS -> Replication
+DBEU -> Replication
+DBAP -> Replication
+
+Properties: "KEY PROPERTIES\n  \u2022 LOW LATENCY: every user hits a nearby geode\n  \u2022 REGIONAL RESILIENCE: one geode down \u2192 traffic routes to nearest neighbor\n  \u2022 DATA RESIDENCY: keep EU data in EU geode (GDPR)\n  \u2022 CHALLENGING: cross-region consistency (eventual / CRDT / strict-with-cost)\n  \u2022 RELATED: deployment stamp (cellular) vs geode (geographic);\n    a region may host one or many stamps" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Users -> GeoDNS
+UserUS -> GeoDNS: "nearest = US"
+UserEU -> GeoDNS: "nearest = EU"
+UserAP -> GeoDNS: "nearest = AP"
+GeoDNS -> GeoUS
+GeoDNS -> GeoEU
+GeoDNS -> GeoAP
+Replication -> Properties

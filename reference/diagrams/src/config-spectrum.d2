@@ -1,0 +1,20 @@
+# Config: static vs hot-reload vs dynamic
+direction: right
+
+Static: "STATIC CONFIG\n(env vars, files)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "Read ONCE at startup\n\n+ Simple, predictable\n+ Immutable in running process\n\u2212 Change needs restart/redeploy\n\u2212 Drift between instances possible\n\nUse: DB connection strings, listen ports,\n  feature toggles that never change at runtime"
+}
+
+Hot: "HOT-RELOAD CONFIG\n(file watch / SIGHUP)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Re-read file on change signal\n(inotify, fsnotify, SIGHUP)\n\n+ No restart needed\n+ Still file-based, easy to audit\n\u2212 Operator must orchestrate change\n  across all instances\n\u2212 Application must handle re-config safely\n\nUse: log levels, rate limits, list of allowed\n  IPs, anything you may need to twiddle in\n  an incident"
+}
+
+Dynamic: "DYNAMIC CONFIG SERVICE\n(Consul, etcd, AppConfig)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "Central service pushes changes\nto all subscribers in real time\n\n+ Instant change across fleet\n+ Per-instance / per-region targeting\n+ Audit trail centralized\n\u2212 Adds runtime dependency\n\u2212 Caching / fallback critical\n\u2212 Boot-time bootstrap matters\n\nUse: feature flags, A/B tests,\n  kill switches, regional toggles,\n  multi-tenant overrides"
+}
+
+Static -> Hot: "evolve when restarts hurt"
+Hot -> Dynamic: "evolve when fleet is large /\nneed per-user targeting"

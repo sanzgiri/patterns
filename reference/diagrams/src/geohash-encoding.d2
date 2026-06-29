@@ -1,0 +1,25 @@
+# Geohash: encoding (lat, lon) for proximity queries
+direction: down
+
+Title: "GEOHASH: encode 2D coordinates as a 1D string where\nPREFIX LENGTH = GEOGRAPHIC PRECISION (and proximity)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Levels: "PRECISION BY PREFIX LENGTH" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Detail: "prefix 1 char (9):      ~5000 km    \u2014 continent\nprefix 3 chars (9q8):   ~150 km     \u2014 large region\nprefix 5 chars (9q8yy): ~5 km       \u2014 city neighborhood\nprefix 7 chars (9q8yyk1): ~150 m    \u2014 a few blocks\nprefix 9 chars: ~5 m  \u2014 building\nprefix 12 chars: cm-level"
+}
+
+Example: "EXAMPLE: 'where are restaurants within 1 km of (37.7749, -122.4194)?'\n\n1. Geohash the query point at appropriate precision (e.g. 5 chars = '9q8yy')\n2. SCAN your restaurants table for geohash LIKE '9q8yy%'\n3. Also check 8 NEIGHBOR cells (boundary case: query is near edge of cell)\n4. Filter results by actual euclidean distance" {
+  shape: rectangle
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+}
+
+Variants: "ALTERNATIVES" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 10 }
+  Detail: "\u2022 H3 (Uber)          \u2014 hexagonal grid; uniform cell distances; better than square grids for proximity\n\u2022 S2 (Google)        \u2014 spherical projection; rich query operations; used in Google Maps, MongoDB, CockroachDB\n\u2022 Quadtree           \u2014 recursive 2D subdivision; classic data structure\n\u2022 R-tree             \u2014 indexing for rectangles; used in PostGIS, MongoDB geo-index\n\u2022 KD-tree            \u2014 multidimensional partitioning; in-memory only typically"
+}
+
+Title -> Levels
+Levels -> Example
+Example -> Variants

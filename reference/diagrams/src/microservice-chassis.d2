@@ -1,0 +1,57 @@
+# Microservice Chassis: what the framework provides at runtime
+direction: down
+
+Service: "YOUR MICROSERVICE\n(business logic only)" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 3; border-radius: 10 }
+  Code: "@Controller\nclass OrderController {\n  placeOrder(req) { ... }\n  getOrder(id)    { ... }\n}\n\u2190 just business code\n  no boilerplate" {
+    style: { fill: "#fff" }
+  }
+}
+
+Chassis: "MICROSERVICE CHASSIS\n(framework: Spring Boot, Micronaut, Quarkus, Go-Kit, NestJS, etc.)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 3; border-radius: 10 }
+
+  Log: "Logging" {
+    style: { fill: "#90caf9" }
+    Detail: "structured JSON, correlation-ID,\n auto-injected fields"
+  }
+  Met: "Metrics" {
+    style: { fill: "#90caf9" }
+    Detail: "request count, latency,\n error rate, JVM stats,\n exposed at /metrics"
+  }
+  Tr: "Tracing" {
+    style: { fill: "#90caf9" }
+    Detail: "OpenTelemetry spans,\n inbound + outbound,\n propagates trace context"
+  }
+  Conf: "Config" {
+    style: { fill: "#90caf9" }
+    Detail: "env vars + remote config\n (Consul, Spring Cloud Config),\n hot-reload"
+  }
+  Disc: "Service\ndiscovery" {
+    style: { fill: "#90caf9" }
+    Detail: "register on startup,\n deregister on shutdown,\n client-side lookup"
+  }
+  CB: "Circuit\nbreaker" {
+    style: { fill: "#90caf9" }
+    Detail: "wraps outbound calls,\n trips on failure,\n half-open recovery"
+  }
+  Auth: "Auth" {
+    style: { fill: "#90caf9" }
+    Detail: "JWT verify, OAuth flow,\n role-based access,\n mTLS"
+  }
+  Health: "Health\nchecks" {
+    style: { fill: "#90caf9" }
+    Detail: "/health (liveness)\n /ready (deps available)\n /info (build version)"
+  }
+  Shut: "Graceful\nshutdown" {
+    style: { fill: "#90caf9" }
+    Detail: "SIGTERM \u2192 stop accepting,\n drain in-flight,\n deregister"
+  }
+}
+
+Service -> Chassis: "uses (one library import)"
+
+Note: "RESULT: A new service starts with ~50 lines of business code\nand inherits hundreds of lines of production-grade cross-cutting concerns.\n\nWHEN A NEW METRIC, LOG FIELD, OR TRACE PROPAGATION IS NEEDED:\n  \u2022 add to the chassis once\n  \u2022 every service that bumps the chassis version gets it\n  \u2022 NO change needed in business code\n\nDOWNSIDE: chassis ties services to a single platform/language.\nMulti-language orgs often switch to the SERVICE MESH model\n(language-agnostic cross-cutting via sidecar proxies) instead." {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}

@@ -1,0 +1,23 @@
+# Leader-Follower Replication: writes to leader, async replication to followers
+direction: down
+
+Client_W: "Writer\nclient" { shape: person }
+Client_R: "Reader\nclients" { shape: person }
+
+Leader: "Leader\n(primary)" {
+  shape: cylinder
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 3 }
+}
+
+F1: "Follower 1\n(replica)" { shape: cylinder; style: { fill: "#c8e6c9"; stroke: "#2e7d32"; stroke-width: 2 } }
+F2: "Follower 2\n(replica)" { shape: cylinder; style: { fill: "#c8e6c9"; stroke: "#2e7d32"; stroke-width: 2 } }
+F3: "Follower 3\n(replica)" { shape: cylinder; style: { fill: "#c8e6c9"; stroke: "#2e7d32"; stroke-width: 2 } }
+
+Client_W -> Leader: "writes (INSERT/UPDATE/DELETE)" { style: { stroke: "#0d47a1"; stroke-width: 2 } }
+Leader -> F1: "replicate WAL/binlog" { style: { stroke: "#f57c00"; stroke-dash: 3 } }
+Leader -> F2: "replicate WAL/binlog" { style: { stroke: "#f57c00"; stroke-dash: 3 } }
+Leader -> F3: "replicate WAL/binlog" { style: { stroke: "#f57c00"; stroke-dash: 3 } }
+
+Client_R -> F1: "reads (SELECT)" { style: { stroke: "#2e7d32" } }
+Client_R -> F2: "reads (SELECT)" { style: { stroke: "#2e7d32" } }
+Client_R -> F3: "reads (SELECT)" { style: { stroke: "#2e7d32" } }

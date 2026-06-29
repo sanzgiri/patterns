@@ -1,0 +1,32 @@
+# Database-per-service: the consequences you have to handle
+direction: down
+
+C1: "1. NO CROSS-SERVICE JOINS" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+  D: "Can't 'SELECT * FROM orders JOIN customers' if they're separate DBs.\nSOLUTIONS:\n  \u2022 API COMPOSITION: app fetches from each, joins in memory\n  \u2022 CQRS: maintain a denormalized read-model fed by events\n  \u2022 Data lake/warehouse: nightly ETL into one query store"
+}
+
+C2: "2. NO CROSS-SERVICE TRANSACTIONS" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+  D: "Can't atomically 'CREATE order AND DECREMENT inventory' across DBs.\nSOLUTIONS:\n  \u2022 SAGA pattern (orchestration or choreography)\n  \u2022 Outbox pattern for reliable events\n  \u2022 Compensating transactions (undo what went wrong)\n  \u2022 Accept eventual consistency"
+}
+
+C3: "3. DATA DUPLICATION IS OK" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+  D: "Customer's name may live in Customers DB and be CACHED in Orders DB.\nThis is FINE \u2014 just keep in sync via events.\nA tiny bit of staleness is the price of independence.\nNORMALIZATION is no longer the goal; LOOSE COUPLING is."
+}
+
+C4: "4. EACH SERVICE CHOOSES ITS OWN PERSISTENCE" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+  D: "POLYGLOT PERSISTENCE:\n  \u2022 Orders: PostgreSQL (transactional, relational)\n  \u2022 Catalog: Elasticsearch (search-optimized)\n  \u2022 Sessions: Redis (TTL, key-value)\n  \u2022 Analytics: Snowflake (columnar, analytical)\n  \u2022 Recommendations: Neo4j (graph)\nEach team picks the right tool for its job."
+}
+
+C5: "5. REPORTING / ANALYTICS NEED A DIFFERENT STRATEGY" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+  D: "BI dashboards can't query 50 different DBs in 50 different formats.\nSOLUTIONS:\n  \u2022 CDC \u2192 data lake (Snowflake, BigQuery, Databricks)\n  \u2022 Event stream as source of truth for analytics\n  \u2022 Materialized read models per use case\nThe operational DBs stay focused; analytical workload goes elsewhere."
+}
+
+C6: "6. SCHEMA EVOLUTION IS THE TEAM'S OWN PROBLEM (UPSIDE)" {
+  style: { fill: "#c8e6c9"; stroke: "#2e7d32"; border-radius: 8 }
+  D: "Want to add a column? Want to rename? Want to switch from Postgres to MongoDB?\nNobody else needs to coordinate. THIS IS THE WHOLE POINT.\nThe service's API is its contract \u2014 the schema is private."
+}

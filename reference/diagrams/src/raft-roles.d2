@@ -1,0 +1,31 @@
+# Raft: leader election + roles
+direction: down
+
+cluster: "Raft Cluster (5 nodes, fault-tolerates 2 failures)" {
+  style: { fill: "#f3e5f5"; stroke: "#4a148c"; stroke-width: 2; border-radius: 12 }
+
+  Leader: "LEADER\nterm=7" {
+    style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 3 }
+    Role: "+ accepts client writes\n+ replicates log to followers\n+ sends heartbeats\n+ commits when majority ack"
+  }
+
+  F1: "Follower\nterm=7" { style: { fill: "#bbdefb"; stroke: "#0d47a1" } }
+  F2: "Follower\nterm=7" { style: { fill: "#bbdefb"; stroke: "#0d47a1" } }
+  F3: "Follower\nterm=7" { style: { fill: "#bbdefb"; stroke: "#0d47a1" } }
+  F4: "Follower\nterm=7" { style: { fill: "#bbdefb"; stroke: "#0d47a1" } }
+
+  Candidate: "(if no heartbeat for\nelection-timeout ms,\nfollower becomes\nCandidate, increments\nterm \u2192 8, requests votes)" {
+    style: { fill: "#fff4c2"; stroke: "#f57c00"; stroke-dash: 4 }
+  }
+
+  Leader -> F1: "heartbeat / AppendEntries"
+  Leader -> F2: "heartbeat / AppendEntries"
+  Leader -> F3: "heartbeat / AppendEntries"
+  Leader -> F4: "heartbeat / AppendEntries"
+
+  F1 -> Candidate: "...if leader silent" { style: { stroke-dash: 4; stroke: "#f57c00" } }
+}
+
+Client: "Client" { shape: person }
+Client -> cluster.Leader: "write (SET x = 5)" { style: { stroke: "#1b5e20"; stroke-width: 2 } }
+cluster.Leader -> Client: "ack (committed)" { style: { stroke: "#1b5e20"; stroke-width: 2 } }

@@ -1,0 +1,29 @@
+# Service Template vs Chassis: complementary but different
+direction: right
+
+Template: "SERVICE TEMPLATE\n(starter / scaffold)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+  T: "WHAT: Code skeleton\nWHEN: Once at service creation\nGENERATES: A repo, files, CI pipeline,\n  Dockerfile, infra configs\nUPDATES: Manual \u2014 each new service has its own copy\nANALOGY: Wedding-cake recipe \u2014\n  baked once, eaten by one service" {
+    style: { fill: "#fff" }
+  }
+}
+
+Chassis: "MICROSERVICE CHASSIS\n(runtime framework)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Ch: "WHAT: A library / framework dependency\nWHEN: Every request, every startup\nPROVIDES: Logging, metrics, tracing,\n  circuit breakers, config, health checks,\n  auth, service discovery,\n  graceful shutdown \u2014 LIVE at runtime\nUPDATES: Bump version \u2192 every service\n  gets the upgrade\nANALOGY: A car chassis \u2014 underlying\n  structure of every model" {
+    style: { fill: "#fff" }
+  }
+}
+
+Together: "TYPICAL USE: BOTH\n  \u2022 Service Template scaffolds the project structure\n  \u2022 The scaffolded project depends on the Chassis library\n  \u2022 Cross-cutting changes (e.g. new metric) ship via chassis upgrade\n  \u2022 Structural changes (e.g. CI config) ship via template re-scaffold or sync tool" {
+  shape: rectangle
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+}
+
+Template -> Together
+Chassis -> Together
+
+Examples: "REAL EXAMPLES\nTemplates: Spring Initializr, Yeoman generators, Cookiecutter,\n  GitHub repo templates, Backstage software templates\nChassis: Spring Boot starters, Micronaut, Quarkus, Dropwizard,\n  Microsoft .NET aspire, Go-Kit, NestJS, Lagom" {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}

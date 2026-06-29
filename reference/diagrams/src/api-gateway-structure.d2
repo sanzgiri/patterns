@@ -1,0 +1,30 @@
+# API Gateway: single entry point fronts multiple backend services
+direction: down
+
+Web: "Web client" { shape: person }
+Mobile: "Mobile client" { shape: person }
+Partner: "Partner / B2B" { shape: person }
+
+GW: "API Gateway" {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#f57c00"; stroke-width: 3; border-radius: 10 }
+  auth: "Auth / token check"
+  ratelimit: "Rate limit"
+  route: "Routing"
+  agg: "Aggregation"
+  log: "Logging / tracing"
+}
+
+Orders: "Orders Service" { style: { fill: "#e3f2fd"; stroke: "#1565c0"; border-radius: 8 } }
+Users: "Users Service" { style: { fill: "#e8f5e9"; stroke: "#2e7d32"; border-radius: 8 } }
+Catalog: "Catalog Service" { style: { fill: "#fce4ec"; stroke: "#ad1457"; border-radius: 8 } }
+Search: "Search Service" { style: { fill: "#ede7f6"; stroke: "#4527a0"; border-radius: 8 } }
+
+Web -> GW
+Mobile -> GW
+Partner -> GW
+
+GW -> Orders: "/orders/*"
+GW -> Users: "/users/*"
+GW -> Catalog: "/catalog/*"
+GW -> Search: "/search/*"

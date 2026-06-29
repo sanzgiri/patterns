@@ -1,0 +1,34 @@
+# Multi-tier storage: match data temperature to storage cost/perf
+direction: down
+
+Title: "MULTI-TIER STORAGE: hot/warm/cold/archival tiers.\nMove data between tiers automatically based on access pattern." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Tiers: "STORAGE TIERS (cost, latency, durability vary)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+
+  Hot: "HOT TIER (high \u00b5s\u20131 ms; expensive)\n  use: live trading, session state, ad-bidding state\n  storage: NVMe SSD, in-memory KV (Redis, Memcached)\n  cost: very high per GB" { style: { fill: "#fff" } }
+
+  Warm: "WARM TIER (low ms)\n  use: typical OLTP, recent user data, dashboards\n  storage: SSD-backed DB, S3 Standard, regular Postgres\n  cost: moderate" { style: { fill: "#fff" } }
+
+  Cool: "COOL TIER (100s of ms; cheap)\n  use: infrequent access (>30d), reports, last quarter\n  storage: S3 Standard-IA, Azure Cool Blob, GCS Nearline\n  cost: ~50% cheaper than hot/warm; retrieval fee" { style: { fill: "#fff" } }
+
+  Archive: "ARCHIVE TIER (seconds-to-hours retrieval; very cheap)\n  use: compliance archives, backups, year-old logs\n  storage: S3 Glacier, Azure Archive, GCS Coldline/Archive\n  cost: ~1/10 of hot; retrieval is slow and metered" { style: { fill: "#fff" } }
+
+  Tape: "OFFLINE / TAPE (hours\u2013days retrieval)\n  use: compliance (decades), disaster recovery\n  storage: AWS Snowball + offline tape, on-prem LTO\n  cost: pennies/TB/month" { style: { fill: "#fff" } }
+
+  Hot -> Warm -> Cool -> Archive -> Tape: "as data ages \u2193"
+}
+
+Lifecycle: "LIFECYCLE / TIERING POLICIES\n  \u2022 'age-based': move objects >30d old to IA, >90d to Glacier\n  \u2022 'access-based': S3 Intelligent-Tiering auto-promotes/demotes by access pattern\n  \u2022 'class-based': different prefixes get different storage classes\n  \u2022 'manual / app-driven': app decides when to tier (e.g., closed ticket \u2192 archive)\n\nCOMMON ARCHITECTURE\n  app reads from hot first \u2192 falls through to warm \u2192 cool \u2192 archive\n  retrievals from archive trigger restoration jobs (minutes\u2013hours)\n  users see 'archived' status; restore-on-demand UX" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+}
+
+Pitfalls: "PITFALLS\n  \u2022 retrieval cost surprises: small frequent reads from cold tiers can cost MORE than just keeping it warm\n  \u2022 latency surprises: 'cold' isn't slower for first byte; it's slower because of restore time\n  \u2022 minimum storage durations: cool/archive often charge for early deletion\n  \u2022 metadata still on hot tier: object listing/search needs warm DB\n  \u2022 lifecycle bugs: accidental archive of hot data is hard to recover quickly" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; border-radius: 8 }
+}
+
+Title -> Tiers
+Tiers -> Lifecycle
+Lifecycle -> Pitfalls

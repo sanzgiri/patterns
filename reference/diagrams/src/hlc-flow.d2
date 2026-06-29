@@ -1,0 +1,29 @@
+# HLC in action: two nodes exchanging messages
+shape: sequence_diagram
+
+A: "Node A\nwall_clock: t=1000ms"
+B: "Node B\nwall_clock: t=997ms (3ms behind A)"
+
+a1: "A: local event" {
+  style: { fill: "#bbdefb"; font-color: "#0d47a1" }
+  A -> A: "wall=1000, prev_phys=1000\n\u2192 phys=1000, logical=1\n\u2192 HLC = (1000, 1)"
+}
+
+m1: "A sends m1 to B with HLC=(1000, 1)" {
+  style: { fill: "#fff4c2"; font-color: "#bf360c" }
+  A -> B: "msg, HLC=(1000, 1)"
+  B -> B: "wall=997 (B is BEHIND A)\nnow = max(997, 1000, 0) = 1000\nm_phys = 1000 \u2192 use m's phys + bump logical\nHLC_B = (1000, 2)"
+}
+
+b1: "B: local event" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  B -> B: "wall=998, prev_phys=1000\nnow = max(1000, 998) = 1000\nlogical++ \u2192 HLC_B = (1000, 3)"
+}
+
+m2: "B sends m2 to A with HLC=(1000, 3)" {
+  style: { fill: "#fff4c2"; font-color: "#bf360c" }
+  B -> A: "msg, HLC=(1000, 3)"
+  A -> A: "wall=1002\nnow = max(1002, 1000, 1) = 1002\nphys advanced \u2192 reset logical\nHLC_A = (1002, 0)"
+}
+
+Note: "Property check:\n\u2022 (1000, 1) < (1000, 2) < (1000, 3) < (1002, 0)\n\u2022 causal order preserved\n\u2022 timestamps stay close to wall clock (1000 \u2192 1002)\n\u2022 logical counter handles same-ms events without violating ordering"

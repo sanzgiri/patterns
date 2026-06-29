@@ -1,0 +1,25 @@
+# 2PC failure mode: coordinator crashes between phases = blocking
+shape: sequence_diagram
+
+Coord: "TX Coordinator"
+P1: "Participant 1"
+P2: "Participant 2"
+
+phase1: "PHASE 1 succeeds" {
+  style: { fill: "#fff4c2"; font-color: "#bf360c"; bold: true }
+  Coord -> P1: "PREPARE"
+  Coord -> P2: "PREPARE"
+  P1 -> Coord: "VOTE-YES (locks acquired)"
+  P2 -> Coord: "VOTE-YES (locks acquired)"
+}
+
+crash: "COORDINATOR CRASHES \u2014 before sending COMMIT/ABORT" {
+  style: { fill: "#ffcdd2"; font-color: "#b71c1c"; bold: true }
+  Coord -> Coord: "\ud83d\udca5 crash"
+}
+
+blocked: "PARTICIPANTS ARE STUCK" {
+  style: { fill: "#f5f5f5"; font-color: "#424242"; bold: true }
+  P1 -> P1: "?\nlocks held\ncan't release\ncan't commit\ncan't abort\nUNTIL coordinator recovers"
+  P2 -> P2: "?\nsame situation"
+}

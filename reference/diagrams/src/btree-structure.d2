@@ -1,0 +1,43 @@
+# B-Tree structure: branching factor + node split
+direction: down
+
+Root: "ROOT NODE\n[30 | 70]" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 6 }
+}
+
+I1: "Internal\n[10 | 20]" { style: { fill: "#c5cae9"; stroke: "#283593"; border-radius: 6 } }
+I2: "Internal\n[40 | 50 | 60]" { style: { fill: "#c5cae9"; stroke: "#283593"; border-radius: 6 } }
+I3: "Internal\n[80 | 90]" { style: { fill: "#c5cae9"; stroke: "#283593"; border-radius: 6 } }
+
+L1: "Leaf\n[1\u20139]" { style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 6 } }
+L2: "Leaf\n[10\u201319]" { style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 6 } }
+L3: "Leaf\n[20\u201329]" { style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 6 } }
+L4: "Leaf\n[30\u201339]" { style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 6 } }
+L5: "Leaf\n[40\u201349]" { style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 6 } }
+L6: "Leaf\n[50\u201359]" { style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 6 } }
+L7: "Leaf\n[60\u201369]" { style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 6 } }
+L8: "Leaf\n[70\u201379]" { style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 6 } }
+L9: "Leaf\n[80\u201389]" { style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 6 } }
+L10: "Leaf\n[90\u201399]" { style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 6 } }
+
+Root -> I1: "< 30"
+Root -> I2: "30\u201369"
+Root -> I3: "\u2265 70"
+
+I1 -> L1: "< 10"
+I1 -> L2: "10\u201319"
+I1 -> L3: "\u2265 20"
+
+I2 -> L4: "< 40"
+I2 -> L5: "40\u201349"
+I2 -> L6: "50\u201359"
+I2 -> L7: "\u2265 60"
+
+I3 -> L8: "< 80"
+I3 -> L9: "80\u201389"
+I3 -> L10: "\u2265 90"
+
+Properties: "Properties:\n\u2022 High branching factor (often hundreds): a 4-level tree holds\n  billions of keys (e.g., 100\u2074 = 100M, 200\u2074 = 1.6B)\n\u2022 ALL leaves at the same depth \u2014 balanced (O(log n))\n\u2022 Reads, writes, range scans: O(log n) random page reads\n\u2022 Updates IN-PLACE (this is the key difference from LSM)\n\u2022 Pages typically 4\u20138 KB \u2014 matches OS/storage page size" {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}

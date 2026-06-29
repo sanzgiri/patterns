@@ -1,0 +1,57 @@
+# CQRS architecture: write side, read side, projection mechanism
+
+direction: down
+
+Client: { shape: person }
+
+Write_API: "Command API\n(write side)" {
+  shape: rectangle
+  style: { fill: "#e3f2fd"; stroke: "#1565c0"; border-radius: 8; stroke-width: 2 }
+}
+
+Domain: "Domain / Command Handlers\n(validate, decide, emit)" {
+  shape: rectangle
+  style: { fill: "#e3f2fd"; stroke: "#1565c0"; border-radius: 8 }
+}
+
+WriteStore: "Write Store\n(normalized, OLTP)" {
+  shape: cylinder
+  style: { fill: "#bbdefb"; stroke: "#1565c0"; stroke-width: 2 }
+}
+
+Projector: "Projection / Sync\n(events, CDC, or message bus)" {
+  shape: hexagon
+  style: { fill: "#fff4c2"; stroke: "#f57c00"; stroke-width: 2 }
+}
+
+ReadStore1: "Read Store A\n(denormalized for\nlist view)" {
+  shape: cylinder
+  style: { fill: "#c8e6c9"; stroke: "#2e7d32"; stroke-width: 2 }
+}
+
+ReadStore2: "Read Store B\n(search index)" {
+  shape: cylinder
+  style: { fill: "#c8e6c9"; stroke: "#2e7d32"; stroke-width: 2 }
+}
+
+ReadStore3: "Read Store C\n(reporting cube)" {
+  shape: cylinder
+  style: { fill: "#c8e6c9"; stroke: "#2e7d32"; stroke-width: 2 }
+}
+
+Query_API: "Query API\n(read side)" {
+  shape: rectangle
+  style: { fill: "#e8f5e9"; stroke: "#2e7d32"; border-radius: 8; stroke-width: 2 }
+}
+
+Client -> Write_API: "Command\n(intent: 'place order')" { style: { stroke: "#1565c0" } }
+Write_API -> Domain
+Domain -> WriteStore: "persist state\n+ emit event"
+
+WriteStore -> Projector: "change stream"
+Projector -> ReadStore1: "update projection" { style: { stroke: "#f57c00"; stroke-dash: 3 } }
+Projector -> ReadStore2: "update index"      { style: { stroke: "#f57c00"; stroke-dash: 3 } }
+Projector -> ReadStore3: "update rollup"     { style: { stroke: "#f57c00"; stroke-dash: 3 } }
+
+Client -> Query_API: "Query\n(question: 'my orders')" { style: { stroke: "#2e7d32" } }
+Query_API -> ReadStore1: "served from\nbest-fit read model" { style: { stroke: "#2e7d32" } }

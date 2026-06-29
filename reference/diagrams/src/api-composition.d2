@@ -1,0 +1,30 @@
+# API Composition: aggregate data from multiple services in one query
+direction: down
+
+Problem: "PROBLEM: client wants 'customer with their last 5 orders + loyalty status'\nbut these live in 3 separate services with 3 separate databases" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Client: "Client (mobile / web)" { style: { fill: "#bbdefb" } }
+
+Composer: "API COMPOSER\n(BFF, gateway, or dedicated service)" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 3; border-radius: 10 }
+  Logic: "1. receive single query\n2. call N services IN PARALLEL\n3. wait for all (or use deadline)\n4. ASSEMBLE result\n5. return one composite response"
+}
+
+Customers: "Customers svc\n(returns profile)" { style: { fill: "#a5d6a7" } }
+Orders: "Orders svc\n(returns recent orders)" { style: { fill: "#a5d6a7" } }
+Loyalty: "Loyalty svc\n(returns tier + points)" { style: { fill: "#a5d6a7" } }
+
+Client -> Composer: "GET /customer-summary/42"
+
+Composer -> Customers: "GET /customers/42\n(parallel)"
+Composer -> Orders: "GET /orders?customer=42&limit=5\n(parallel)"
+Composer -> Loyalty: "GET /loyalty/42\n(parallel)"
+
+Composer -> Client: "{ customer: {...},\n  orders: [...],\n  loyalty: { tier, points } }"
+
+Concerns: "OPERATIONAL CONCERNS\n  \u2022 LATENCY = max(service latencies), not sum (parallel)\n  \u2022 PARTIAL FAILURE: one service down \u2192 entire response empty?\n      \u2192 return partial result with 'loyalty: null'\n      \u2022 honest degradation > all-or-nothing\n  \u2022 OVER-FETCHING: client wanted only customer.name + last_order_total\n      but composer fetched everything \u2192 see GraphQL for the fix\n  \u2022 N+1 RISK: if doing 'enrich each order with product name'\n      \u2192 1 orders call + N catalog calls = N+1 problem\n      \u2192 batch via /products?ids=1,2,3 or DataLoader pattern\n  \u2022 CACHE: composer can cache per-service results independently" {
+  shape: rectangle
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+}

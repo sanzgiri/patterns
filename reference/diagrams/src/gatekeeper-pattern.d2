@@ -1,0 +1,33 @@
+# Gatekeeper pattern: dedicated security frontend
+direction: down
+
+Title: "GATEKEEPER: a dedicated service stands between the public internet\nand the trusted internal services. Only its responsibility:\nvalidate, authenticate, authorize, sanitize, and forward." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Internet: "PUBLIC INTERNET (untrusted)\nattackers, bots, scrapers, malformed requests" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+}
+
+Gatekeeper: "GATEKEEPER (hardened, minimal, exposed)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 3; border-radius: 10 }
+  Detail: "Only job: be the security perimeter.\n  \u2022 TERMINATE TLS\n  \u2022 VALIDATE input (JSON schema, size limits, content type)\n  \u2022 AUTHENTICATE (token check, mTLS, signature)\n  \u2022 AUTHORIZE (RBAC / policy engine)\n  \u2022 RATE-LIMIT / throttle\n  \u2022 BLOCK known-bad (WAF, IP reputation)\n  \u2022 SANITIZE / NORMALIZE before forwarding\n  \u2022 LOG every request for audit\n  \u2022 NEVER hold business secrets\n  \u2022 NEVER speak to the database directly\n  \u2022 MINIMAL code footprint \u2192 smaller attack surface"
+}
+
+Trusted: "TRUSTED INTERNAL SERVICES" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  S1: "Business service A\n(does not validate auth itself)" { style: { fill: "#fff" } }
+  S2: "Business service B" { style: { fill: "#fff" } }
+  DB: "Database\n(only reachable from internal net)" { style: { fill: "#fff" } }
+  S1 -> DB
+  S2 -> DB
+}
+
+Properties: "WHY SEPARATE GATEKEEPER\n  \u2022 small, well-audited, hardened \u2192 if compromised, attacker still has no DB/secrets\n  \u2022 business logic NOT in the security layer (easier to reason about)\n  \u2022 security updates go to ONE service, not every business service\n  \u2022 DEFENSE IN DEPTH: even if gatekeeper is bypassed,\n    business services should still check auth (belt + braces)\n\nVARIANTS:\n  API Gateway (a gatekeeper that ALSO does routing/aggregation)\n  WAF (Web Application Firewall \u2014 a more network-layer gatekeeper)\n  Service mesh sidecar (a per-service gatekeeper)\n  Bastion host (gatekeeper for SSH/admin access)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Internet -> Gatekeeper: "all external requests"
+Gatekeeper -> S1: "validated, authorized requests only"
+Gatekeeper -> S2
+Gatekeeper -> Properties

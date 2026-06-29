@@ -1,0 +1,32 @@
+# Gossip protocol: rumor spreads exponentially across cluster
+direction: down
+
+t0: "t=0  Node A learns new info (e.g., 'B is down')" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+  A0: "A \u2605"
+  others0: "B  C  D  E  F  G  H  I  J  K  L  M  N  O  P (15 others)"
+}
+
+t1: "t=1  A gossips to 3 random peers \u2192 4 nodes know" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+  Spreaders1: "A \u2605    C \u2605    F \u2605    J \u2605"
+  Unknown1: "B  D  E  G  H  I  K  L  M  N  O  P (12 unknown)"
+}
+
+t2: "t=2  Each knowing node gossips to 3 random peers \u2192 ~13 nodes know" {
+  style: { fill: "#ffe082"; stroke: "#bf360c"; border-radius: 8 }
+  Spreaders2: "A \u2605  C \u2605  F \u2605  J \u2605  D \u2605  E \u2605  G \u2605  H \u2605  K \u2605  L \u2605  N \u2605  O \u2605  P \u2605"
+  Unknown2: "B  I  M (still unknown)"
+}
+
+t3: "t=3  Exponential spread complete \u2014 all 16 nodes know" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+  All: "A \u2605  B \u2605  C \u2605  D \u2605  E \u2605  F \u2605  G \u2605  H \u2605  I \u2605  J \u2605  K \u2605  L \u2605  M \u2605  N \u2605  O \u2605  P \u2605"
+}
+
+Note: "Properties:\n\u2022 O(log N) rounds to reach every node \u2014 even at thousands of nodes,\n  fewer than 20 rounds\n\u2022 each node sends only constant traffic per round (e.g., 3 peers)\n  \u2192 total traffic ~ N \u00b7 fanout per round, not O(N\u00b2)\n\u2022 robust to failures: if some gossip messages drop, the rumor\n  still spreads via other paths (redundancy)\n\u2022 eventually consistent: no guarantee of *when* a node learns,\n  only that it eventually will" {
+  shape: rectangle
+  style: { fill: "#e3f2fd"; stroke: "#0d47a1"; border-radius: 8 }
+}
+
+t0 -> t1 -> t2 -> t3 -> Note

@@ -1,0 +1,38 @@
+# Backpressure mechanisms
+direction: down
+
+Top: "WAYS TO SIGNAL OR ENFORCE BACKPRESSURE" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Block: "1. BLOCKING SEND (push back via blocking)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "Producer blocks (or async-awaits) when queue is full.\nNatural in Go channels, Java BlockingQueue, Rust mpsc::sync_channel.\n\nSimple and correct. Couples producer's rate to consumer's rate."
+}
+
+Drop: "2. DROP / LOAD SHED" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "When queue is full, drop messages (reject incoming requests with 503).\nLose some work; protect the system. Often best for stateless requests.\n\nVARIANTS: random drop, tail drop, head drop, prioritized drop (drop low priority first)."
+}
+
+Pull: "3. PULL-BASED FLOW (consumer drives)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "Producer doesn't push at will; consumer requests N items at a time.\nUSED BY: Reactive Streams spec (request(n) signal), Kafka consumer poll(),\nReactiveX (RxJava with backpressure), Project Reactor, RSocket.\n\nProducer has no choice but to respect consumer's rate; natural backpressure."
+}
+
+Credit: "4. CREDIT-BASED / WINDOW FLOW CONTROL" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Consumer grants 'credits' (sliding window) to producer.\nProducer can send up to credit limit; consumer replenishes as it processes.\n\nUSED BY: TCP receive window; HTTP/2 stream flow control; gRPC flow control;\nReactive Streams .request(n) mechanism."
+}
+
+AIMD: "5. ADDITIVE-INCREASE / MULTIPLICATIVE-DECREASE (AIMD)" {
+  style: { fill: "#ffcdd2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Producer auto-adjusts rate based on observed signals:\n  \u2022 success \u2192 increase rate by +1\n  \u2022 timeout / failure / 503 \u2192 cut rate in half\n\nUSED BY: TCP congestion control, AWS SDK retry, adaptive rate limiters."
+}
+
+Backoff: "6. RETRY WITH EXPONENTIAL BACKOFF + JITTER" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+  Detail: "On rejection / timeout / 429: wait N seconds and retry; N doubles each time;\nadd random jitter to prevent synchronized retries (thundering retry herd).\n\nNot exactly backpressure, but the complement: consumers respond to push-back signals."
+}
+
+Top -> Block; Top -> Drop; Top -> Pull; Top -> Credit; Top -> AIMD; Top -> Backoff

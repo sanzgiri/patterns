@@ -1,0 +1,22 @@
+# Merkle Tree real-world uses: anti-entropy, blockchain, content-addressed storage
+direction: down
+
+Anti: "1. ANTI-ENTROPY REPAIR (Cassandra, DynamoDB, Riak)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "Two replicas should hold the same data but might have drifted.\nEach computes a Merkle tree of its data (partitioned by token range).\nExchange root hashes \u2192 differ?\nDescend into mismatched subtree \u2192 find specific divergent rows.\nRepair only the differences (not the whole dataset).\n\u2192 Cassandra calls this 'nodetool repair'"
+}
+
+Block: "2. BLOCKCHAIN / GIT" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "Bitcoin: each block's header includes a Merkle root over all transactions.\n  \u2192 SPV clients verify a transaction was included with O(log N) proof\n  \u2192 alteration of ANY transaction changes block hash \u2192 detected by consensus\nGit: every commit's tree object IS a Merkle tree of the file content.\n  \u2192 commit hash uniquely identifies the entire repo state\n  \u2192 'git fsck' uses Merkle tree to verify object integrity"
+}
+
+CAS: "3. CONTENT-ADDRESSED STORAGE (IPFS, BitTorrent v2, Tahoe-LAFS, Perkeep)" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Files are split into chunks; each chunk's hash IS its address.\nThe root of the chunk Merkle tree identifies the whole file.\n\u2192 immutable: changing a chunk gives a different hash \u2192 different file\n\u2192 deduplication: identical chunks across files share storage\n\u2192 integrity: download is verifiable; corruption is detectable"
+}
+
+Cert: "4. CERTIFICATE TRANSPARENCY (CT logs)" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Public log of every TLS certificate ever issued (so rogue certs can be detected).\nMerkle tree structure provides: (a) tamper-evidence (any log change is visible),\n(b) cryptographic 'inclusion proofs' \u2014 a short proof that cert X is in log of N total."
+}

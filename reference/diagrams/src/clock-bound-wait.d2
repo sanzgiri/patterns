@@ -1,0 +1,33 @@
+# Clock-bound wait (Spanner TrueTime commit-wait)
+shape: sequence_diagram
+
+Client
+Leader: "Spanner leader\n(of Paxos group)"
+TT: "TrueTime API"
+Replicas: "Paxos replicas"
+
+phase1: "Phase 1: assign commit timestamp" {
+  style: { fill: "#bbdefb"; font-color: "#0d47a1" }
+  Client -> Leader: "COMMIT txn T"
+  Leader -> TT: "TT.now()"
+  TT -> Leader: "{ earliest=t0-\u03b5, latest=t0+\u03b5 }\n(\u03b5 is uncertainty bound,\ntypically 1\u20137 ms in Spanner)"
+  Leader -> Leader: "commit_ts = TT.now().latest = t0 + \u03b5\n(pick the LATEST possible 'now')"
+}
+
+phase2: "Phase 2: replicate commit via Paxos" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  Leader -> Replicas: "AcceptCommit(txn=T, ts=t0+\u03b5)"
+  Replicas -> Leader: "majority ack"
+}
+
+phase3: "Phase 3: COMMIT-WAIT \u2014 wait until clock-bound passes" {
+  style: { fill: "#fff4c2"; font-color: "#bf360c" }
+  Leader -> Leader: "loop:\n  if TT.now().earliest > commit_ts: break\n  sleep a bit\n\n\u2192 wait until 'no clock anywhere\n  is still earlier than commit_ts'\n\u2192 typically 1\u20137ms wait"
+}
+
+phase4: "Phase 4: only NOW return to client" {
+  style: { fill: "#e1bee7"; font-color: "#4a148c" }
+  Leader -> Client: "COMMIT OK (timestamp = t0+\u03b5)"
+}
+
+Why: "Why wait? EXTERNAL CONSISTENCY guarantee:\nif transaction T1 commits and returns to client,\nand then client starts T2 that observes T1's writes,\nthen T2's commit timestamp will be > T1's.\n\nWithout wait: a writer in another datacenter could pick\na timestamp earlier than T1 \u2014 violating ordering visible to clients.\nWith wait: by the time client knows T1 committed,\nno clock anywhere can produce a timestamp < T1's commit_ts."

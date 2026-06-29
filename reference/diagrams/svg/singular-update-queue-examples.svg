@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-d2-version="0.7.1" preserveAspectRatio="xMinYMin meet" viewBox="0 0 3138 364"><svg class="d2-1087264198 d2-svg" width="3138" height="364" viewBox="-101 -101 3138 364"><rect x="-101.000000" y="-101.000000" width="3138.000000" height="364.000000" rx="0.000000" fill="#FFFFFF" class=" fill-N7" stroke-width="0" /><style type="text/css"><![CDATA[
+.d2-1087264198 .text-bold {
+	font-family: "d2-1087264198-font-bold";
+}
+@font-face {
+	font-family: d2-1087264198-font-bold;
+	src: url("data:application/font-woff;base64,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");
+}]]></style><style type="text/css"><![CDATA[.shape {
+  shape-rendering: geometricPrecision;
+  stroke-linejoin: round;
+}
+.connection {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.blend {
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+		.d2-1087264198 .fill-N1{fill:#0A0F25;}
+		.d2-1087264198 .fill-N2{fill:#676C7E;}
+		.d2-1087264198 .fill-N3{fill:#9499AB;}
+		.d2-1087264198 .fill-N4{fill:#CFD2DD;}
+		.d2-1087264198 .fill-N5{fill:#DEE1EB;}
+		.d2-1087264198 .fill-N6{fill:#EEF1F8;}
+		.d2-1087264198 .fill-N7{fill:#FFFFFF;}
+		.d2-1087264198 .fill-B1{fill:#0D32B2;}
+		.d2-1087264198 .fill-B2{fill:#0D32B2;}
+		.d2-1087264198 .fill-B3{fill:#E3E9FD;}
+		.d2-1087264198 .fill-B4{fill:#E3E9FD;}
+		.d2-1087264198 .fill-B5{fill:#EDF0FD;}
+		.d2-1087264198 .fill-B6{fill:#F7F8FE;}
+		.d2-1087264198 .fill-AA2{fill:#4A6FF3;}
+		.d2-1087264198 .fill-AA4{fill:#EDF0FD;}
+		.d2-1087264198 .fill-AA5{fill:#F7F8FE;}
+		.d2-1087264198 .fill-AB4{fill:#EDF0FD;}
+		.d2-1087264198 .fill-AB5{fill:#F7F8FE;}
+		.d2-1087264198 .stroke-N1{stroke:#0A0F25;}
+		.d2-1087264198 .stroke-N2{stroke:#676C7E;}
+		.d2-1087264198 .stroke-N3{stroke:#9499AB;}
+		.d2-1087264198 .stroke-N4{stroke:#CFD2DD;}
+		.d2-1087264198 .stroke-N5{stroke:#DEE1EB;}
+		.d2-1087264198 .stroke-N6{stroke:#EEF1F8;}
+		.d2-1087264198 .stroke-N7{stroke:#FFFFFF;}
+		.d2-1087264198 .stroke-B1{stroke:#0D32B2;}
+		.d2-1087264198 .stroke-B2{stroke:#0D32B2;}
+		.d2-1087264198 .stroke-B3{stroke:#E3E9FD;}
+		.d2-1087264198 .stroke-B4{stroke:#E3E9FD;}
+		.d2-1087264198 .stroke-B5{stroke:#EDF0FD;}
+		.d2-1087264198 .stroke-B6{stroke:#F7F8FE;}
+		.d2-1087264198 .stroke-AA2{stroke:#4A6FF3;}
+		.d2-1087264198 .stroke-AA4{stroke:#EDF0FD;}
+		.d2-1087264198 .stroke-AA5{stroke:#F7F8FE;}
+		.d2-1087264198 .stroke-AB4{stroke:#EDF0FD;}
+		.d2-1087264198 .stroke-AB5{stroke:#F7F8FE;}
+		.d2-1087264198 .background-color-N1{background-color:#0A0F25;}
+		.d2-1087264198 .background-color-N2{background-color:#676C7E;}
+		.d2-1087264198 .background-color-N3{background-color:#9499AB;}
+		.d2-1087264198 .background-color-N4{background-color:#CFD2DD;}
+		.d2-1087264198 .background-color-N5{background-color:#DEE1EB;}
+		.d2-1087264198 .background-color-N6{background-color:#EEF1F8;}
+		.d2-1087264198 .background-color-N7{background-color:#FFFFFF;}
+		.d2-1087264198 .background-color-B1{background-color:#0D32B2;}
+		.d2-1087264198 .background-color-B2{background-color:#0D32B2;}
+		.d2-1087264198 .background-color-B3{background-color:#E3E9FD;}
+		.d2-1087264198 .background-color-B4{background-color:#E3E9FD;}
+		.d2-1087264198 .background-color-B5{background-color:#EDF0FD;}
+		.d2-1087264198 .background-color-B6{background-color:#F7F8FE;}
+		.d2-1087264198 .background-color-AA2{background-color:#4A6FF3;}
+		.d2-1087264198 .background-color-AA4{background-color:#EDF0FD;}
+		.d2-1087264198 .background-color-AA5{background-color:#F7F8FE;}
+		.d2-1087264198 .background-color-AB4{background-color:#EDF0FD;}
+		.d2-1087264198 .background-color-AB5{background-color:#F7F8FE;}
+		.d2-1087264198 .color-N1{color:#0A0F25;}
+		.d2-1087264198 .color-N2{color:#676C7E;}
+		.d2-1087264198 .color-N3{color:#9499AB;}
+		.d2-1087264198 .color-N4{color:#CFD2DD;}
+		.d2-1087264198 .color-N5{color:#DEE1EB;}
+		.d2-1087264198 .color-N6{color:#EEF1F8;}
+		.d2-1087264198 .color-N7{color:#FFFFFF;}
+		.d2-1087264198 .color-B1{color:#0D32B2;}
+		.d2-1087264198 .color-B2{color:#0D32B2;}
+		.d2-1087264198 .color-B3{color:#E3E9FD;}
+		.d2-1087264198 .color-B4{color:#E3E9FD;}
+		.d2-1087264198 .color-B5{color:#EDF0FD;}
+		.d2-1087264198 .color-B6{color:#F7F8FE;}
+		.d2-1087264198 .color-AA2{color:#4A6FF3;}
+		.d2-1087264198 .color-AA4{color:#EDF0FD;}
+		.d2-1087264198 .color-AA5{color:#F7F8FE;}
+		.d2-1087264198 .color-AB4{color:#EDF0FD;}
+		.d2-1087264198 .color-AB5{color:#F7F8FE;}.appendix text.text{fill:#0A0F25}.md{--color-fg-default:#0A0F25;--color-fg-muted:#676C7E;--color-fg-subtle:#9499AB;--color-canvas-default:#FFFFFF;--color-canvas-subtle:#EEF1F8;--color-border-default:#0D32B2;--color-border-muted:#0D32B2;--color-neutral-muted:#EEF1F8;--color-accent-fg:#0D32B2;--color-accent-emphasis:#0D32B2;--color-attention-subtle:#676C7E;--color-danger-fg:red;}.sketch-overlay-B1{fill:url(#streaks-darker-d2-1087264198);mix-blend-mode:lighten}.sketch-overlay-B2{fill:url(#streaks-darker-d2-1087264198);mix-blend-mode:lighten}.sketch-overlay-B3{fill:url(#streaks-bright-d2-1087264198);mix-blend-mode:darken}.sketch-overlay-B4{fill:url(#streaks-bright-d2-1087264198);mix-blend-mode:darken}.sketch-overlay-B5{fill:url(#streaks-bright-d2-1087264198);mix-blend-mode:darken}.sketch-overlay-B6{fill:url(#streaks-bright-d2-1087264198);mix-blend-mode:darken}.sketch-overlay-AA2{fill:url(#streaks-dark-d2-1087264198);mix-blend-mode:overlay}.sketch-overlay-AA4{fill:url(#streaks-bright-d2-1087264198);mix-blend-mode:darken}.sketch-overlay-AA5{fill:url(#streaks-bright-d2-1087264198);mix-blend-mode:darken}.sketch-overlay-AB4{fill:url(#streaks-bright-d2-1087264198);mix-blend-mode:darken}.sketch-overlay-AB5{fill:url(#streaks-bright-d2-1087264198);mix-blend-mode:darken}.sketch-overlay-N1{fill:url(#streaks-darker-d2-1087264198);mix-blend-mode:lighten}.sketch-overlay-N2{fill:url(#streaks-dark-d2-1087264198);mix-blend-mode:overlay}.sketch-overlay-N3{fill:url(#streaks-normal-d2-1087264198);mix-blend-mode:color-burn}.sketch-overlay-N4{fill:url(#streaks-normal-d2-1087264198);mix-blend-mode:color-burn}.sketch-overlay-N5{fill:url(#streaks-bright-d2-1087264198);mix-blend-mode:darken}.sketch-overlay-N6{fill:url(#streaks-bright-d2-1087264198);mix-blend-mode:darken}.sketch-overlay-N7{fill:url(#streaks-bright-d2-1087264198);mix-blend-mode:darken}.light-code{display: block}.dark-code{display: none}]]></style><g class="UmFmdA=="><g class="shape" ><rect x="0.000000" y="0.000000" width="563.000000" height="162.000000" rx="8.000000" stroke="#0d47a1" fill="#bbdefb" style="stroke-width:2;" /></g><text x="281.500000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="281.500000" dy="0.000000">RAFT LEADER</tspan><tspan x="281.500000" dy="16.714286">update loop processes one entry at a time</tspan><tspan x="281.500000" dy="16.714286">u2022 single-threaded append to leader log</tspan><tspan x="281.500000" dy="16.714286">u2022 single-threaded commit handling</tspan><tspan x="281.500000" dy="16.714286">u2022 single-threaded apply to state machine</tspan><tspan x="281.500000" dy="16.714286">u2192 zero locks on the log/state</tspan><tspan x="281.500000" dy="16.714286">u2192 fan-out to network is parallel; queue serialization is the bottleneck</tspan></text></g><g class="UmVkaXM="><g class="shape" ><rect x="623.000000" y="0.000000" width="424.000000" height="162.000000" rx="8.000000" stroke="#1b5e20" fill="#c8e6c9" style="stroke-width:2;" /></g><text x="835.000000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="835.000000" dy="0.000000">REDIS (single-threaded core)</tspan><tspan x="835.000000" dy="16.714286">all commands processed by ONE thread on a queue</tspan><tspan x="835.000000" dy="16.714286">u2022 multiplexed network I/O (epoll/kqueue)</tspan><tspan x="835.000000" dy="16.714286">u2022 commands queued, executed serially</tspan><tspan x="835.000000" dy="16.714286">u2022 no GIL/lock concerns inside the main loop</tspan><tspan x="835.000000" dy="16.714286">u2192 millions of QPS on a single CPU core</tspan><tspan x="835.000000" dy="16.714286">u2192 simpler reasoning than concurrent Memcached</tspan></text></g><g class="Tm9kZQ=="><g class="shape" ><rect x="1107.000000" y="8.000000" width="359.000000" height="146.000000" rx="8.000000" stroke="#bf360c" fill="#fff4c2" style="stroke-width:2;" /></g><text x="1286.500000" y="46.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1286.500000" dy="0.000000">NODE.JS EVENT LOOP</tspan><tspan x="1286.500000" dy="16.833333">entire user code runs on one thread</tspan><tspan x="1286.500000" dy="16.833333">u2022 I/O handled by background pool</tspan><tspan x="1286.500000" dy="16.833333">u2022 callbacks queued, executed serially</tspan><tspan x="1286.500000" dy="16.833333">u2022 if you need concurrency, fork workers</tspan><tspan x="1286.500000" dy="16.833333">u2192 no locks in user code, naturally serial</tspan></text></g><g class="QWN0b3I="><g class="shape" ><rect x="1526.000000" y="8.000000" width="423.000000" height="146.000000" rx="8.000000" stroke="#4a148c" fill="#e1bee7" style="stroke-width:2;" /></g><text x="1737.500000" y="46.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1737.500000" dy="0.000000">ACTOR MODEL (Akka, Erlang/OTP, Orleans)</tspan><tspan x="1737.500000" dy="16.833333">each actor has a mailbox queue</tspan><tspan x="1737.500000" dy="16.833333">u2022 messages dequeued one at a time</tspan><tspan x="1737.500000" dy="16.833333">u2022 actor&#39;s state never accessed concurrently</tspan><tspan x="1737.500000" dy="16.833333">u2192 &#39;singular update queue&#39; per actor</tspan><tspan x="1737.500000" dy="16.833333">u2192 thousands of actors, each independently serial</tspan></text></g><g class="TE1BWA=="><g class="shape" ><rect x="2009.000000" y="16.000000" width="503.000000" height="130.000000" rx="8.000000" stroke="#37474f" fill="#cfd8dc" style="stroke-width:2;" /></g><text x="2260.500000" y="54.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="2260.500000" dy="0.000000">LMAX DISRUPTOR</tspan><tspan x="2260.500000" dy="17.000000">special single-writer ring buffer</tspan><tspan x="2260.500000" dy="17.000000">u2022 lock-free producer / single consumer</tspan><tspan x="2260.500000" dy="17.000000">u2022 6M+ events/sec single-threaded</tspan><tspan x="2260.500000" dy="17.000000">u2192 the LMAX trading platform&#39;s whole order book on one core</tspan></text></g><g class="U2N5bGxhREI="><g class="shape" ><rect x="2572.000000" y="8.000000" width="364.000000" height="146.000000" rx="8.000000" stroke="#263238" fill="#b0bec5" style="stroke-width:2;" /></g><text x="2754.000000" y="46.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="2754.000000" dy="0.000000">SCYLLA DB / SEASTAR</tspan><tspan x="2754.000000" dy="16.833333">shared-nothing per-core architecture</tspan><tspan x="2754.000000" dy="16.833333">u2022 each core owns a partition of data</tspan><tspan x="2754.000000" dy="16.833333">u2022 cross-core via explicit message queues</tspan><tspan x="2754.000000" dy="16.833333">u2192 singular update queue PER CORE</tspan><tspan x="2754.000000" dy="16.833333">u2192 NUMA-friendly, near-linear scaling</tspan></text></g><mask id="d2-1087264198" maskUnits="userSpaceOnUse" x="-101" y="-101" width="3138" height="364">
+<rect x="-101" y="-101" width="3138" height="364" fill="white"></rect>
+
+</mask></svg></svg>

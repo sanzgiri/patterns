@@ -1,0 +1,33 @@
+# Service Template: what every new microservice gets for free
+direction: down
+
+Template: "SERVICE TEMPLATE\n(starter project / Cookiecutter / scaffold)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 3; border-radius: 10 }
+
+  Layout: "STANDARD CODE LAYOUT\n  /src        \u2014 business logic\n  /api        \u2014 controllers / handlers\n  /domain     \u2014 entities & rules\n  /repo       \u2014 persistence adapters\n  /tests      \u2014 unit + integration\n  /infra      \u2014 Terraform, Helm charts\n  Dockerfile  \u2014 reproducible build\n  ci.yml      \u2014 CI pipeline" {
+    style: { fill: "#fff" }
+  }
+
+  Observability: "OBSERVABILITY PRE-WIRED\n  \u2022 structured JSON logging (logger configured)\n  \u2022 metrics endpoint (/metrics for Prometheus)\n  \u2022 health check endpoint (/health)\n  \u2022 readiness check endpoint (/ready)\n  \u2022 OpenTelemetry tracing initialized\n  \u2022 correlation-ID middleware" {
+    style: { fill: "#fff" }
+  }
+
+  Resilience: "RESILIENCE PATTERNS BUILT IN\n  \u2022 circuit-breaker library wrapping outbound calls\n  \u2022 retry with exponential backoff\n  \u2022 timeouts on EVERY remote call\n  \u2022 graceful-shutdown signal handling\n  \u2022 connection pool defaults" {
+    style: { fill: "#fff" }
+  }
+
+  Security: "SECURITY DEFAULTS\n  \u2022 auth middleware (JWT validation)\n  \u2022 TLS certs from cert-manager\n  \u2022 secret-loading from Vault / SSM\n  \u2022 rate-limit middleware\n  \u2022 audit-log middleware" {
+    style: { fill: "#fff" }
+  }
+
+  Deploy: "DEPLOYMENT ARTIFACTS\n  \u2022 multi-stage Dockerfile (small image)\n  \u2022 Helm chart / Kustomize overlays\n  \u2022 CI workflow (lint \u2192 test \u2192 build \u2192 push \u2192 deploy)\n  \u2022 .env.example with all required vars\n  \u2022 Makefile with standard targets (run, test, lint, deploy)" {
+    style: { fill: "#fff" }
+  }
+}
+
+New: "> scaffold new-service order-svc\n\u2192 fully working microservice in ~30 seconds:\n  builds, runs, exposes /health, ships logs/metrics, deploys to dev cluster.\n  Developer just adds business logic." {
+  shape: rectangle
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+Template -> New: "scaffold"

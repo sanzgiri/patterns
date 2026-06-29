@@ -1,0 +1,33 @@
+# Edge computing: push compute to where the users (or devices) are
+direction: down
+
+Title: "EDGE COMPUTING: move compute from central cloud to network/device edge.\nReduce latency, save bandwidth, work offline, respect data locality." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Spectrum: "THE SPECTRUM (cloud \u2192 edge \u2192 device)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Cloud: "CENTRAL CLOUD REGION\n  full compute, all data\n  100-200ms RTT global\n  unlimited scale" { style: { fill: "#fff" } }
+  CDN: "CDN PoP (edge cache only)\n  300+ global PoPs\n  static content + cached responses\n  see [CDN page](../scale/cdn.md)" { style: { fill: "#fff" } }
+  EdgeCompute: "EDGE COMPUTE\n  Cloudflare Workers / Lambda@Edge / Vercel Edge /\n  Fastly Compute / Deno Deploy / AWS Wavelength\n  run code at PoPs; ms latency to user\n  KV stores at edge (Workers KV, R2)" { style: { fill: "#fff" } }
+  OnPrem: "ON-PREM / MEC (Multi-access Edge)\n  factory floor, retail store, telco base station\n  AWS Outposts / Azure Stack Edge / Snowball\n  ms latency, data sovereignty" { style: { fill: "#fff" } }
+  Device: "DEVICE / IoT\n  phone, sensor, car, drone\n  0ms latency, offline-capable\n  local ML inference (Core ML, TF Lite, ONNX Runtime)" { style: { fill: "#fff" } }
+  Cloud -> CDN -> EdgeCompute -> OnPrem -> Device: "closer to user"
+}
+
+Why: "WHY EDGE\n  \u2022 LATENCY: physics says light takes ~5ms per 1000km; edge is faster\n  \u2022 BANDWIDTH: process video locally vs uploading full feed\n  \u2022 OFFLINE: keep working without connectivity\n  \u2022 DATA SOVEREIGNTY: GDPR, PIPL data residency\n  \u2022 RESILIENCE: regional outage doesn't kill the edge\n  \u2022 COST: edge compute often cheaper than egress\n\nWORKLOADS THAT FIT\n  \u2022 personalization at request time\n  \u2022 A/B testing decisions\n  \u2022 auth / token validation\n  \u2022 geo-routing, header rewrites\n  \u2022 IoT data filtering before upload\n  \u2022 AR/VR, gaming low-latency hot path\n  \u2022 video / image transformation\n  \u2022 small ML inference (intent classification)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+}
+
+NotFit: "WORKLOADS THAT DON'T FIT EDGE\n  \u2022 large-state OLTP (data is centralized)\n  \u2022 heavy compute (large ML training / inference)\n  \u2022 complex SQL joins across global data\n  \u2022 cross-region transactions\n  \u2022 anything needing ACID across edge nodes" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; border-radius: 8 }
+}
+
+Patterns: "EDGE PATTERNS\n  \u2022 EDGE CACHE: cache responses near user (CDN)\n  \u2022 EDGE COMPUTE: run code at PoP for personalization\n  \u2022 EDGE STATE: KV stores at edge (eventually consistent)\n  \u2022 OFFLINE-FIRST: local-first apps; sync when online\n  \u2022 PROGRESSIVE ENHANCEMENT: client-side rendering with edge fallback\n  \u2022 [GEODE](../ops/deployment-stamps.md): geographic stamps + global routing\n  \u2022 IoT TIERING: device \u2192 gateway \u2192 cloud (filtering at each tier)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Spectrum
+Spectrum -> Why
+Spectrum -> NotFit
+Why -> Patterns

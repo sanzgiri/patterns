@@ -1,0 +1,29 @@
+# Idempotent Consumer: why "at-least-once" requires deduplication
+direction: down
+
+AtLeastOnce: "FACT OF LIFE: most messaging is AT-LEAST-ONCE delivery\n  \u2022 Kafka, SQS, RabbitMQ, NATS \u2014 all redeliver on failure\n  \u2022 a consumer that crashes after processing but before ack \u2192 retry\n  \u2022 a producer that retries after timeout \u2192 duplicate published\n  \u2022 a network blip during ack \u2192 broker thinks failed; redelivers\n\u2192 DUPLICATES are NORMAL, not exceptional. Design for them." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+NaiveConsumer: "WITHOUT IDEMPOTENCY \u2014 the bug" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 10 }
+  Code: "// consumer of OrderPlaced events\non_message(msg):\n    sendShippingNotification(msg.order_id)\n    chargeCard(msg.customer_id, msg.amount)\n\u2192 if msg is REDELIVERED:\n  \u2022 second notification sent (annoying)\n  \u2022 SECOND CHARGE on the card (lawsuit-grade bug)" {
+    style: { fill: "#fff" }
+  }
+}
+
+IdempConsumer: "WITH IDEMPOTENT CONSUMER \u2014 the fix" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  Code2: "on_message(msg):\n    if already_processed(msg.id):  // check dedup store\n        ack and return    // skip silently\n    BEGIN TXN;\n      sendShippingNotification(msg.order_id)\n      chargeCard(msg.customer_id, msg.amount)\n      INSERT INTO processed_messages (id) VALUES (msg.id);\n    COMMIT;\n    ack" {
+    style: { fill: "#fff" }
+  }
+}
+
+DedupStore: "DEDUP STORE: where 'already_processed' is checked" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Detail: "OPTIONS:\n  \u2022 Same DB as business logic (recommended \u2014 atomic with side-effect)\n  \u2022 Redis SET with TTL (lightweight; suitable when business logic is external)\n  \u2022 Kafka Streams 'transactional' / exactly-once support\n  \u2022 Per-message-ID column with UNIQUE constraint (DB enforces, simplest)\n\nKEY CONSTRAINT: the dedup record and the side-effect MUST be ATOMIC.\nOtherwise: crash between them \u2192 either skipped or duplicated." { style: { fill: "#fff" } }
+}
+
+AtLeastOnce -> NaiveConsumer
+AtLeastOnce -> IdempConsumer
+IdempConsumer -> DedupStore

@@ -1,0 +1,30 @@
+# Service Component Test: test one service end-to-end in isolation
+direction: down
+
+ScopeOut: "OUT OF SCOPE for component test\n(other services, real partners, full env)" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 10 }
+  Other: "Customer svc | Inventory svc | Shipping svc | Stripe" { style: { fill: "#fff" } }
+}
+
+InScope: "IN SCOPE for component test of ORDERS service" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 3; border-radius: 10 }
+
+  Service: "ORDERS SERVICE PROCESS (real binary, real Spring/Quarkus/Node app)" { style: { fill: "#a5d6a7" } }
+  DB: "Real Postgres\n(via testcontainers)" { style: { fill: "#bbdefb" } }
+  Stubs: "Stubbed dependencies:\n  \u2022 Customer svc stub (Wiremock / Mountebank)\n  \u2022 Inventory svc stub\n  \u2022 Stripe stub\n  \u2022 Kafka in-memory broker" { style: { fill: "#ffe0b2" } }
+
+  Service -> DB: "real SQL"
+  Service -> Stubs: "all external calls"
+}
+
+Test: "TEST RUNNER (uses ONLY the service's public API)" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 10 }
+  Detail: "POST /orders { customer_id: 1, items: [...] }\n  \u2192 expect 201; body { id, status: 'pending' }\n  \u2192 expect Kafka message 'OrderPlaced' published\n  \u2192 expect Customer stub received GET /customers/1\n  \u2192 expect Inventory stub received POST /reserve"
+}
+
+Test -> Service
+
+Note: "WHAT THIS GIVES YOU:\n  \u2022 Tests the REAL service code: routes, serialization,\n    framework, transactions, ORM, DB queries\n  \u2022 Tests the FULL request lifecycle end-to-end inside the service\n  \u2022 No flaky integrated environment\n  \u2022 Each service has its own component-test suite\n  \u2022 Catches bugs unit tests can't (framework misconfig,\n    schema migrations, DB constraints)\n\nDIFFERENCE FROM UNIT TEST: full service is real.\nDIFFERENCE FROM INTEGRATION TEST: external dependencies stubbed.\nDIFFERENCE FROM E2E: only ONE service tested at a time." {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}

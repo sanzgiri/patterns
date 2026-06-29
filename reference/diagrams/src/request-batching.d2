@@ -1,0 +1,22 @@
+# Request Batching: combine N small requests into 1 bulk request
+direction: down
+
+Without: "WITHOUT BATCHING" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Client sends 100 individual requests\u2192 100 RTTs \u00d7 10ms = 1000ms total\n\u2192 100 \u00d7 (TCP overhead + headers + processing) = high CPU\n\u2192 100 disk fsyncs = ~1000ms on HDD\n\u2192 every operation pays the FULL per-operation cost"
+}
+
+With: "WITH BATCHING" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "Client accumulates 100 requests in a buffer\nsends 1 bulk request with 100 operations\n\u2192 1 RTT = 10ms (100\u00d7 better)\n\u2192 1 TCP + headers, 1 batched server processing\n\u2192 1 fsync for all 100 = ~10ms (100\u00d7 better)\n\u2192 server-side latency similar to single op for many cases"
+}
+
+Triggers: "WHEN TO FLUSH A BATCH?\n  \u2022 SIZE THRESHOLD \u2014 e.g., when buffer hits 16 KB or 100 entries\n  \u2022 TIME THRESHOLD \u2014 e.g., every 10ms (linger time)\n  \u2022 OPERATION-DRIVEN \u2014 on commit/sync/explicit flush\n  \u2022 BACKPRESSURE \u2014 when server signals it's ready\n\nUsually a COMBINATION: 'send when buffer hits 16 KB OR 10ms elapsed.'\nThis bounds both batch size (memory) AND latency (no operation\nwaits longer than 10ms for batch to fill)." {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Tradeoff: "TRADE-OFF\nLatency per operation: increases slightly (must wait for batch)\nThroughput: increases dramatically (10\u2013100\u00d7)\nMemory: bounded by max batch size\n\u2192 great for write-heavy workloads with relaxed per-op latency requirements\n\u2192 great when network/disk overhead dominates per-op processing cost\n\u2192 used by: Kafka producer (linger.ms + batch.size), gRPC bidi streaming,\n  database GROUP COMMIT, fsync coalescing, JDBC addBatch + executeBatch" {
+  shape: rectangle
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+}

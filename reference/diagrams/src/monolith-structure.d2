@@ -1,0 +1,30 @@
+# Monolithic architecture: single deployable, internal modules
+direction: down
+
+Client: { shape: person }
+LB: "Load Balancer" { shape: rectangle; style: { fill: "#f5f5f5"; stroke: "#616161"; border-radius: 8 } }
+
+Monolith: "Application Process (single deployable)" {
+  shape: rectangle
+  style: { fill: "#e3f2fd"; stroke: "#1565c0"; stroke-width: 2; border-radius: 12 }
+
+  UI: "Web / API\nlayer" { style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 6 } }
+  Orders: "Orders\nmodule" { style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 6 } }
+  Inventory: "Inventory\nmodule" { style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 6 } }
+  Billing: "Billing\nmodule" { style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 6 } }
+  Users: "Users\nmodule" { style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 6 } }
+
+  UI -> Orders
+  UI -> Users
+  Orders -> Inventory
+  Orders -> Billing
+}
+
+DB: "Shared Database" { shape: cylinder; style: { fill: "#c5cae9"; stroke: "#283593"; stroke-width: 2 } }
+
+Client -> LB
+LB -> Monolith.UI
+Monolith.Orders -> DB
+Monolith.Inventory -> DB
+Monolith.Billing -> DB
+Monolith.Users -> DB

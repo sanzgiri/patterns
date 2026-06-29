@@ -1,0 +1,25 @@
+# HyperLogLog: counting distinct items in fixed memory
+direction: down
+
+Intuition: "INTUITION: if you've seen a long string of leading zeros in any hash,\nyou've probably seen MANY items (rare events imply large samples).\n\nMost extreme leading-zero count seen \u2248 log2(distinct count)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Algo: "ALGORITHM:" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Detail: "1. hash each incoming item h(x)\n2. use FIRST p bits of hash to pick a 'bucket' (m = 2^p buckets)\n3. count leading zeros of the REMAINING bits\n4. store MAX(leading_zeros) seen for that bucket\n\nAfter the stream:\n   distinct \u2248 alpha * m^2 / sum(2^(-max_zeros[bucket]))\n   error \u2248 1.04 / sqrt(m)\n\nWith m=16384 (using 2.5 KB): \u00b10.8% error for cardinalities from 0 to billions"
+}
+
+WhyBuckets: "WHY BUCKETS (not just one counter)?\n  \u2022 averaging across m buckets reduces variance\n  \u2022 each bucket stores ~6 bits (max zeros up to 63)\n  \u2022 total = m * 6 bits \u2248 1.5 KB for m=2048; 12 KB for m=16384\n  \u2022 buckets from independent shards can be MERGED (max per bucket)\n     \u2192 distributed counting: each worker computes its HLL, merge at the end" {
+  shape: rectangle
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+}
+
+Use: "REAL-WORLD USES:\n  \u2022 Google: per-query distinct counting\n  \u2022 BigQuery: APPROX_COUNT_DISTINCT() uses HLL++\n  \u2022 Redshift / Snowflake / Presto / Druid: same\n  \u2022 Reddit: distinct page-view counts per post\n  \u2022 Twitter: tweet impression cardinality\n  \u2022 Redis: PFADD / PFCOUNT / PFMERGE commands" {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}
+
+Intuition -> Algo
+Algo -> WhyBuckets
+WhyBuckets -> Use

@@ -1,0 +1,36 @@
+# Blue-Green deployment: two production environments, instant cutover
+direction: down
+
+Title: "BLUE-GREEN: keep two identical production environments; switch traffic between them" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Before: "BEFORE CUTOVER: BLUE is live, GREEN is being prepared" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+
+  R1: "Router / Load Balancer\n(100% traffic \u2192 BLUE)" { style: { fill: "#fff" } }
+  Blue1: "BLUE (live)\nVersion v1.0\nServing 100% of users" { style: { fill: "#90caf9"; stroke: "#0d47a1"; stroke-width: 3 } }
+  Green1: "GREEN (idle)\nVersion v1.1 deployed\nTesting / warm-up only" { style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; stroke-dash: 3 } }
+
+  R1 -> Blue1: "100%"
+  R1 -> Green1: "0% (smoke tests)" { style: { stroke-dash: 3; opacity: 0.5 } }
+}
+
+After: "AFTER CUTOVER: GREEN is live, BLUE held in reserve" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+
+  R2: "Router / Load Balancer\n(100% traffic \u2192 GREEN)" { style: { fill: "#fff" } }
+  Blue2: "BLUE (idle, held)\nVersion v1.0\nReady for instant rollback" { style: { fill: "#90caf9"; stroke: "#0d47a1"; stroke-width: 2; stroke-dash: 3 } }
+  Green2: "GREEN (live)\nVersion v1.1\nServing 100% of users" { style: { fill: "#66bb6a"; stroke: "#1b5e20"; stroke-width: 3 } }
+
+  R2 -> Blue2: "0% (held)" { style: { stroke-dash: 3; opacity: 0.5 } }
+  R2 -> Green2: "100%"
+}
+
+Rollback: "ROLLBACK: flip the router back to BLUE\n  \u2192 happens in seconds (DNS / LB rule)\n  \u2192 NO redeploy, NO database restore, NO downtime\n\u2192 zero-downtime deploys + instant safety net" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Before
+Before -> After: "switch router"
+After -> Rollback

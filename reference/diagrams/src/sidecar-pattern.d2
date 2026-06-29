@@ -1,0 +1,28 @@
+# Sidecar pattern: deploy helper alongside main container
+direction: right
+
+Pod: "POD / DEPLOYMENT UNIT\n(K8s pod, ECS task, Nomad allocation, VM)" {
+  shape: rectangle
+  style: { fill: "#e8f5e9"; stroke: "#1b5e20"; stroke-width: 3; border-radius: 12 }
+
+  Main: "MAIN APP CONTAINER\n(your business code)\n  language: Python / Java / Go\n  port: 8080" {
+    style: { fill: "#a5d6a7"; stroke: "#2e7d32"; border-radius: 8 }
+  }
+
+  Side: "SIDECAR CONTAINER\n(helper process)\n  e.g.:\n  \u2022 Envoy proxy (mTLS, retries, metrics)\n  \u2022 log shipper (Fluent Bit \u2192 ELK)\n  \u2022 secret rotator (Vault agent)\n  \u2022 config sync\n  \u2022 cache warmer" {
+    style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+  }
+
+  Volume: "SHARED VOLUME (often)\n  /tmp/logs, /etc/secrets,\n  /var/run/envoy.sock" {
+    style: { fill: "#e3f2fd"; stroke: "#0d47a1"; border-radius: 8 }
+  }
+
+  Main -> Volume: "writes logs,\n reads secrets"
+  Side -> Volume: "ships logs out,\n injects secrets"
+  Main -> Side: "loopback (127.0.0.1)\n e.g. all outbound\n traffic via Envoy"
+}
+
+Properties: "PROPERTIES of running sidecar in the same pod:\n  \u2022 SHARED LIFECYCLE \u2014 they start and stop together\n  \u2022 SHARED NETWORK \u2014 talk via localhost (no network hop overhead)\n  \u2022 SHARED VOLUME \u2014 can exchange files\n  \u2022 SEPARATE PROCESSES \u2014 own crashes don't take down each other (mostly)\n  \u2022 LANGUAGE-AGNOSTIC \u2014 sidecar can be Go even if app is Python\n  \u2022 INDEPENDENTLY UPGRADABLE \u2014 bump sidecar without rebuilding app image" {
+  shape: rectangle
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+}

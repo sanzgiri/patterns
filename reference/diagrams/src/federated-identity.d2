@@ -1,0 +1,33 @@
+# Federated identity: outsource authentication
+direction: down
+
+Title: "FEDERATED IDENTITY: your app does NOT manage passwords.\nIt redirects to a TRUSTED IDENTITY PROVIDER (Google, GitHub, Okta, Azure AD, etc.)\nwhich authenticates the user and returns a verifiable token." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+User: "USER\n(has Google / GitHub / Okta / corporate AD account)" {
+  style: { fill: "#fff" } }
+
+App: "YOUR APPLICATION (RELYING PARTY)\n  no password database\n  no MFA implementation\n  no password-reset flows\n  no compromised-credential checks\n  just: verify a token from the IdP and trust the user identity" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+}
+
+IdP: "IDENTITY PROVIDER (IdP)\n  Google, GitHub, Microsoft, Apple\n  Okta, Auth0, Ping, OneLogin\n  Azure AD, Google Workspace, Active Directory\n  Keycloak, Authelia, Authentik (self-hosted)\n  ALL the actual security work happens here:\n   passwords, MFA, biometrics, anomaly detection,\n   compromised-credential checks, password rotation, etc." {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+Token: "TOKEN (JWT / SAML assertion)\n  signed by the IdP \u2192 your app verifies the signature\n  contains: user identifier, name, email, roles, expiry\n  short-lived (minutes to hours); refresh token used to renew\n  cryptographic guarantee that the IdP authenticated the user" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+Why: "WHY FEDERATE\n  \u2022 you don't store passwords \u2192 you can't leak them\n  \u2022 you get MFA / hardware keys for free (the IdP implements)\n  \u2022 enterprise SSO (one corporate login for all SaaS)\n  \u2022 specialist security teams (Google, Okta) do the hard work\n  \u2022 user joins/leaves one place \u2192 access updated everywhere\n  \u2022 standards-based (OAuth 2.0, OpenID Connect, SAML)\nWHEN NOT TO FEDERATE\n  \u2022 air-gapped / no-internet systems\n  \u2022 zero-dependency requirements\n  \u2022 specific compliance that mandates internal authentication\n  \u2022 but for nearly all consumer/enterprise SaaS \u2192 FEDERATE" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+User -> App: "1. click login"
+App -> IdP: "2. redirect with auth request"
+IdP -> User: "3. authenticate (password + MFA)"
+User -> IdP: "4. credentials"
+IdP -> App: "5. signed token (via redirect)"
+App -> Token: "6. verify"
+Token -> Why

@@ -1,0 +1,26 @@
+# Thundering Herd / Cache Stampede: the problem
+direction: down
+
+Setup: "SETUP: 1 hot cache key (homepage banner, top-N feed, JWT public key)\nTTL just expired or cache flushed; key not present" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Storm: "WHAT HAPPENS:" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 10 }
+
+  T0: "T0: 10,000 concurrent requests for the key arrive" { style: { fill: "#fff" } }
+  T1: "T1: each one MISSes the cache" { style: { fill: "#fff" } }
+  T2: "T2: each one starts a DB query" { style: { fill: "#fff" } }
+  T3: "T3: 10,000 concurrent identical DB queries hit the DB" { style: { fill: "#ffcdd2" } }
+  T4: "T4: DB collapses under the herd\n      \u2192 connections exhausted\n      \u2192 query queue grows\n      \u2192 even other queries (not for this key) time out\n      \u2192 cascading failure" { style: { fill: "#b71c1c"; font-color: "#fff" } }
+
+  T0 -> T1 -> T2 -> T3 -> T4
+}
+
+Why: "WHY IT'S A HERD:\n  \u2022 cache TTLs often align (all set at deploy time, all expire together)\n  \u2022 popular keys have many concurrent readers (it's WHY they're cached)\n  \u2022 a cache outage \u2192 ALL keys miss simultaneously\n  \u2022 dependent caches (cascading misses propagate)" {
+  shape: rectangle
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+}
+
+Setup -> Storm
+Storm -> Why

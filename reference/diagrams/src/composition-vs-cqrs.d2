@@ -1,0 +1,30 @@
+# API Composition vs CQRS read model: two ways to handle cross-service queries
+direction: down
+
+Same: "Both solve: 'I need data from multiple services in one query'\nbut they trade off LATENCY vs FRESHNESS vs OPERATIONAL COMPLEXITY" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+APIc: "API COMPOSITION (read-time aggregation)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Detail: "On each query, FAN OUT to source services and aggregate.\n\nPROS:\n  \u2022 Always FRESH (real-time)\n  \u2022 No replicated data; no consistency issues\n  \u2022 Easy to start with: just call services and merge\n  \u2022 Each service's API stays the source of truth\nCONS:\n  \u2022 Latency = slowest service in the fan-out\n  \u2022 Partial failure handling required\n  \u2022 N+1 risk with nested aggregation\n  \u2022 Hard to do complex JOINs / GROUP BY across services\nBEST FOR:\n  \u2022 Simple aggregation (composing existing data shapes)\n  \u2022 Low-latency-tolerant clients\n  \u2022 Real-time freshness required" {
+    style: { fill: "#fff" }
+  }
+}
+
+CQRS: "CQRS / READ MODEL (write-time aggregation)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  Detail: "Pre-build a denormalized view fed by EVENTS from source services.\nQuery hits ONE store; data is already joined and indexed.\n\nPROS:\n  \u2022 Very FAST reads (one DB lookup)\n  \u2022 Supports complex queries (full-text, aggregates, sorting)\n  \u2022 No fan-out latency, no partial failure\n  \u2022 Can use specialized store (Elasticsearch, columnar)\nCONS:\n  \u2022 Eventually consistent (lag = event propagation time)\n  \u2022 Requires event streams (Kafka, etc.)\n  \u2022 Read model needs schema design, maintenance, rebuilding capability\n  \u2022 More infrastructure to operate\nBEST FOR:\n  \u2022 Complex queries (search, dashboards, reports)\n  \u2022 High read volume\n  \u2022 Eventual consistency acceptable\n  \u2022 Use-case-specific projections" {
+    style: { fill: "#fff" }
+  }
+}
+
+Combo: "OFTEN USED TOGETHER:\n  \u2022 simple aggregation \u2192 API composition\n  \u2022 search & dashboards \u2192 CQRS read model\n  \u2022 the BFF picks the right strategy per query" {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}
+
+Same -> APIc
+Same -> CQRS
+APIc -> Combo
+CQRS -> Combo

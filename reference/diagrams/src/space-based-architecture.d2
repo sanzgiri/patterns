@@ -1,0 +1,34 @@
+# Space-based architecture: in-memory data grid + processing units
+direction: down
+
+Title: "SPACE-BASED ARCHITECTURE: scale by removing the database bottleneck.\nKeep ALL active state in a distributed in-memory grid ('the space');\nlet many stateless processing units read/write it; persist asynchronously." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Traditional: "TRADITIONAL N-TIER (the problem)\n  Web tier (scales out) \u2192 App tier (scales out)\n     \u2192 DB tier (bottleneck; vertical-scale until very expensive)\n  Under burst: DB saturates; app blocks on DB; latency explodes." {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+}
+
+SBA: "SPACE-BASED" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+
+  PU: "PROCESSING UNITS (many, identical, ephemeral)\n  each holds part of the data in-memory (the 'space')\n  business logic runs on the same node as the data\n  data replicated across PUs for HA\n  PUs can come & go; data rebalances via [consistent hashing](../data/consistent-hashing.md)" { style: { fill: "#fff" } }
+
+  Space: "DATA GRID (the SPACE)\n  Hazelcast / Apache Ignite / GridGain / Coherence / GemFire / Memcached\n  shared in-memory key-value tuple space\n  topologies: partitioned + replicated\n  PUs read/write locally most of the time" { style: { fill: "#fff" } }
+
+  Async: "ASYNC PERSISTENCE\n  data writer process drains updates from space \u2192 RDBMS / object store\n  database is no longer in the hot path\n  loss tolerance: recover from log replay" { style: { fill: "#fff" } }
+
+  Gateway: "MESSAGING GRID + PROCESSING GRID + DEPLOYMENT GRID\n  request router \u2192 PU with the right data\n  workflow orchestration across PUs\n  manage PU lifecycle, scaling, failover" { style: { fill: "#fff" } }
+
+  Gateway -> PU
+  PU -> Space: "local fast path"
+  Space -> Async: "drain"
+}
+
+Properties: "WHEN IT WINS\n  \u2022 sustained high concurrency where DB is the bottleneck\n  \u2022 burst patterns (flash sales, ticket releases, market open)\n  \u2022 low-latency requirements that traditional DB can't hit\n  \u2022 stateful sessions that don't fit in stateless tier\n\nCANONICAL USES\n  \u2022 stock trading / market-making systems\n  \u2022 airline reservations / GDS systems\n  \u2022 online betting at peak\n  \u2022 risk calculation grids\n  \u2022 large multiplayer games (region servers)\n\nTRADE-OFFS\n  \u2022 in-memory means SIZE LIMITS (TBs, not PBs)\n  \u2022 consistency depends on grid implementation\n  \u2022 operational complexity is HIGH\n  \u2022 framework lock-in (Hazelcast/Ignite/Coherence)\n  \u2022 NOT for ad-hoc OLAP, document storage, big data" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Traditional
+Title -> SBA
+SBA -> Properties

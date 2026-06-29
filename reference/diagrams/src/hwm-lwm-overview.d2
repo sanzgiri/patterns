@@ -1,0 +1,37 @@
+# HWM and LWM on a log: what's safe vs what can be truncated
+direction: down
+
+Log: "REPLICATED LOG (leader view)" {
+  style: { fill: "#f5f5f5"; stroke: "#424242"; stroke-width: 2; border-radius: 8 }
+
+  E1: "idx=1\nsnap" { style: { fill: "#cfd8dc"; stroke-dash: 4 } }
+  E2: "idx=2\nsnap" { style: { fill: "#cfd8dc"; stroke-dash: 4 } }
+  E3: "idx=3\n(safe to delete \u2014 below LWM)" { style: { fill: "#cfd8dc"; stroke-dash: 4 } }
+  E4: "idx=4\n(committed,\nin snapshot)" { style: { fill: "#a5d6a7"; stroke: "#1b5e20" } }
+  E5: "idx=5\n(committed,\napplied)" { style: { fill: "#a5d6a7"; stroke: "#1b5e20" } }
+  E6: "idx=6\n(committed,\napplied)" { style: { fill: "#a5d6a7"; stroke: "#1b5e20" } }
+  E7: "idx=7\n(committed,\nnot all replicas)" { style: { fill: "#fff59d"; stroke: "#f57c00" } }
+  E8: "idx=8\n(replicated\nbut UNCOMMITTED)" { style: { fill: "#ffe0b2"; stroke: "#bf360c" } }
+  E9: "idx=9\n(replicated\nbut UNCOMMITTED)" { style: { fill: "#ffe0b2"; stroke: "#bf360c" } }
+
+  E1 -> E2 -> E3 -> E4 -> E5 -> E6 -> E7 -> E8 -> E9
+}
+
+LWM: "LOW WATER MARK = 4\n\u2192 everything < LWM has been\n  snapshotted & is safe to TRUNCATE\n  from the log on every replica\n\u2192 frees disk space\n\u2192 bounds recovery work" {
+  shape: rectangle
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+}
+
+HWM: "HIGH WATER MARK = 7\n\u2192 highest index known to be on\n  a majority of replicas\n\u2192 safe to APPLY to state machine\n\u2192 safe to RETURN to client as ack" {
+  shape: rectangle
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+}
+
+Uncommitted: "ENTRIES > HWM\n\u2192 NOT YET committed\n\u2192 may be overwritten by a new leader\n\u2192 client has NOT been ack'd" {
+  shape: rectangle
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+LWM -> Log.E3
+HWM -> Log.E7
+Uncommitted -> Log.E8

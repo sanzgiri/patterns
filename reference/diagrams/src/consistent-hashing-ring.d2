@@ -1,0 +1,36 @@
+# Consistent Hashing: the ring
+direction: down
+
+Problem: "PROBLEM: with N servers, you map key -> hash(key) % N to pick a server.\nAdd or remove ONE server \u2192 N changes \u2192 nearly EVERY key moves \u2192 cache stampede,\nrebalance storm, painful cluster operations." {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 10 }
+}
+
+Ring: "THE RING (hash space, e.g. 0 .. 2^64-1, wrapped into a circle)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+
+  N1: "Server A\nhash positions: 100, 800, 1500" { style: { fill: "#a5d6a7" } }
+  N2: "Server B\nhash positions: 300, 1000, 1700" { style: { fill: "#a5d6a7" } }
+  N3: "Server C\nhash positions: 500, 1200, 1900" { style: { fill: "#a5d6a7" } }
+
+  Keys: "Each KEY also hashes onto the ring.\nKey is owned by the FIRST SERVER POSITION clockwise from key's hash." {
+    style: { fill: "#fff59d" }
+  }
+
+  N1 -> Keys
+  N2 -> Keys
+  N3 -> Keys
+}
+
+Add: "ADDING server D (hash positions: 200, 900, 1600)\n\n  Only keys whose hash falls in:\n     A's old range that's now closer to D\n     B's old range that's now closer to D\n     C's old range that's now closer to D\n  ... need to move. About K/N keys total, not K \u00d7 (N-1)/N." {
+  shape: rectangle
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+}
+
+VirtualNodes: "VIRTUAL NODES (vnodes) \u2014 each physical server owns MANY ring positions\n(typically 100\u2013500). This:\n  \u2022 SMOOTHS load distribution (one position would give very uneven shards)\n  \u2022 lets you weight servers (bigger box = more vnodes)\n  \u2022 spreads the 'moved keys' across many other servers (not just neighbors)" {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}
+
+Problem -> Ring
+Ring -> Add
+Add -> VirtualNodes

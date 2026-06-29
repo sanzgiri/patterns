@@ -1,0 +1,39 @@
+# Health endpoint monitoring: liveness vs readiness vs deep
+direction: down
+
+Title: "HEALTH ENDPOINT: every service exposes an HTTP endpoint\nthat reports its current state. Used by load balancers,\nKubernetes, monitors, and load-shedding logic." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Liveness: "LIVENESS\n GET /healthz/live  \u2192 200 OK or 5xx" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "Q: 'Am I broken so badly the process should be RESTARTED?'\nReturns OK unless the process is genuinely deadlocked / corrupt.\nDoes NOT check dependencies.\nFails \u2192 K8s kills and restarts the pod.\nMUST be cheap and almost always OK \u2014 wrongly failing = restart loop."
+}
+
+Readiness: "READINESS\n GET /healthz/ready  \u2192 200 OK or 503" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Q: 'Am I ready to ACCEPT TRAFFIC?'\nChecks critical dependencies (DB connection, config loaded, warmup done).\nFails \u2192 K8s removes pod from Service endpoints (no new traffic);\n        existing traffic continues to drain.\nFails on intermittent dep blip \u2014 NOT a restart, just a traffic pause.\nMore strict than liveness: temporarily failing is normal during startup / draining / dep outage."
+}
+
+Startup: "STARTUP\n GET /healthz/startup  \u2192 200 OK once warm" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "Q: 'Have I finished WARMING UP?' (slow-start apps: JVM, large model load)\nLiveness and readiness checks gated until startup OK.\nUntil first OK, the pod gets MORE TIME to start without being killed.\nOnce OK, falls back to liveness/readiness for ongoing checks."
+}
+
+Deep: "DEEP HEALTH (custom)\n GET /healthz/deep  \u2192 detailed JSON" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Q: 'What's the state of every dependency?'\nUsed by humans / external monitors, NOT by orchestrators.\n{\n  'database': {'status': 'ok', 'latency_ms': 5},\n  'redis': {'status': 'degraded', 'last_error': 'timeout'},\n  'kafka': {'status': 'ok'},\n  'version': 'v2.4.1'\n}\nNEVER use deep checks for liveness \u2014 deps go down momentarily,\ndon't want to restart the pod every time."
+}
+
+Consumers: "CONSUMERS\n  \u2022 Kubernetes / Nomad orchestrators (liveness / readiness / startup probes)\n  \u2022 Load balancers (use readiness/health to decide whether to send traffic)\n  \u2022 Service mesh (Envoy uses health for outlier detection)\n  \u2022 External monitors (Pingdom, Datadog Synthetics, internal)\n  \u2022 Status pages / human dashboards" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Liveness
+Title -> Readiness
+Title -> Startup
+Title -> Deep
+Liveness -> Consumers
+Readiness -> Consumers
+Startup -> Consumers
+Deep -> Consumers

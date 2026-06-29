@@ -1,0 +1,29 @@
+# State Watch: revision-based replay (no missed events)
+direction: down
+
+t1: "Client establishes watch at revision 42" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+  D: "WATCH /services  start_rev=42\n\u2192 server streams any event AFTER rev 42"
+}
+
+t2: "Changes happen while client receives them normally" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+  D2: "rev 43 \u2192 client\nrev 44 \u2192 client\nrev 45 \u2192 client\nclient stays in sync"
+}
+
+t3: "Client network drops at rev 45 (knows last_rev = 45)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+  D3: "Network or process restart; client lost connection.\nServer keeps receiving changes:\n  rev 46, 47, 48, ..., 71"
+}
+
+t4: "Client reconnects: WATCH ... start_rev=46" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+  D4: "Server checks: do I still have events from rev 46?\n  \u2022 if YES \u2192 replay 46\u201371, then resume live stream\n  \u2022 if NO (compacted) \u2192 send 'gone' error;\n    client must full-resync then re-watch"
+}
+
+t5: "No missed events guarantee" {
+  style: { fill: "#c5e1a5"; stroke: "#33691e"; border-radius: 8 }
+  D5: "Subject to retention: as long as the change-history\nstill covers (last_rev, now], the client never misses an event.\nThis is why etcd / ZK / Kafka all maintain a recent change log\nspecifically for resuming watches."
+}
+
+t1 -> t2 -> t3 -> t4 -> t5

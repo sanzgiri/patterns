@@ -1,0 +1,25 @@
+# Heartbeat: timeout tuning trade-off
+direction: down
+
+Short: "SHORT timeout (50ms)" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+  Pros: "+ fast failure detection (~50ms to act)"
+  Cons: "\u2212 every GC pause / scheduling hiccup / network blip\n  triggers FALSE POSITIVE failover\n\u2212 frequent leader churn \u2192 unavailable for elections\n\u2212 huge network/CPU overhead from heartbeats"
+}
+
+Medium: "MEDIUM timeout (150\u2013300ms randomized)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Pros: "+ tolerates typical GC / network blips\n+ Raft's recommended default\n+ randomization avoids split votes\n+ recovers within \u2264 1s on real crash"
+  Cons: "\u2212 honest crash takes ~200\u2013300ms to detect"
+}
+
+Long: "LONG timeout (5\u201330s)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Pros: "+ very stable (e.g., for stateful DBs with expensive failover)\n+ tolerates VM pauses, long stop-the-world GCs"
+  Cons: "\u2212 long unavailability window during failover\n\u2212 stale-read window grows"
+}
+
+Note: "Practical examples:\n\u2022 Raft: 150\u2013300ms election timeout\n\u2022 ZooKeeper: ~6s session timeout (tickTime * 4)\n\u2022 Kubernetes: 10s node-not-ready threshold (after kubelet stops heartbeating)\n\u2022 Consul: ~10s for serf failure detection\n\u2022 Cassandra: 'phi accrual' failure detector \u2014 not a fixed timeout,\n  but a continuous suspicion score" {
+  shape: rectangle
+  style: { fill: "#e3f2fd"; stroke: "#0d47a1"; border-radius: 8 }
+}

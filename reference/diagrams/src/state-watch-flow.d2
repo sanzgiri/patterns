@@ -1,0 +1,34 @@
+# State Watch: subscribe to changes
+shape: sequence_diagram
+
+Client
+Server: "etcd / ZK / Kafka controller"
+Store: "Backing store"
+
+setup: "1. Client subscribes (watch) instead of polling" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  Client -> Server: "WATCH /services/api  rev=42"
+  Server -> Store: "remember: client X wants /services/api changes after rev 42"
+  Server -> Client: "watch established (long-lived stream)"
+}
+
+idle: "2. No changes \u2014 connection stays open, no traffic" {
+  style: { fill: "#bbdefb"; font-color: "#0d47a1" }
+  Server -> Server: "(idle for minutes/hours)"
+  Server -> Client: "occasional keepalive (every ~30s)"
+}
+
+change: "3. Something writes to /services/api" {
+  style: { fill: "#fff4c2"; font-color: "#bf360c" }
+  Other: "Another client"
+  Other -> Store: "PUT /services/api/instance1 = '10.0.0.5'"
+  Store -> Server: "change event { rev=43, key=/services/api/instance1, val=... }"
+}
+
+notify: "4. Server pushes event to ALL subscribers immediately" {
+  style: { fill: "#e1bee7"; font-color: "#4a148c" }
+  Server -> Client: "event { rev=43, key=..., val=... }"
+  Client -> Client: "react: add 10.0.0.5 to backend pool"
+}
+
+Note: "vs polling:\n\u2022 polling: client asks every N seconds 'anything new?' \u2192 N\u00d7 latency, N\u00d7 wasted load\n\u2022 watch: server pushes within milliseconds, only when there's actually news\n\u2022 watch scales: thousands of subscribers on one server, near-zero idle cost\n\u2022 used by: etcd watch, ZooKeeper watches, Kafka consumer rebalance,\n  Kubernetes informer cache, Consul blocking queries"

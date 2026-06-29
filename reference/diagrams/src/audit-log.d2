@@ -1,0 +1,23 @@
+# Audit logging: tamper-evident record of who did what
+direction: down
+
+Title: "AUDIT LOG: an immutable, append-only record of\nsecurity-/compliance-relevant events.\nDistinct from application logs and access logs." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+WhatGoes: "WHAT GOES IN AN AUDIT LOG" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "ENTITY CHANGES (CRUD on sensitive data)\n  \u2022 create / update / delete of customer records, accounts, permissions\n  \u2022 changes to billing data, configuration, secrets\nAUTH EVENTS\n  \u2022 login success / failure, MFA, password reset\n  \u2022 role assignment changes, permission grants/revokes\nPRIVILEGED ACTIONS\n  \u2022 admin views customer data; support impersonates user\n  \u2022 access to PHI / PII / payment card data\nSYSTEM EVENTS\n  \u2022 schema migration applied; secret rotated; deployment\n  \u2022 export of bulk data\nRECORD FIELDS\n  who (user / service principal / API key)\n  what (action + entity + before/after state)\n  when (server-side timestamp, UTC)\n  where (source IP, user-agent, region)\n  why (business reason / ticket reference if available)\n  correlation_id"
+}
+
+NotIn: "NOT IN AUDIT LOG\n  \u2022 routine application log lines (those go to app logs)\n  \u2022 routine HTTP access logs (those go to access logs)\n  \u2022 secrets themselves \u2014 log that a secret was rotated, NOT its value\n  \u2022 raw PII when not needed for audit \u2014 hash/redact instead" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+}
+
+Properties: "MUST-HAVE PROPERTIES\n  \u2022 IMMUTABLE: append-only, no edits, no deletes\n  \u2022 TAMPER-EVIDENT: hashes / digital signatures / WORM storage\n  \u2022 LONG-RETAINED: years (regulatory: SOX, HIPAA, PCI-DSS)\n  \u2022 SEPARATELY-STORED: not in the system being audited\n  \u2022 ACL-PROTECTED: read-restricted; write-only for the auditing service\n  \u2022 TIMELY: written reliably even under load (often via outbox)\n  \u2022 QUERYABLE: investigators need to search by user, time, entity\n  \u2022 COMPLETE: no gaps in sequence (gap = suspicious)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> WhatGoes
+Title -> NotIn
+WhatGoes -> Properties

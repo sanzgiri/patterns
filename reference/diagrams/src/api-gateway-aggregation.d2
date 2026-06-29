@@ -1,0 +1,21 @@
+# API Gateway aggregation: one client request fanned out to multiple services
+shape: sequence_diagram
+
+Client
+GW: "API Gateway"
+Profile: "Profile Svc"
+Orders: "Orders Svc"
+Recs: "Recommendations Svc"
+
+Client -> GW: "GET /me/dashboard\n(one round trip)"
+
+GW -> Profile: "GET /users/123"
+GW -> Orders: "GET /orders?user=123&limit=5"
+GW -> Recs: "GET /recs?user=123"
+
+Profile -> GW: "{name, avatar, ...}"
+Orders -> GW: "[order1, order2, ...]"
+Recs -> GW: "[item1, item2, ...]"
+
+GW -> GW: "merge into\nsingle response"
+GW -> Client: "{ profile, orders, recs }\n(one response)"

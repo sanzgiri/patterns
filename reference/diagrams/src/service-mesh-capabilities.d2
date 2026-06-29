@@ -1,0 +1,24 @@
+# Mesh capabilities: what you get and where it competes
+direction: down
+
+Capabilities: "WHAT A SERVICE MESH GIVES YOU\n(language-agnostic, no app code change)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+
+  Sec: "SECURITY\n\u2022 automatic mTLS between services (encrypted in transit)\n\u2022 workload identity (SPIFFE)\n\u2022 fine-grained authorization (who can call what)" { style: { fill: "#fff" } }
+
+  Traf: "TRAFFIC MANAGEMENT\n\u2022 weighted routing (canary 1%/5%/25%/100%)\n\u2022 header-based routing (route 'user=beta' to v2)\n\u2022 mirror traffic to a shadow service\n\u2022 fault injection (chaos testing)" { style: { fill: "#fff" } }
+
+  Resil: "RESILIENCE\n\u2022 retries with backoff (per-route policy)\n\u2022 timeouts (per-route)\n\u2022 circuit breakers (outlier ejection)\n\u2022 connection pool limits" { style: { fill: "#fff" } }
+
+  Obs: "OBSERVABILITY\n\u2022 golden signals for EVERY service-to-service call\n\u2022 distributed traces (auto-stitched across mesh)\n\u2022 service-topology map (auto-discovered)\n\u2022 per-route latency histograms" { style: { fill: "#fff" } }
+}
+
+VsChassis: "MESH vs CHASSIS \u2014 who owns which concern?" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+  Detail: "MESH does well:\n  \u2022 network-level: mTLS, retries, traffic-splitting, golden-signal metrics\n  \u2022 cross-language: works the same for Python/Java/Go/Node\n  \u2022 platform-team controlled: ops can change policy without redeploys\n\nCHASSIS does well:\n  \u2022 in-process concerns: business metrics, structured logging with context\n  \u2022 ORM, async processing, config loading, validation\n  \u2022 anything needing in-process domain knowledge\n\nMOST MATURE ORGS: use BOTH \u2014 lighter chassis when mesh handles network." { style: { fill: "#fff" } }
+}
+
+Costs: "COSTS / DOWNSIDES of the service mesh" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 10 }
+  Detail: "\u2022 EVERY POD now has a sidecar \u2014 +CPU, +memory, +startup time\n\u2022 OPERATIONAL COMPLEXITY \u2014 control plane is a complex system itself\n\u2022 EXTRA NETWORK HOP \u2014 every call goes through 2 proxies (\u00b11ms latency)\n\u2022 DEBUGGING HARDER \u2014 5xx could be in app, sidecar, or control plane\n\u2022 SKILL DEBT \u2014 team must learn Envoy/Istio mental model\n\nMITIGATIONS: 'ambient mesh' (Istio Ambient, Cilium) puts the data plane\nat the node level instead of per-pod \u2014 lower overhead, similar features." { style: { fill: "#fff" } }
+}

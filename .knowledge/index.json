@@ -1,0 +1,176 @@
+{
+  "topics": {
+    "system design patterns": {
+      "files": [
+        {
+          "path": "semantic/system-design-patterns-unified-registry.json",
+          "role": "PRIMARY — cross-source de-duplicated registry",
+          "pattern_count": 142,
+          "sources_merged": ["MS Azure","microservices.io","Neo Kim","ByteByteGo","Joshi","DDIA (conceptual)"],
+          "provenance": "verified_by_fetch",
+          "confidence": 0.9
+        },
+        {
+          "path": "semantic/system-design-patterns-azure.json",
+          "source": "Microsoft Azure Cloud Design Patterns catalog",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/",
+          "scope": "cloud architectural patterns",
+          "pattern_count": 43,
+          "provenance": "verified_by_fetch",
+          "confidence": 0.95
+        },
+        {
+          "path": "semantic/system-design-patterns-microservices-io.json",
+          "source": "Chris Richardson — microservices.io pattern language",
+          "url": "https://microservices.io/patterns/index.html",
+          "scope": "microservice-specific patterns",
+          "pattern_count": "~50 grouped",
+          "provenance": "verified_by_fetch",
+          "confidence": 0.95
+        },
+        {
+          "path": "semantic/system-design-patterns-distributed-joshi.json",
+          "source": "Unmesh Joshi — Patterns of Distributed Systems",
+          "url": "https://martinfowler.com/articles/patterns-of-distributed-systems/",
+          "scope": "implementation-level distributed-systems patterns (Kleppmann-influenced)",
+          "pattern_count": 30,
+          "provenance": "verified_by_fetch",
+          "confidence": 0.95
+        },
+        {
+          "path": "semantic/ddia-kleppmann-reference.json",
+          "source": "Martin Kleppmann — Designing Data-Intensive Applications",
+          "url": "https://dataintensive.net/",
+          "scope": "conceptual textbook — NOT a pattern catalog; chapter-organized treatment of replication, partitioning, transactions, consistency, consensus, batch, stream",
+          "provenance": "verified_by_fetch_of_author_site_and_publisher_page",
+          "confidence": 0.95
+        }
+      ],
+      "tags": ["architecture","distributed-systems","scalability","resilience","microservices","cloud","data-systems"],
+      "note": "Use unified-registry as the canonical list. Per-source files preserve original framing and counts. DDIA is included as a conceptual cross-reference, not a numbered pattern catalog.",
+      "reference_pages_status": {
+        "location": "/Users/sanzgiri/patterns/reference/",
+        "phase_A_complete": 15,
+        "phase_B_complete": 20,
+        "phase_C_complete": 21,
+        "phase_D_complete": 13,
+        "phase_E_complete": 8,
+        "phase_F_complete": 4,
+        "phase_G_complete": 5,
+        "total_pages": 86,
+        "total_diagrams_d2": 170,
+        "total_prose_words": 165087,        "phase_C_patterns": [
+          "arch/strangler-fig", "arch/anti-corruption-layer", "arch/service-template", "arch/microservice-chassis",
+          "comm/sidecar", "comm/service-mesh", "comm/ambassador", "comm/bff",
+          "comm/service-registry", "comm/client-side-discovery", "comm/server-side-discovery",
+          "data/outbox", "data/cdc", "comm/idempotent-consumer",
+          "arch/service-decomposition", "data/database-per-service",
+          "comm/consumer-driven-contract-test", "comm/service-component-test",
+          "comm/api-composition", "comm/graphql-federation"
+        ],
+        "phase_E_patterns": [
+          "ops/blue-green-canary (Blue-Green + Canary + Recreate + Rolling + Shadow)",
+          "ops/feature-flag (Release + Experiment + Ops + Permission toggles)",
+          "ops/deployment-stamps (Stamps/Cells + Geode + AZ/Region terminology)",
+          "ops/externalized-config (12-factor + config service + secrets)",
+          "ops/distributed-tracing (Tracing + Correlation ID + W3C Trace Context)",
+          "ops/log-aggregation-metrics (Logs + Metrics + Health Endpoint + Golden Signals/RED/USE)",
+          "ops/chaos-engineering (Simian Army + experiment loop + Game Days)",
+          "ops/audit-log (Tamper-evident compliance logging)"
+        ],
+        "phase_F_patterns": [
+          "sec/federated-identity (OAuth 2.0 + OIDC + SAML + PKCE)",
+          "sec/gatekeeper-valet-key (Gatekeeper + Presigned URLs / SAS)",
+          "arch/claim-check-static-hosting (Claim Check EIP + Static Content Hosting + Jamstack)",
+          "data/event-sourcing (Event Sourcing + CQRS marriage + snapshots + versioning)"
+        ],
+        "phase_G_patterns": [
+          "arch/space-based-edge (Space-Based Architecture / IMDG + Edge Computing / Workers / MEC / Fog)",
+          "sec/scim-passkeys-kerberos (SCIM provisioning + FIDO2/WebAuthn/Passkeys + Kerberos/AD)",
+          "res/static-stability (AWS Builders' Library; pre-provisioned failure response)",
+          "cache/cache-hierarchy-storage-tiering (CPU-to-archive hierarchy + cloud storage tiers)",
+          "arch/compute-resource-consolidation (bin packing + multi-tenancy + serverless)"
+        ],
+        "cross_reference_check": "all 25 broken internal links found and fixed; zero remaining",
+        "remaining_work": [
+          "Optional: verify individual claims in llm-patterns-2024-2026-additions.json (confidence 0.7)",
+          "Optional: deeper spot-check / editorial review across all 86 pages"
+        ]
+      }
+    },
+    "llm patterns": {
+      "files": [
+        {
+          "path": "semantic/llm-patterns-eugene-yan.json",
+          "source": "Eugene Yan — Patterns for Building LLM-based Systems & Products",
+          "date": "2023-07",
+          "scope": "7 product-engineering patterns",
+          "pattern_count": 7,
+          "provenance": "verified_by_fetch",
+          "confidence": 0.95,
+          "still_valid": "mostly — see additions file for what's new/superseded"
+        },
+        {
+          "path": "semantic/llm-patterns-anthropic.json",
+          "source": "Anthropic — Building Effective Agents",
+          "date": "2024-12",
+          "scope": "workflows + agents (single + multi)",
+          "pattern_count": "5 workflows + 1 building block + 1 agent category",
+          "provenance": "verified_by_fetch",
+          "confidence": 0.95
+        },
+        {
+          "path": "semantic/llm-agent-orchestration-microsoft.json",
+          "source": "Microsoft — AI Agent Orchestration Patterns",
+          "date": "2026-02",
+          "scope": "multi-agent coordination patterns",
+          "pattern_count": 5,
+          "provenance": "verified_by_fetch",
+          "confidence": 0.95
+        },
+        {
+          "path": "semantic/llm-agent-components-weng.json",
+          "source": "Lilian Weng — LLM-powered Autonomous Agents",
+          "date": "2023-06",
+          "scope": "agent components (Planning/Memory/Tools) + techniques",
+          "provenance": "verified_by_fetch",
+          "confidence": 0.85,
+          "note": "Mental model still strong; specific techniques (MRKL/Toolformer/HuggingGPT) largely superseded — see additions file"
+        },
+        {
+          "path": "semantic/llm-patterns-12-factor-agents.json",
+          "source": "Dex Horthy (HumanLayer) — 12-Factor Agents",
+          "date": "2025-04",
+          "scope": "engineering principles for production LLM apps",
+          "pattern_count": "12 factors + 1 honorable mention",
+          "provenance": "verified_by_fetch",
+          "confidence": 0.9
+        },
+        {
+          "path": "semantic/llm-patterns-2024-2026-additions.json",
+          "source": "Synthesis of patterns post-2023 baseline",
+          "date": "2024-2026",
+          "scope": "patterns that did not exist when Yan/Weng wrote (MCP, reasoning models, prompt caching, GraphRAG, computer use, DPO, etc.)",
+          "pattern_count": 11,
+          "provenance": "model_synthesis_with_cited_anchors_pending_verification",
+          "confidence": 0.7,
+          "todo": "verify individual claims by fetching primary sources before relying on any specific fact"
+        }
+      ],
+      "tags": ["llm", "agents", "rag", "prompting", "evals", "orchestration", "mcp", "reasoning-models"]
+    }
+  },
+  "deprecated_entries": [
+    {
+      "id": "system-design-patterns",
+      "reason": "Earlier synthesized list of 20 was generated from model memory and mixed architectural patterns with infrastructure mechanisms, algorithms, and DB internals. Replaced by Azure catalog (43) and microservices.io (~50).",
+      "deprecated_on": "2026-06-25"
+    },
+    {
+      "id": "llm-patterns",
+      "reason": "Earlier synthesized list of 20 was generated from model memory without source verification. Replaced by five source-attributed files (Yan, Anthropic, Microsoft, Weng, 12-factor) plus one synthesis-of-2024-2026 additions file.",
+      "deprecated_on": "2026-06-25"
+    }
+  ],
+  "updated": "2026-06-25T00:00:00Z"
+}

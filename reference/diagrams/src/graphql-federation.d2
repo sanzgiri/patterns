@@ -1,0 +1,30 @@
+# GraphQL Federation: composing one graph from many subgraphs
+direction: down
+
+Clients: "CLIENTS\n(web, mobile, partner) \u2014 see ONE unified GraphQL schema" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+}
+
+Gateway: "FEDERATION GATEWAY\n(Apollo Router, Cosmo Router, Mesh, GraphQL Hive)" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 3; border-radius: 10 }
+  Logic: "1. accept GraphQL query\n2. consult SUPERGRAPH \u2014 know which fields live where\n3. plan a query plan (which subgraph to hit, in what order, for which fields)\n4. dispatch SUB-QUERIES to subgraphs IN PARALLEL\n5. stitch responses; resolve entity references across subgraphs\n6. return unified response"
+}
+
+S1: "CUSTOMERS SUBGRAPH\n(Customers service)\n  type Customer {\n    id: ID!\n    name: String!\n    email: String!\n  }" { style: { fill: "#a5d6a7" } }
+
+S2: "ORDERS SUBGRAPH\n(Orders service)\n  extend type Customer @key(fields:\"id\") {\n    id: ID! @external\n    orders: [Order!]!\n  }\n  type Order {\n    id: ID!\n    total: Float!\n  }" { style: { fill: "#a5d6a7" } }
+
+S3: "LOYALTY SUBGRAPH\n(Loyalty service)\n  extend type Customer @key(fields:\"id\") {\n    id: ID! @external\n    loyaltyTier: String!\n    points: Int!\n  }" { style: { fill: "#a5d6a7" } }
+
+Clients -> Gateway: "query { customer(id:42) { name orders { total } loyaltyTier } }"
+
+Gateway -> S1: "{ customer(id:42) { id name } }"
+Gateway -> S2: "{ _entities(representations:[{__typename:Customer, id:42}])\n   { ... on Customer { orders { total } } } }"
+Gateway -> S3: "{ _entities(representations:[{__typename:Customer, id:42}])\n   { ... on Customer { loyaltyTier } } }"
+
+Gateway -> Clients: "{ customer: { name, orders: [...], loyaltyTier } }"
+
+Note: "KEY INSIGHT: each team owns its piece of the Customer type.\n  \u2022 Customers team owns name, email\n  \u2022 Orders team extends with 'orders'\n  \u2022 Loyalty team extends with 'loyaltyTier'\nNo team needs to coordinate with others to add fields to Customer.\nThe gateway figures out the cross-subgraph plan." {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}

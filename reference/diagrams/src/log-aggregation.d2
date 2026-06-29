@@ -1,0 +1,35 @@
+# Log aggregation: pipeline from app to searchable store
+direction: down
+
+Title: "LOG AGGREGATION: collect all logs from all services in all hosts\nto a central searchable store. Without this, microservices = blind." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Sources: "LOG SOURCES" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  AppA: "App A\n100 pods" { style: { fill: "#fff" } }
+  AppB: "App B\n50 pods" { style: { fill: "#fff" } }
+  Mesh: "Service mesh\n(Envoy access logs)" { style: { fill: "#fff" } }
+  Infra: "Infra\n(K8s events, DB logs,\nLB logs, audit logs)" { style: { fill: "#fff" } }
+}
+
+Collect: "COLLECTION AGENT (per-host)\n  Fluentd / Fluent Bit / Vector / Filebeat / Promtail / OTel Collector\n\n  Reads:  files, journald, stdout/stderr, Docker logs\n  Parses: JSON, key=value, regex\n  Adds:   host, pod, service, env metadata\n  Buffers: local disk if downstream is down\n  Routes: to one or many destinations" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+Transport: "TRANSPORT (optional)\nKafka / Kinesis / NATS / direct HTTP\n  \u2192 decouples producers from sinks\n  \u2192 absorbs traffic bursts\n  \u2192 enables fanout to multiple sinks" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+Storage: "STORAGE + SEARCH\n  Elasticsearch / OpenSearch (most common; expensive)\n  Loki (Grafana, log streams keyed by labels; cheap)\n  ClickHouse, VictoriaLogs (column store; very cheap)\n  Splunk, Datadog Logs, Sumo Logic (commercial)\n  AWS CloudWatch, Azure Log Analytics, GCP Cloud Logging (cloud)\n  S3 / GCS + Athena / Presto (long-term archive, cheap)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+Use: "QUERY + ALERT + DASHBOARD\n  search by correlation_id, user_id, error keyword\n  alerts on error rate (logs-as-metrics)\n  dashboards on top errors, request distribution\n  forensic investigation of past incidents" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+Sources -> Collect
+Collect -> Transport
+Transport -> Storage
+Storage -> Use

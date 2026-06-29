@@ -1,0 +1,40 @@
+{
+  "nodes": {
+    "system design patterns": { "type": "topic" },
+    "llm patterns": { "type": "topic" },
+    "Microsoft Azure Cloud Design Patterns": { "type": "source", "topic": "system design patterns" },
+    "Eugene Yan — LLM Patterns": { "type": "source", "topic": "llm patterns" },
+    "Anthropic — Building Effective Agents": { "type": "source", "topic": "llm patterns" },
+    "Microsoft — AI Agent Orchestration Patterns": { "type": "source", "topic": "llm patterns" },
+    "Lilian Weng — LLM Autonomous Agents": { "type": "source", "topic": "llm patterns" }
+  },
+  "edges": [
+    { "from": "Microsoft Azure Cloud Design Patterns", "to": "system design patterns", "type": "documents" },
+    { "from": "Eugene Yan — LLM Patterns", "to": "llm patterns", "type": "documents" },
+    { "from": "Anthropic — Building Effective Agents", "to": "llm patterns", "type": "documents" },
+    { "from": "Microsoft — AI Agent Orchestration Patterns", "to": "llm patterns", "type": "documents" },
+    { "from": "Lilian Weng — LLM Autonomous Agents", "to": "llm patterns", "type": "documents" },
+
+    { "from": "Anthropic Evaluator-optimizer", "to": "Microsoft Group chat (Maker-Checker loop)", "type": "same_pattern_different_name", "note": "Anthropic's evaluator-optimizer and Microsoft's maker-checker loop describe the same generator+critic loop pattern." },
+    { "from": "Anthropic Prompt chaining", "to": "Microsoft Sequential orchestration", "type": "same_pattern_different_name" },
+    { "from": "Anthropic Parallelization", "to": "Microsoft Concurrent orchestration", "type": "same_pattern_different_name" },
+    { "from": "Anthropic Routing", "to": "Microsoft Handoff orchestration", "type": "related_to", "note": "Anthropic's Routing is static dispatch by a classifier; Microsoft's Handoff is dynamic peer-to-peer transfer between active agents. Related but not identical." },
+    { "from": "Anthropic Orchestrator-workers", "to": "Microsoft Magentic orchestration", "type": "related_to", "note": "Both feature a central planner that dynamically decomposes work. Magentic adds an explicit task ledger and tool use against external systems." },
+
+    { "from": "Microsoft Sequential orchestration", "to": "Azure Pipes and Filters", "type": "ai_extends_cloud_pattern" },
+    { "from": "Microsoft Concurrent orchestration", "to": "Azure Gateway Aggregation", "type": "topologically_similar", "note": "Both fan-out then fan-in; aggregation pattern in cloud, ensemble pattern in AI." },
+    { "from": "Microsoft Handoff orchestration", "to": "Azure Scheduler Agent Supervisor", "type": "ai_extends_cloud_pattern" },
+
+    { "from": "Yan RAG", "to": "Weng Memory — long-term", "type": "same_concept", "note": "RAG and Weng's long-term memory both use external vector stores with MIPS retrieval." },
+    { "from": "Yan Evals", "to": "Anthropic Evaluator-optimizer", "type": "depends_on", "note": "Evaluator-optimizer loops require a working evaluator, i.e., evals." },
+    { "from": "Weng ReAct", "to": "Anthropic Agents", "type": "foundational_technique", "note": "ReAct's Thought/Action/Observation loop is the core mechanism of an autonomous agent." },
+    { "from": "Weng Reflexion", "to": "Microsoft Group chat (Maker-Checker loop)", "type": "related_to", "note": "Both rely on self/peer critique to iteratively improve outputs." }
+  ],
+  "cross_topic_patterns": [
+    { "name": "Caching", "appears_in": ["system design patterns (Cache-Aside)", "llm patterns (Yan Caching)"], "note": "Same underlying idea; LLM caching adds semantic-similarity and pre-computation variants." },
+    { "name": "Routing", "appears_in": ["system design patterns (Gateway Routing)", "llm patterns (Anthropic Routing, Microsoft Handoff)"], "note": "Cloud routing is deterministic; LLM routing/handoff can be classifier- or agent-driven." },
+    { "name": "Rate Limiting / Throttling", "appears_in": ["system design patterns"], "note": "Relevant to LLM apps too — Anthropic emphasizes iteration limits for agents (effectively a rate guard)." },
+    { "name": "Retry + Circuit Breaker", "appears_in": ["system design patterns"], "note": "Microsoft's AI agent orchestration doc explicitly recommends timeout/retry/circuit-breaker for agent dependencies." }
+  ],
+  "updated": "2026-06-25T00:00:00Z"
+}

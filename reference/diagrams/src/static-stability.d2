@@ -1,0 +1,32 @@
+# Static stability: stay in a known-good state when dependencies fail
+direction: down
+
+Title: "STATIC STABILITY (AWS Builders' Library): the system stays in its\nlast-known-good state when a dependency fails, rather than scrambling\nto change state during the failure (which usually makes it worse)." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Dynamic: "DYNAMIC (FRAGILE) APPROACH\n  Region A fails \u2192 control plane tries to move workload to Region B\n     \u2192 control plane needs Region A to do the move (CIRCULAR)\n     \u2192 cascading load on Region B (THUNDERING HERD)\n     \u2192 in-flight state inconsistent across regions\n     \u2192 even if successful: recovery is slow & complex\n     \u2192 if control plane is the failure: catastrophe" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+}
+
+Static: "STATICALLY STABLE APPROACH" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+
+  Provision: "OVER-PROVISION FOR FAILURE\n  Run capacity in MULTIPLE AZs/regions, sized so that\n  any one AZ/region can lose and the others handle full load\n  (e.g., 3 AZs at 50% each \u2192 lose 1, the other 2 absorb at 75%)" { style: { fill: "#fff" } }
+
+  PreDist: "PRE-DISTRIBUTE STATE & CONFIG\n  Each region/AZ has the data it needs to operate INDEPENDENTLY\n  No live cross-region calls in the hot path\n  DNS / Route 53 health checks shift traffic; data is already there" { style: { fill: "#fff" } }
+
+  KnownGood: "STAY IN KNOWN-GOOD STATE\n  When failure happens: DO NOTHING new\n  Just lose the bad region; surviving regions keep working\n  No reactive scaling, no failover dance, no config push" { style: { fill: "#fff" } }
+
+  Plane: "DATA PLANE > CONTROL PLANE\n  Data plane (serving traffic) does NOT depend on control plane\n  during failures. Control plane can be broken; serving continues.\n  Example: EC2 instances keep running even if EC2 API is degraded." { style: { fill: "#fff" } }
+
+  Provision -> PreDist -> KnownGood -> Plane
+}
+
+Properties: "PRINCIPLES\n  \u2022 minimize what must HAPPEN during a failure\n  \u2022 pre-bake the failure response into normal operation\n  \u2022 spend CapEx on idle capacity to avoid OpEx on outages\n  \u2022 every failure response is itself a potential failure\n\nIMPLEMENTATIONS\n  \u2022 active-active multi-AZ EC2 (50% headroom for AZ loss)\n  \u2022 S3 cross-region replication (data is already there)\n  \u2022 Route 53 health checks shift DNS without orchestration\n  \u2022 read replicas pre-promoted vs reactive failover\n  \u2022 cells / [deployment stamps](../ops/deployment-stamps.md) \u2014 lose a cell, others untouched\n  \u2022 [bulkhead](bulkhead.md) \u2014 isolate so failure doesn't spread\n\nWHEN NOT TO USE\n  \u2022 cost-sensitive workloads (idle capacity is wasted)\n  \u2022 systems where reactive failover is well-tested and fast enough" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Dynamic
+Title -> Static
+Static -> Properties

@@ -1,0 +1,32 @@
+# Claim check pattern: store the payload, pass a reference
+direction: down
+
+Title: "CLAIM CHECK: don't put large payloads in messages.\nStore them in a blob store; put a reference in the message." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Bad: "WITHOUT CLAIM CHECK (the problem)\n  Producer sends 50 MB image as a Kafka/SQS message\n     \u2192 broker max message size exceeded (Kafka default 1MB)\n     \u2192 OR: every consumer in fanout holds 50 MB\n     \u2192 OR: serialization/dispatch latency explodes\n     \u2192 OR: replay/replication multiplies cost\n     \u2192 OR: dead-letter queues fill up with huge bodies" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+}
+
+With: "WITH CLAIM CHECK (the fix)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+
+  Producer: "PRODUCER\n  1. uploads 50 MB image \u2192 blob store (S3, Azure Blob, GCS)\n     returns: storage-key 'images/img-abc-123.jpg'\n  2. publishes SMALL message to bus:\n     { event: 'ImageUploaded',\n       blob_ref: 's3://my-bucket/images/img-abc-123.jpg',\n       size: 52428800,\n       sha256: '...',\n       user_id: 'alice',\n       request_id: 'req-7f3a' }\n     \u2192 a few hundred BYTES, not 50 MB" { style: { fill: "#fff" } }
+
+  Bus: "MESSAGE BUS (Kafka/SQS/RabbitMQ/Pub-Sub)\n   - small messages \u2192 high throughput\n   - cheap fanout\n   - cheap replay" { style: { fill: "#fff" } }
+
+  Consumer: "CONSUMER\n  1. receives small message with blob_ref\n  2. DECIDES if it needs the payload (maybe it doesn't)\n  3. IF needed: fetches blob from store\n     - lazy: only when actually needed\n     - parallel: each consumer fetches independently\n     - cached: nearby fetches share storage CDN cache" { style: { fill: "#fff" } }
+
+  Cleanup: "CLEANUP\n  blob lifecycle policy deletes after retention period\n  OR cleanup event after all consumers processed" { style: { fill: "#fff" } }
+
+  Producer -> Bus -> Consumer -> Cleanup
+}
+
+Properties: "WHEN TO USE\n  \u2022 payload >> typical message size (rule of thumb: > 256 KB)\n  \u2022 not every consumer needs the payload (lazy fetch)\n  \u2022 cost of replicated message storage > cost of blob store\n  \u2022 long-lived payloads where blob retention != message retention\n\nWHEN NOT TO USE\n  \u2022 payloads are small (just send them inline)\n  \u2022 every consumer always needs full payload + low latency\n  \u2022 strict atomicity needed (blob and message can diverge)\n\nIMPLEMENTATIONS\n  \u2022 Azure Service Bus + Blob Storage (Azure documents this pattern explicitly)\n  \u2022 SQS + S3 (very common; AWS extended client lib does this transparently)\n  \u2022 Kafka + S3 / HDFS (common for media / large events)\n  \u2022 Apache Camel claim-check EIP\n  \u2022 Spring Cloud Stream + S3 binder" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Bad
+Title -> With
+With -> Properties

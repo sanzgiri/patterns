@@ -1,0 +1,30 @@
+# Paxos safety: dueling proposers
+shape: sequence_diagram
+
+P1: "Proposer A"
+P2: "Proposer B"
+A: "Acceptor"
+
+t1: "1. A proposes n=10" {
+  style: { fill: "#e3f2fd"; font-color: "#0d47a1" }
+  P1 -> A: "PREPARE(10)"
+  A -> P1: "PROMISE(10)"
+}
+
+t2: "2. B proposes n=11 (higher)" {
+  style: { fill: "#fce4ec"; font-color: "#880e4f" }
+  P2 -> A: "PREPARE(11)"
+  A -> P2: "PROMISE(11) \u2014 also promises NOT to accept anything < 11"
+}
+
+t3: "3. A tries to ACCEPT(10) too late" {
+  style: { fill: "#ffcdd2"; font-color: "#b71c1c" }
+  P1 -> A: "ACCEPT(10, valueA)"
+  A -> P1: "REJECT \u2014 already promised 11"
+}
+
+t4: "4. B can now safely ACCEPT(11)" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  P2 -> A: "ACCEPT(11, valueB)"
+  A -> P2: "ACCEPTED"
+}

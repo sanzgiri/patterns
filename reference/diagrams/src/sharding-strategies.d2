@@ -1,0 +1,26 @@
+# Sharding strategies compared
+direction: down
+
+Hash: "Hash partitioning\nhash(key) mod N" {
+  style: { fill: "#e3f2fd"; stroke: "#1565c0"; border-radius: 8 }
+  pros: "+ even distribution\n+ no hot keys (if good hash)"
+  cons: "\u2212 range queries hit all shards\n\u2212 resharding moves most data\n  (unless consistent hashing)"
+}
+
+Range: "Range partitioning\nsorted key ranges" {
+  style: { fill: "#e8f5e9"; stroke: "#2e7d32"; border-radius: 8 }
+  pros: "+ fast range scans\n+ HBase/Bigtable/Spanner"
+  cons: "\u2212 hot partitions on\n  sequential keys\n  (timestamps, autoincrement IDs)"
+}
+
+Directory: "Directory / lookup\nmap key \u2192 shard explicitly" {
+  style: { fill: "#fff4c2"; stroke: "#f57c00"; border-radius: 8 }
+  pros: "+ flexible re-routing\n+ Vitess, ProxySQL"
+  cons: "\u2212 lookup is critical path\n\u2212 directory must be HA"
+}
+
+Geo: "Geo partitioning\nby region / locality" {
+  style: { fill: "#fce4ec"; stroke: "#ad1457"; border-radius: 8 }
+  pros: "+ data residency / GDPR\n+ low cross-region latency"
+  cons: "\u2212 skewed loads by region\n\u2212 cross-region txns are slow"
+}

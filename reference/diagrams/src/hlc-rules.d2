@@ -1,0 +1,23 @@
+# Hybrid Logical Clock: physical time + Lamport counter
+direction: down
+
+Components: "HLC = (physical_ms, logical_counter)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  P: "physical_ms\n\u2022 best estimate of wall-clock time (NTP-synced)\n\u2022 monotonic non-decreasing\n\u2022 advances forward as real time passes\n\u2022 NEVER goes backward (clamp if wall clock jumps)"
+  L: "logical_counter\n\u2022 increments when physical can't advance\n\u2022 captures causal order within same millisecond\n\u2022 resets to 0 when physical_ms moves forward"
+}
+
+Rule1: "RULE: local event\n\nnow = max(local_phys, wall_clock_ms)\nif now == local_phys:\n    local_logical += 1\nelse:\n    local_phys = now\n    local_logical = 0" {
+  shape: rectangle
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+}
+
+Rule2: "RULE: receive message with HLC (m_phys, m_logical)\n\nnow = max(local_phys, m_phys, wall_clock_ms)\nif now == local_phys == m_phys:\n    local_logical = max(local_logical, m_logical) + 1\nelif now == local_phys:\n    local_logical += 1\nelif now == m_phys:\n    local_logical = m_logical + 1\nelse:\n    local_phys = now; local_logical = 0" {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Property: "GUARANTEES (proven by Kulkarni et al., 2014):\n\n1. Captures HAPPENS-BEFORE (like Lamport):\n   if A causes B, HLC(A) < HLC(B)\n\n2. Approximately TRACKS PHYSICAL TIME:\n   |HLC.phys - true wall_clock| \u2264 NTP_clock_skew + small bounded drift\n\n3. Monotonic non-decreasing across receives and crashes\n   (with appropriate persistence)\n\n4. Small overhead: a few bits of logical counter on top of normal timestamp" {
+  shape: rectangle
+  style: { fill: "#e3f2fd"; stroke: "#0d47a1"; border-radius: 8 }
+}

@@ -1,0 +1,40 @@
+# BFF: separate gateways per client experience
+direction: down
+
+NoBFF: "WITHOUT BFF \u2014 one general-purpose API for all clients" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+
+  Web: "Web app" { style: { fill: "#fff" } }
+  Mobile: "Mobile app\n  (bandwidth-conscious)" { style: { fill: "#fff" } }
+  IoT: "IoT device\n  (tiny, intermittent)" { style: { fill: "#fff" } }
+
+  GenApi: "Generic API\n(returns full Customer + Orders + Inventory)\n\u2192 fits no client perfectly\n\u2192 mobile downloads 10\u00d7 more data than needed\n\u2192 IoT can't parse the deep JSON tree\n\u2192 every client change ripples through this API\n\u2192 'design by committee' across all clients" { style: { fill: "#ffe0b2" } }
+
+  Backend: "Microservices\n(Customers, Orders, Inventory, ...)" { style: { fill: "#a5d6a7" } }
+
+  Web -> GenApi
+  Mobile -> GenApi
+  IoT -> GenApi
+  GenApi -> Backend
+}
+
+WithBFF: "WITH BFF \u2014 one tailored gateway per client experience" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+
+  Web2: "Web app" { style: { fill: "#fff" } }
+  Mobile2: "Mobile app" { style: { fill: "#fff" } }
+  IoT2: "IoT device" { style: { fill: "#fff" } }
+
+  WebBFF: "Web BFF\n\u2022 returns full nested JSON\n\u2022 GraphQL for flexibility\n\u2022 owned by web team" { style: { fill: "#ffe0b2"; stroke: "#bf360c" } }
+  MobBFF: "Mobile BFF\n\u2022 returns flat trimmed JSON\n\u2022 binary protocol option\n\u2022 batches related requests\n\u2022 owned by mobile team" { style: { fill: "#ffe0b2"; stroke: "#bf360c" } }
+  IoTBFF: "IoT BFF\n\u2022 MQTT / CoAP protocol\n\u2022 tiny payloads\n\u2022 batches & deduplicates\n\u2022 owned by device team" { style: { fill: "#ffe0b2"; stroke: "#bf360c" } }
+
+  Backend2: "Same backend microservices\n(unchanged \u2014 BFFs adapt for clients)" { style: { fill: "#a5d6a7" } }
+
+  Web2 -> WebBFF
+  Mobile2 -> MobBFF
+  IoT2 -> IoTBFF
+  WebBFF -> Backend2
+  MobBFF -> Backend2
+  IoTBFF -> Backend2
+}

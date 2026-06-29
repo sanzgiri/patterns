@@ -1,0 +1,38 @@
+# Paxos roles and message flow (Multi-Paxos single instance)
+shape: sequence_diagram
+
+Proposer
+A1: "Acceptor 1"
+A2: "Acceptor 2"
+A3: "Acceptor 3"
+L: "Learner(s)"
+
+phase1: "PHASE 1 \u2014 PREPARE (acquire 'leadership' for proposal number n)" {
+  style: { fill: "#fff4c2"; font-color: "#bf360c"; bold: true }
+  Proposer -> A1: "PREPARE(n=42)"
+  Proposer -> A2: "PREPARE(n=42)"
+  Proposer -> A3: "PREPARE(n=42)"
+
+  A1 -> Proposer: "PROMISE(n=42, no prior accepted)"
+  A2 -> Proposer: "PROMISE(n=42, prior=(n=40, v=X))"
+  A3 -> Proposer: "PROMISE(n=42, no prior accepted)"
+}
+
+phase2: "PHASE 2 \u2014 ACCEPT (pick value, ask majority to commit)" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20"; bold: true }
+  Proposer -> Proposer: "value = X\n(must use highest prior\naccepted value seen)"
+  Proposer -> A1: "ACCEPT(n=42, v=X)"
+  Proposer -> A2: "ACCEPT(n=42, v=X)"
+  Proposer -> A3: "ACCEPT(n=42, v=X)"
+
+  A1 -> Proposer: "ACCEPTED"
+  A2 -> Proposer: "ACCEPTED"
+  A3 -> Proposer: "ACCEPTED"
+}
+
+learn: "LEARN \u2014 acceptors notify learners; majority \u2192 chosen" {
+  style: { fill: "#e3f2fd"; font-color: "#0d47a1"; bold: true }
+  A1 -> L: "v=X is chosen"
+  A2 -> L: "v=X is chosen"
+  A3 -> L: "v=X is chosen"
+}

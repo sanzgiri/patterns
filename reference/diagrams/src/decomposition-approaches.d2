@@ -1,0 +1,24 @@
+# Decompose by Business Capability vs by Subdomain (DDD)
+direction: down
+
+BC: "DECOMPOSE BY BUSINESS CAPABILITY\n(what the business DOES)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Detail: "Identify the major BUSINESS CAPABILITIES the org provides:\n  \u2022 'Order Management'\n  \u2022 'Inventory Management'\n  \u2022 'Customer Management'\n  \u2022 'Payment Processing'\n  \u2022 'Shipping & Fulfillment'\nMap each to ONE service (or small group of related services).\n\nSOURCE: business architecture / org chart.\nQUESTION: 'What does our company do?'\nTYPICAL BOUNDARY: matches existing departments / teams." {
+    style: { fill: "#fff" }
+  }
+}
+
+SD: "DECOMPOSE BY SUBDOMAIN (DDD)\n(what concepts the business KNOWS)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  Detail: "Identify SUBDOMAINS of the problem space (DDD):\n  \u2022 CORE subdomains (competitive advantage)\n      \u2192 e.g. for Amazon: recommendations, pricing\n  \u2022 SUPPORTING subdomains (need it, not differentiating)\n      \u2192 e.g. customer accounts, basic catalog\n  \u2022 GENERIC subdomains (commodity)\n      \u2192 e.g. auth, email sending, payments-via-Stripe\nEach subdomain becomes a BOUNDED CONTEXT \u2192 one service.\n\nSOURCE: domain modeling sessions with experts.\nQUESTION: 'What are the distinct concepts and rules?'\nTYPICAL BOUNDARY: where the same word means different things." {
+    style: { fill: "#fff" }
+  }
+}
+
+Practical: "PRACTICAL TRUTH: they usually CONVERGE\n  \u2022 BC and SD often agree on the same boundaries\n  \u2022 When they disagree, choose based on:\n    - Team structure (who's going to own it?)\n    - Rate of change (areas that change together stay together)\n    - Data ownership (clear data boundaries)\n  \u2022 Bigger insight: AVOID DECOMPOSING BY TECHNICAL LAYER\n    \u2022 BAD: 'database team', 'web team', 'business-logic team'\n    \u2022 GOOD: vertical slices, each team owns end-to-end" {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+BC -> Practical
+SD -> Practical

@@ -1,0 +1,39 @@
+# Write-Ahead Log: the order of operations
+shape: sequence_diagram
+
+Client
+DB: "Database process"
+WAL: "WAL file (durable, fsync'd)"
+Memory: "In-memory state\n(B-tree, page cache, MVCC)"
+Disk: "Data files (eventual)"
+
+Client -> DB: "BEGIN;\nUPDATE accounts SET balance=100 WHERE id=1;\nCOMMIT;"
+
+phase1: "STEP 1 \u2014 Write to WAL (BEFORE touching state)" {
+  style: { fill: "#bbdefb"; font-color: "#0d47a1" }
+  DB -> WAL: "append: { txn=42, page=7, before=80, after=100 }"
+  WAL -> WAL: "fsync()  \u2190 returns only after disk acknowledges"
+}
+
+phase2: "STEP 2 \u2014 Commit acknowledged" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  WAL -> DB: "OK"
+  DB -> Client: "COMMIT OK"
+}
+
+phase3: "STEP 3 \u2014 Apply to in-memory state (now safe)" {
+  style: { fill: "#fff4c2"; font-color: "#bf360c" }
+  DB -> Memory: "update page 7: balance = 100"
+}
+
+phase4: "STEP 4 \u2014 Background: flush dirty pages to disk (lazily)" {
+  style: { fill: "#e1bee7"; font-color: "#4a148c" }
+  Memory -> Disk: "checkpoint: write dirty pages\n(can happen seconds/minutes later)"
+}
+
+phase5: "CRASH RECOVERY (if process dies anywhere above)" {
+  style: { fill: "#ffcdd2"; font-color: "#b71c1c" }
+  DB -> WAL: "scan from last checkpoint"
+  WAL -> DB: "replay: page 7 += (80 \u2192 100)"
+  DB -> Memory: "rebuild state \u2014 committed txns survived"
+}

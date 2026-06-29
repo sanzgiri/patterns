@@ -1,0 +1,37 @@
+# Cell vs region vs stamp vs shard: the terminology
+direction: down
+
+Title: "ISOLATION TERMINOLOGY: confusingly overloaded vocabulary" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Shard: "SHARD (data partition)\n  \u2022 horizontal split of a dataset\n  \u2022 e.g. users 0\u2013999 vs 1000\u20131999 vs ...\n  \u2022 see [sharding](../data/sharding.md)\n  \u2022 typically a database concept" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+}
+
+Stamp: "DEPLOYMENT STAMP / CELL (application partition)\n  \u2022 full app stack (web + DB + cache + queue + workers)\n  \u2022 isolation domain: blast radius = 1 stamp\n  \u2022 scale by adding stamps, not growing them\n  \u2022 examples: AWS cells (Route 53, S3); Slack 'cells'; Salesforce 'pods'\n  \u2022 1 stamp may contain N shards" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+AZ: "AVAILABILITY ZONE\n  \u2022 cloud provider concept (AWS AZ, GCP zone, Azure zone)\n  \u2022 distinct power / network / fault domain within a region\n  \u2022 typically <1ms latency between AZs in same region\n  \u2022 best practice: replicate across 2\u20133 AZs for HA" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+Region: "REGION\n  \u2022 cloud provider concept (us-east-1, eu-west-1, ...)\n  \u2022 geographically distinct location\n  \u2022 10\u2013200ms latency to other regions\n  \u2022 unit of geographic distribution / data residency / disaster recovery" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+Geode: "GEODE (geographic deployment)\n  \u2022 full app stack in each region\n  \u2192 active-active across regions\n  \u2022 every user hits a nearby instance\n  \u2022 1 geode may contain N stamps; 1 stamp may contain N shards" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+}
+
+Composition: "TYPICAL COMPOSITION (e.g., a large SaaS):\n\n   GEODE us-east        GEODE eu-west       GEODE ap-northeast\n     \u2502                     \u2502                     \u2502\n   3 STAMPS in us-east   3 STAMPS in eu-west   3 STAMPS in ap-northeast\n     \u2502                     \u2502                     \u2502\n   Each stamp = full stack across 3 AZs in that region\n     \u2502\n   Each stamp's DB = N SHARDS (by tenant ID hash within the stamp)\n\nResult: tenant goes to 1 geode \u2192 1 stamp \u2192 1 shard.\nBlast radius per shard, per stamp, per AZ, per geode are all bounded.\nEach level is a different unit of isolation/scale/recovery." {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Shard; Title -> Stamp; Title -> AZ; Title -> Region; Title -> Geode
+Shard -> Composition
+Stamp -> Composition
+AZ -> Composition
+Region -> Composition
+Geode -> Composition

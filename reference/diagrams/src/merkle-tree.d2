@@ -1,0 +1,38 @@
+# Merkle Tree: efficient verification of large data sets
+direction: down
+
+Problem: "PROBLEM: two replicas (DBs, file stores, blockchain peers) want to know if they hold the same data.\nNAIVE: send 1 TB across the network to compare \u2192 absurd.\nWHAT YOU WANT: detect MISMATCH in O(log N) without transferring everything." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Tree: "MERKLE TREE: a tree where each NODE = hash(children's hashes)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+
+  Root: "ROOT = hash(L + R)\n         \"abc123\"" { style: { fill: "#fff59d" } }
+
+  L: "L = hash(LL + LR)" { style: { fill: "#bbdefb" } }
+  R: "R = hash(RL + RR)" { style: { fill: "#bbdefb" } }
+
+  LL: "LL = hash(d1)" { style: { fill: "#a5d6a7" } }
+  LR: "LR = hash(d2)" { style: { fill: "#a5d6a7" } }
+  RL: "RL = hash(d3)" { style: { fill: "#a5d6a7" } }
+  RR: "RR = hash(d4)" { style: { fill: "#a5d6a7" } }
+
+  d1: "data 1" { style: { fill: "#fff" } }
+  d2: "data 2" { style: { fill: "#fff" } }
+  d3: "data 3" { style: { fill: "#fff" } }
+  d4: "data 4" { style: { fill: "#fff" } }
+
+  Root -> L; Root -> R
+  L -> LL; L -> LR
+  R -> RL; R -> RR
+  LL -> d1; LR -> d2; RL -> d3; RR -> d4
+}
+
+Property: "MAGIC PROPERTY: if any leaf changes, every hash on its path to root changes.\nIf root hashes MATCH \u2192 all data is identical (cryptographic confidence).\nIf root hashes DIFFER \u2192 recurse into children to find WHERE they differ.\nFinding a single difference in 1B items: O(log N) = ~30 hash comparisons." {
+  shape: rectangle
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+}
+
+Problem -> Tree
+Tree -> Property

@@ -1,0 +1,58 @@
+# Storage choice taxonomy
+direction: down
+
+Top: "PICKING STORAGE: matching workload to DB type" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+RDBMS: "RELATIONAL (Postgres, MySQL, Oracle, SQL Server, Spanner, CockroachDB)" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "Strengths: ACID transactions, complex joins, mature ecosystem, SQL\nUse for: orders, payments, accounts, anything with strong consistency needs\nLimits: scaling writes hard (sharding adds complexity)"
+}
+
+KV: "KEY-VALUE (Redis, Memcached, DynamoDB, Riak)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Strengths: O(1) lookup, low latency, simple API, easy to scale horizontally\nUse for: caches, session stores, leaderboards, simple lookup tables\nLimits: no complex queries, no joins, secondary indexes are afterthoughts"
+}
+
+Doc: "DOCUMENT (MongoDB, Couchbase, DynamoDB, Cosmos DB)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "Strengths: flexible schema, nested data, JSON-native, horizontal scale\nUse for: catalogs, content management, event payloads, user profiles\nLimits: cross-document transactions limited, joins expensive"
+}
+
+Wide: "WIDE-COLUMN (Cassandra, HBase, ScyllaDB, Bigtable)" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Strengths: massive write throughput, linear scale, tunable consistency\nUse for: time-series, IoT telemetry, event logs, write-heavy workloads\nLimits: query patterns must match schema; secondary indexes weak"
+}
+
+Graph: "GRAPH (Neo4j, JanusGraph, ArangoDB, TigerGraph, AWS Neptune)" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Strengths: relationship-heavy queries (paths, cycles, communities)\nUse for: social networks, recommendations, knowledge graphs, fraud rings\nLimits: smaller scale, fewer ops experts, niche use cases"
+}
+
+Search: "SEARCH (Elasticsearch, OpenSearch, Solr, Vespa, Algolia)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "Strengths: full-text, fuzzy, relevance ranking, facets, aggregations\nUse for: product search, log search, autocomplete, geospatial\nLimits: not a source of truth (eventual consistency); expensive at scale"
+}
+
+TS: "TIME-SERIES (InfluxDB, TimescaleDB, Prometheus, VictoriaMetrics, M3, QuestDB)" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Strengths: time-partitioned, compression, downsampling, retention policies\nUse for: metrics, monitoring, sensor data, financial ticks\nLimits: not for general OLTP; queries must be time-bounded"
+}
+
+OLAP: "COLUMNAR / OLAP (Snowflake, BigQuery, Redshift, Druid, Pinot, ClickHouse, DuckDB)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "Strengths: massive scans, aggregations, compression, MPP\nUse for: BI, analytics, dashboards, ad-hoc data exploration\nLimits: not for transactional writes; expensive for small queries"
+}
+
+Object: "OBJECT (S3, GCS, Azure Blob, MinIO)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "Strengths: cheap, durable, infinite scale, lifecycle policies\nUse for: images, videos, logs, backups, data lake, ML datasets\nLimits: high per-request latency, no per-byte updates"
+}
+
+Vector: "VECTOR (Pinecone, Weaviate, Qdrant, Milvus, pgvector, Chroma)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Strengths: approximate nearest neighbor over embeddings (HNSW, IVF, ScaNN)\nUse for: semantic search, RAG, recommendation, anomaly detection\nLimits: new tech, ops less mature, often hybrid with inverted index"
+}
+
+Top -> RDBMS; Top -> KV; Top -> Doc; Top -> Wide; Top -> Graph; Top -> Search; Top -> TS; Top -> OLAP; Top -> Object; Top -> Vector

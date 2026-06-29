@@ -1,0 +1,19 @@
+# WAL: the three guarantees
+direction: down
+
+A: "DURABILITY (D in ACID)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Statement: "Once a transaction commits,\nits effects survive crash, power loss,\nprocess kill, OS panic.\n\nMechanism: the commit record is fsync'd to the WAL\nBEFORE the client gets 'COMMIT OK'.\nEven if the in-memory state is lost,\nrecovery replays the WAL and rebuilds it."
+}
+
+B: "ATOMICITY (A in ACID)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Statement: "A multi-step transaction is all-or-nothing.\n\nMechanism: each modification is logged\nbefore being applied. On crash mid-transaction,\nrecovery either:\n  \u2022 replays the whole txn (if commit record present), OR\n  \u2022 discards partial work (if no commit record).\nNever leaves partial visible state."
+}
+
+C: "PERFORMANCE (the *reason* for WAL)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Statement: "Without WAL: every commit must fsync the actual data pages\n(random I/O \u2014 slow).\n\nWith WAL: commit fsyncs only the WAL\n(sequential I/O \u2014 100\u20131000\u00d7 faster on HDD/SSD).\nData files are updated later in batch from memory.\n\nThis is why every serious DB uses WAL\n(Postgres, MySQL/InnoDB, SQLite, RocksDB, LMDB, SQL Server, Oracle...)."
+}
+
+A -> B -> C

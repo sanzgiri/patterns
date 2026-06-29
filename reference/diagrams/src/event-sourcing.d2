@@ -1,0 +1,28 @@
+# Event sourcing: events are the source of truth
+direction: down
+
+Title: "EVENT SOURCING: store every state change as an immutable EVENT.\nCurrent state is computed by replaying events.\nThe event log IS the database." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Traditional: "TRADITIONAL CRUD (state-only)\n  table 'account':\n     id=42, balance=1500\n  history: LOST (overwritten with each UPDATE)\n  questions you cannot answer:\n    'why is the balance 1500 USD?'\n    'what was the balance on Jan 15?'\n    'what would the balance be if we ignored Jan 16 fraud?'" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+}
+
+ES: "EVENT-SOURCED" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+
+  Log: "EVENT LOG (append-only)\n  - AccountOpened       {id=42, owner=alice}                 T=0\n  - MoneyDeposited     {id=42, amount=1000, source='ach'}  T=1\n  - MoneyDeposited     {id=42, amount=500, source='card'}  T=2\n  - MoneyWithdrawn     {id=42, amount=200, dest='atm'}     T=3\n  - MoneyDeposited     {id=42, amount=200, source='ach'}   T=4\n  ... never overwritten; new events appended forever ...\n  CURRENT BALANCE: replay all events \u2192 \u03a3 deposits \u2212 \u03a3 withdrawals = 1500" { style: { fill: "#fff" } }
+
+  Projections: "PROJECTIONS (derived state, rebuildable from events)\n  - 'current_balance'  view: id=42, balance=1500\n  - 'monthly_summary'  view: id=42, 2024-01: +1500 \u2212 200\n  - 'fraud_flags'      view: id=42, suspicious=false\n  - 'audit_export'     view: full transaction list\n  Each projection can be rebuilt by replaying events." { style: { fill: "#fff" } }
+
+  Log -> Projections: "events processed by\nprojection handlers"
+}
+
+Properties: "EVENT-SOURCED PROPERTIES\n  \u2022 COMPLETE HISTORY: every change preserved\n  \u2022 TIME TRAVEL: 'what was the state on date X?'\n  \u2022 AUDIT BUILT-IN: log IS the audit trail\n  \u2022 NEW PROJECTIONS: add a new view; replay events to populate it\n  \u2022 NATURAL FIT for CQRS, event-driven architecture, [outbox](../data/outbox.md)\n  \u2022 DOMAIN INSIGHT: events name what happened (DDD-friendly)\n  \u2022 BUG FIX BY REWRITE: discovered a bug; rewrite projection; replay events\n\nCOSTS\n  \u2022 querying current state requires replay or maintained projection (eventual consistency)\n  \u2022 schema evolution of events is HARD (events are immutable, but their interpretation evolves)\n  \u2022 event volume grows linearly forever (\u2192 snapshots, archival)\n  \u2022 mental model shift: not 'rows that change' but 'facts that accumulate'\n  \u2022 NOT every system benefits: simple CRUD apps just want UPDATE" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Traditional
+Title -> ES
+ES -> Properties

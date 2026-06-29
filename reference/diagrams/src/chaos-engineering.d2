@@ -1,0 +1,26 @@
+# Chaos engineering: planned experimentation on production behavior
+direction: down
+
+Title: "CHAOS ENGINEERING: deliberately inject failures into a running system\nto BUILD CONFIDENCE that it survives real failures." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Loop: "THE EXPERIMENT LOOP" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+
+  S1: "1. STEADY-STATE HYPOTHESIS\n'p99 latency stays <500ms;\n error rate stays <0.1%;\n checkout success >99.5%'" { style: { fill: "#a5d6a7" } }
+  S2: "2. CHOOSE A REAL-WORLD EVENT\n'kill 1 of 3 DB replicas',\n'add 200ms latency to payment API',\n'CPU pegged on 1 host',\n'AZ network partition'" { style: { fill: "#fff59d" } }
+  S3: "3. BLAST-RADIUS CONTAINMENT\n  \u2022 start in dev / staging\n  \u2022 small fraction of production\n  \u2022 known time window\n  \u2022 abort criteria ready" { style: { fill: "#ffe0b2" } }
+  S4: "4. RUN THE EXPERIMENT\n  inject the fault\n  monitor the steady-state hypothesis\n  ABORT immediately if hypothesis breaks" { style: { fill: "#ffcdd2" } }
+  S5: "5. ANALYZE\n  did the system stay within hypothesis? \u2192 confidence up\n  did it not? \u2192 you found a weakness\n  either way: SHARE FINDINGS, FIX WEAKNESSES, RE-RUN" { style: { fill: "#c8e6c9" } }
+
+  S1 -> S2 -> S3 -> S4 -> S5
+  S5 -> S1: "iterate"
+}
+
+Principles: "PRINCIPLES (principlesofchaos.org)\n  1. Build a HYPOTHESIS about steady state behavior\n  2. Vary REAL-WORLD events\n  3. Run experiments in PRODUCTION (the only way to learn the truth)\n  4. AUTOMATE experiments to run continuously\n  5. MINIMIZE BLAST RADIUS\nNetflix coined 'chaos engineering' \u2014 these principles defined the field." {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Loop
+Loop -> Principles

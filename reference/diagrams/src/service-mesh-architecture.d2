@@ -1,0 +1,27 @@
+# Service Mesh: data plane + control plane architecture
+direction: down
+
+ControlPlane: "CONTROL PLANE\n(Istiod, Linkerd controller, Consul servers)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 3; border-radius: 10 }
+  Config: "\u2022 Service registry\n\u2022 Routing rules / VirtualServices\n\u2022 Traffic-shifting policies\n\u2022 Auth policies (mTLS, AuthZ)\n\u2022 Certificate authority (mTLS certs)\n\u2022 Telemetry aggregation point" { style: { fill: "#fff" } }
+}
+
+DataPlane: "DATA PLANE (one sidecar proxy per pod)" {
+  style: { fill: "#e8f5e9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  P1: "Pod A\n  app A + envoy" { style: { fill: "#a5d6a7" } }
+  P2: "Pod B\n  app B + envoy" { style: { fill: "#a5d6a7" } }
+  P3: "Pod C\n  app C + envoy" { style: { fill: "#a5d6a7" } }
+}
+
+ControlPlane -> P1: "push config / certs (xDS)"
+ControlPlane -> P2: "push config / certs"
+ControlPlane -> P3: "push config / certs"
+
+P1 -> P2: "mTLS-encrypted traffic\n(envoy \u2194 envoy)"
+P2 -> P3: "retries, circuit breakers,\n traffic-shifting in-flight"
+P1 -> P3: "metrics + traces emitted\nfrom every hop"
+
+Note: "DATA PLANE: per-pod proxies do the actual traffic work\n  \u2022 mTLS termination/origination\n  \u2022 routing (weighted, header-based)\n  \u2022 retries, timeouts, circuit breakers\n  \u2022 telemetry (latency, error rate, traces)\n  \u2022 access policy enforcement\n\nCONTROL PLANE: tells proxies what to do\n  \u2022 watches K8s services & endpoints\n  \u2022 compiles configs\n  \u2022 pushes via xDS protocol\n  \u2022 issues mTLS certs (SPIFFE/SPIRE)\n\nAPP IS UNCHANGED: zero code in the app to get all of this.\nLanguage-agnostic. The mesh is the chassis for a polyglot org." {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}

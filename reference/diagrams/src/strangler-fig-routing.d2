@@ -1,0 +1,43 @@
+# Strangler Fig: routing rules at the facade
+direction: right
+
+Client: "Client request" {
+  shape: rectangle
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+}
+
+Facade: "FACADE / ROUTER\n(reverse proxy, API gateway,\n  or load-balancer rules)" {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+
+  Rules: "Routing logic (priority order):\n  1. POST /users/* \u2192 new-users-svc\n  2. GET /users/* (5% shadow) \u2192 new AND legacy, compare\n  3. /orders/v2/* \u2192 new-orders-svc\n  4. /catalog/* if user in beta-list \u2192 new-catalog-svc\n  5. EVERYTHING ELSE \u2192 legacy monolith" {
+    style: { fill: "#fff"; stroke: "#666" }
+  }
+}
+
+New: "New microservices" {
+  shape: rectangle
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+  U: "users-svc"
+  O: "orders-svc"
+  Cat: "catalog-svc"
+}
+
+Legacy: "Legacy monolith\n(catch-all fallback)" {
+  shape: rectangle
+  style: { fill: "#ef9a9a"; stroke: "#b71c1c"; border-radius: 8 }
+}
+
+Client -> Facade
+Facade -> New: "matched modern routes"
+Facade -> Legacy: "everything not matched yet"
+
+Strategies: "MIGRATION STRATEGIES used at the facade:" {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+  S1: "DARK LAUNCH \u2014 send request to BOTH, return legacy response, compare new in background"
+  S2: "SHADOW TRAFFIC \u2014 send N% to new for validation; legacy is still source of truth"
+  S3: "CANARY ROUTE \u2014 route N% real users to new, fall back to legacy on error"
+  S4: "FEATURE-FLAG GATED \u2014 specific users / regions hit new code"
+  S5: "FULL CUTOVER \u2014 once confident: 100% to new; legacy code removed later"
+}

@@ -1,0 +1,37 @@
+# Circuit Breaker request flow with downstream dependency
+direction: right
+
+Client: { shape: person }
+
+App: "Application\n(wraps call in breaker)" {
+  shape: rectangle
+  style: { fill: "#e3f2fd"; stroke: "#1565c0"; border-radius: 8 }
+}
+
+Breaker: "Circuit Breaker" {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#f57c00"; border-radius: 8; stroke-width: 2 }
+  State: { shape: cylinder; label: "state +\nfailure count +\nlast-failure time" }
+}
+
+Downstream: "Downstream Service\n(e.g., payment API)" {
+  shape: rectangle
+  style: { fill: "#fce4ec"; stroke: "#ad1457"; border-radius: 8 }
+}
+
+Fallback: "Fallback\n(cached value /\ndegraded response)" {
+  shape: rectangle
+  style: { fill: "#f5f5f5"; stroke: "#616161"; border-radius: 8; stroke-dash: 4 }
+}
+
+Client -> App: "1. request"
+App -> Breaker: "2. allow?"
+Breaker -> Downstream: "3a. yes \u2192 call" {
+  style: { stroke: "#2e7d32" }
+}
+Breaker -> Fallback: "3b. no (OPEN) \u2192 short-circuit" {
+  style: { stroke: "#c62828"; stroke-dash: 3 }
+}
+Downstream -> Breaker: "4. response or timeout"
+Breaker -> App: "5. result + state update"
+App -> Client: "6. response"

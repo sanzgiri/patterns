@@ -1,0 +1,75 @@
+{
+  "id": "llm-agent-orchestration-microsoft",
+  "topic": "llm patterns",
+  "subtopic": "AI agent orchestration patterns (multi-agent)",
+  "source": {
+    "title": "AI agent orchestration patterns",
+    "publisher": "Microsoft Learn / Azure Architecture Center",
+    "url": "https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/ai-agent-design-patterns",
+    "last_updated_on_source": "2026-02-12",
+    "fetched": "2026-06-25",
+    "authors": ["Chad Kittel", "Clayton Siemens"]
+  },
+  "provenance": "verified_by_fetch",
+  "confidence": 0.95,
+  "framing": "Multi-agent orchestration patterns that complement traditional cloud design patterns for AI workloads. Microsoft recommends starting at the lowest level of complexity: Direct model call → Single agent with tools → Multi-agent orchestration.",
+  "complexity_levels": [
+    "Direct model call — single LLM call with a well-crafted prompt; no agent logic.",
+    "Single agent with tools — one agent reasons over available tools and knowledge sources in a loop. Often the right default for enterprise use cases.",
+    "Multi-agent orchestration — multiple specialized agents that coordinate via an orchestrator or peer protocol. Justified when a single agent can't reliably handle the task."
+  ],
+  "patterns": [
+    {
+      "name": "Sequential orchestration",
+      "aliases": ["pipeline", "prompt chaining", "linear delegation"],
+      "summary": "Agents are chained in a predefined linear order. Each agent processes the previous agent's output. Routing is deterministic.",
+      "when_to_use": "Multi-stage processes with clear linear dependencies; data transformation pipelines; progressive refinement (draft → review → polish).",
+      "watch_out_for": "Failures in early stages propagate; no parallelism."
+    },
+    {
+      "name": "Concurrent orchestration",
+      "aliases": ["parallel", "fan-out/fan-in", "scatter-gather", "map-reduce"],
+      "summary": "Multiple agents run simultaneously on the same input. Each provides independent analysis from a unique specialization. Results may be aggregated (vote, weighted merge, LLM-synthesized summary) or applied independently.",
+      "when_to_use": "Independent analysis from multiple perspectives; latency-sensitive scenarios; brainstorming, ensemble reasoning, quorum/voting decisions.",
+      "watch_out_for": "Requires conflict-resolution when results contradict; resource-intensive."
+    },
+    {
+      "name": "Group chat orchestration",
+      "aliases": ["roundtable", "collaborative", "multi-agent debate", "council"],
+      "summary": "Multiple agents collaborate in a shared conversation thread. A chat manager controls turn order. Supports human-in-the-loop participation. Includes the sub-pattern Maker-Checker loops (also known as evaluator-optimizer, generator-verifier, critic loops, reflection loops).",
+      "when_to_use": "Brainstorming; decision-making via debate and consensus; quality-assurance with structured review; compliance validation requiring multiple expert perspectives.",
+      "watch_out_for": "Conversation loops; control degrades with many agents — Microsoft recommends ≤ 3 agents."
+    },
+    {
+      "name": "Handoff orchestration",
+      "aliases": ["routing", "triage", "transfer", "dispatch", "delegation"],
+      "summary": "Dynamic delegation between specialized agents. Each agent can assess the task and decide to handle it or transfer control to a more appropriate agent. Only one agent is active at a time; full control transfers on each handoff.",
+      "when_to_use": "The optimal agent isn't known upfront and requirements emerge during processing; multi-domain problems with one specialist active at a time.",
+      "watch_out_for": "Infinite handoff loops; unpredictable routing paths."
+    },
+    {
+      "name": "Magentic orchestration",
+      "aliases": ["dynamic orchestration", "task-ledger-based orchestration", "adaptive planning"],
+      "summary": "Designed for open-ended problems with no predetermined plan. A manager agent dynamically builds and refines a task ledger of goals/subgoals through collaboration with specialized agents that use tools to change external systems. Iterates, backtracks, and re-plans as context evolves.",
+      "when_to_use": "Open-ended problems without a predetermined solution path; need for an auditable plan produced before/after execution.",
+      "watch_out_for": "Slow to converge; stalls on ambiguous goals; cost variance is high."
+    }
+  ],
+  "pattern_count": 5,
+  "implementation_considerations_from_source": [
+    "Context and state management: monitor accumulated context size; compact (summarize/prune) between agents; persist long-running state externally.",
+    "Reliability: timeouts, retries, circuit breakers, validate agent output before passing on, isolate agents from shared single points of failure.",
+    "Security: authn/secure networking between agents, least privilege, user-identity propagation with security trimming, content-safety guardrails at multiple points.",
+    "Cost: match model size to agent task; monitor token consumption per agent; compact context between agents.",
+    "Observability and testing: instrument all agent operations and handoffs; use LLM-as-judge / scoring rubrics rather than exact-match assertions.",
+    "Human-in-the-loop: scope HITL gates to specific tool invocations; persist state at checkpoints."
+  ],
+  "implementations_called_out_by_source": [
+    "Microsoft Agent Framework (open source SDK)",
+    "Semantic Kernel (migration path to Agent Framework)",
+    "Foundry Agent Service (managed, no-code)",
+    "LangChain, CrewAI, OpenAI Agents SDK (third-party)"
+  ],
+  "created": "2026-06-25T00:00:00Z",
+  "updated": "2026-06-25T00:00:00Z"
+}

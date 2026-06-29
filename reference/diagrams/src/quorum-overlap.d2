@@ -1,0 +1,35 @@
+# Quorum: read + write quorum overlap = at least one replica has latest
+direction: down
+
+cluster: "5-node cluster (N=5)" {
+  style: { fill: "#f3e5f5"; stroke: "#4a148c"; border-radius: 12; stroke-width: 2 }
+  N1: "Node 1" { style: { fill: "#bbdefb" } }
+  N2: "Node 2" { style: { fill: "#bbdefb" } }
+  N3: "Node 3" { style: { fill: "#bbdefb" } }
+  N4: "Node 4" { style: { fill: "#bbdefb" } }
+  N5: "Node 5" { style: { fill: "#bbdefb" } }
+}
+
+Write: "WRITE QUORUM W = 3\nwrite acknowledged when 3 / 5 nodes\nhave durably accepted the value\n\u2192 in this case, writes to N1, N2, N3" {
+  shape: rectangle
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8; stroke-width: 2 }
+}
+
+Read: "READ QUORUM R = 3\nread queries 3 / 5 nodes; takes\nthe value with the highest timestamp\n\u2192 in this case, reads from N3, N4, N5" {
+  shape: rectangle
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8; stroke-width: 2 }
+}
+
+Overlap: "OVERLAP: write quorum {1,2,3} \u2229 read quorum {3,4,5} = {3}\nN3 has the latest value \u2192 reader gets it.\n\nKEY INVARIANT:    W + R > N\n3 + 3 = 6 > 5 \u2713  \u2192 every read sees the latest committed write\n\nIf instead W=2, R=2: 2+2=4 \u2264 5 \u2717 \u2192 NOT safe\n  reader could pick {4,5}, none of which saw write {1,2}" {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 10; stroke-width: 2 }
+}
+
+Write -> cluster.N1
+Write -> cluster.N2
+Write -> cluster.N3
+Read -> cluster.N3
+Read -> cluster.N4
+Read -> cluster.N5
+
+cluster -> Overlap

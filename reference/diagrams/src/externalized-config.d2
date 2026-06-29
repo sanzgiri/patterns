@@ -1,0 +1,37 @@
+# Externalized configuration: same artifact, different envs
+direction: down
+
+Title: "EXTERNALIZED CONFIGURATION: code does not embed config;\nconfig is read from the environment at runtime,\nso the SAME artifact runs in dev, staging, prod, EU, US." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Artifact: "BUILD ONCE\nDocker image / JAR / binary\n(no env-specific values inside)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+}
+
+ConfigSources: "CONFIG SOURCES (read at startup or on change)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+  Env: "Env vars\n(12-factor app)" { style: { fill: "#fff" } }
+  Files: "Config files\n(YAML/JSON/HCL)" { style: { fill: "#fff" } }
+  CLI: "CLI flags" { style: { fill: "#fff" } }
+  KV: "Distributed KV\n(Consul, etcd,\nZooKeeper)" { style: { fill: "#fff" } }
+  Cloud: "Cloud config\n(AWS AppConfig\nAzure App Config\nGCP Runtime Config)" { style: { fill: "#fff" } }
+  Secrets: "Secrets store\n(Vault, KMS,\nAWS Secrets Manager)" { style: { fill: "#fff" } }
+}
+
+Envs: "ENVIRONMENTS (same artifact + different config)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  Dev: "DEV\nDB=localhost\nLOG=DEBUG\nRATE=1/s" { style: { fill: "#fff" } }
+  Stg: "STAGING\nDB=stg-db.eu\nLOG=INFO\nRATE=100/s" { style: { fill: "#fff" } }
+  Prod: "PROD US\nDB=prod-db.us\nLOG=WARN\nRATE=10k/s" { style: { fill: "#fff" } }
+  ProdEU: "PROD EU\nDB=prod-db.eu\nLOG=WARN\nRATE=10k/s" { style: { fill: "#fff" } }
+}
+
+Artifact -> ConfigSources: "fed config"
+ConfigSources -> Envs
+
+Properties: "12-FACTOR APP STORE-CONFIG-IN-ENVIRONMENT\n  \u2022 ONE binary across all envs (no 'build for prod')\n  \u2022 sensitive values NEVER in source / never in image\n  \u2022 changing config does NOT need a redeploy\n  \u2022 promotion = same artifact, new config\n  \u2022 supports per-region, per-tenant, per-flag overrides" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Envs -> Properties

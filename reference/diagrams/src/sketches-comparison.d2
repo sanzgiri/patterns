@@ -1,0 +1,33 @@
+# Three sketches side by side: Bloom, HLL, Count-Min
+direction: down
+
+Top: "THREE PROBABILISTIC SKETCHES \u2014 each answers a different question on big streams" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Bloom: "BLOOM FILTER: 'is x in the set?'" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "Answers: SET MEMBERSHIP (yes/no, with false positives only)\nMemory: ~10 bits per item for 1% FPR\nUSE WHEN: \n  \u2022 'is this URL malicious?' (Chrome, Squid)\n  \u2022 'have I seen this key before?' (LSM-tree negative lookups)\n  \u2022 'is this username taken?' (pre-check before DB query)\n  \u2022 cache penetration prevention\nFALSE POS: small chance yes when actually no\nFALSE NEG: never"
+}
+
+HLL: "HYPERLOGLOG: 'how many distinct items?'" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "Answers: CARDINALITY (count of unique values)\nMemory: ~1.5 KB total \u2192 1.04 / sqrt(m) error \u2248 1% with m=8192\nUSE WHEN:\n  \u2022 unique-visitors per minute/hour/day\n  \u2022 unique users in A/B test buckets\n  \u2022 distinct query terms in a search log\n  \u2022 DISTINCT in column-store databases (BigQuery, Redshift, Snowflake)\nERROR: \u00b11-2% typically; constant memory regardless of cardinality\nMERGEABLE: HLLs can be combined (union of sets)"
+}
+
+CMS: "COUNT-MIN SKETCH: 'how many times did x appear?'" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Answers: FREQUENCY ESTIMATE (approximate count per key)\nMemory: w \u00d7 d ints; ~few KB for good accuracy\nUSE WHEN:\n  \u2022 heavy hitters (top-K most frequent keys)\n  \u2022 streaming counters that can't fit exact dict in memory\n  \u2022 abuse / DDoS detection (count requests per IP)\n  \u2022 NLP frequency tables in fixed memory\nOVERESTIMATES (collisions add); never underestimates\nMin estimator across rows minimizes the overestimate"
+}
+
+Common: "ALL THREE SHARE:\n  \u2022 SUBLINEAR memory in number of items\n  \u2022 controlled approximation error (you choose the trade-off)\n  \u2022 fast O(k) updates and queries (k = number of hash functions)\n  \u2022 mergeable across shards (you can compute partials and combine)\n  \u2022 acceptable inaccuracy for the use case" {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}
+
+Top -> Bloom
+Top -> HLL
+Top -> CMS
+Bloom -> Common
+HLL -> Common
+CMS -> Common

@@ -1,0 +1,32 @@
+# Valet key pattern: short-lived restricted credential
+direction: down
+
+Title: "VALET KEY: client wants to upload/download a file directly to/from storage.\nInstead of proxying through your app (slow + expensive), hand them a\nshort-lived, narrowly-scoped credential and let them talk to storage directly." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Naive: "NAIVE APPROACH (don't do this for large files)" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Client \u2192 App \u2192 Storage\n  1. Client uploads 5 GB to your app\n  2. App holds it in memory / temp\n  3. App uploads it to S3\n\u2192 doubles bandwidth (egress costs add up)\n\u2192 app server memory/time tied up\n\u2192 doesn't scale; slow"
+}
+
+ValetKey: "VALET KEY APPROACH (the pattern)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+
+  S1: "1. Client asks app: 'I want to upload my-file.jpg (5 MB)'" { style: { fill: "#fff" } }
+  S2: "2. App AUTHORIZES the request (is user allowed? quota? content type?)" { style: { fill: "#fff" } }
+  S3: "3. App generates a PRESIGNED URL via storage SDK:\n   uploads/abc-123.jpg\n   method=PUT\n   expires=5 minutes\n   max-size=10MB\n   content-type=image/jpeg\n   uploader-id=user-42 (server enforced)\n[uses app's storage credentials to sign;\n the URL itself is the only thing the client gets]" { style: { fill: "#fff" } }
+  S4: "4. App returns the URL to the client" { style: { fill: "#fff" } }
+  S5: "5. Client uploads file DIRECTLY to storage at that URL\n(or downloads from a presigned GET URL)" { style: { fill: "#fff" } }
+  S6: "6. Storage validates signature + constraints + expiry,\n   accepts (or rejects)" { style: { fill: "#fff" } }
+
+  S1 -> S2 -> S3 -> S4 -> S5 -> S6
+}
+
+Properties: "PROPERTIES OF A VALET KEY\n  \u2022 SHORT-LIVED (minutes, not days)\n  \u2022 SCOPED to one resource (this exact object key)\n  \u2022 SCOPED to one operation (PUT only, or GET only)\n  \u2022 ENFORCED CONSTRAINTS (max size, content-type, IP, etc.)\n  \u2022 NOT REVOCABLE before expiry \u2192 keep expiry short\n  \u2022 NOT cacheable / shareable (or treat any sharing as a breach)\n\nIMPLEMENTATIONS\n  \u2022 AWS S3 presigned URLs (the canonical implementation)\n  \u2022 Azure Blob Storage SAS (Shared Access Signatures)\n  \u2022 GCP Cloud Storage signed URLs\n  \u2022 Cloudflare R2 / Backblaze B2 presigned URLs\n  \u2022 AWS STS AssumeRole (short-lived AWS credentials)\n  \u2022 OAuth scope-limited tokens" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Naive
+Title -> ValetKey
+ValetKey -> Properties

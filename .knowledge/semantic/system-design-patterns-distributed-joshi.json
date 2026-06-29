@@ -1,0 +1,71 @@
+{
+  "id": "system-design-patterns-distributed-joshi",
+  "topic": "system design patterns",
+  "subtopic": "Patterns of Distributed Systems — Unmesh Joshi",
+  "source": {
+    "title": "Catalog of Patterns of Distributed Systems",
+    "author": "Unmesh Joshi",
+    "publisher": "martinfowler.com",
+    "url": "https://martinfowler.com/articles/patterns-of-distributed-systems/",
+    "first_published": "2020 (online), 2023 (book — Patterns of Distributed Systems)",
+    "fetched": "2026-06-25"
+  },
+  "provenance": "verified_by_fetch",
+  "confidence": 0.95,
+  "framing": "Pattern catalog covering the implementation-level mechanisms used inside distributed databases, brokers, and coordination systems (Kafka, ZooKeeper, Raft/Paxos impls, Cassandra, HBase, etc.). Strong overlap in spirit with Kleppmann's DDIA but formatted as named patterns. Lower-level than the Azure/microservices.io catalogs.",
+  "patterns": [
+    { "name": "Clock-Bound Wait",      "summary": "Wait out clock uncertainty before read/write so values can be globally ordered (Spanner TrueTime style)." },
+    { "name": "Consistent Core",        "summary": "Run a small strongly-consistent control plane alongside a larger eventually-consistent data plane (HBase + ZK; Kafka + KRaft)." },
+    { "name": "Emergent Leader",        "summary": "Pick leader implicitly by age in cluster rather than running an explicit election (SWIM style)." },
+    { "name": "Fixed Partitions",       "summary": "Number of partitions fixed at creation; rebalancing reassigns whole partitions to nodes (Kafka, Elasticsearch)." },
+    { "name": "Follower Reads",         "summary": "Serve reads from followers for higher throughput, lower latency — tolerating bounded staleness." },
+    { "name": "Generation Clock",       "summary": "Monotonic epoch/term number that increments on leadership change; lets followers reject stale leaders (Raft term, Kafka epoch)." },
+    { "name": "Gossip Dissemination",   "summary": "Each node periodically exchanges state with random peers; information propagates epidemically (Cassandra, Consul SWIM)." },
+    { "name": "HeartBeat",              "summary": "Periodic 'I'm alive' message from one node to others; absence signals failure. Push-based, distinct from pull-based health checks." },
+    { "name": "High-Water Mark",        "summary": "Offset in the replicated log up to which all replicas have ack'd; consumers can only read up to this point (Kafka)." },
+    { "name": "Hybrid Clock",           "summary": "Combine physical timestamp with logical counter to get monotonic + roughly-real-time ordering (HLC; CockroachDB, YugabyteDB)." },
+    { "name": "Idempotent Receiver",    "summary": "Server stores request IDs and ignores duplicates so client retries are safe." },
+    { "name": "Key-Range Partitions",   "summary": "Partition by sorted key ranges for efficient range scans (HBase, Bigtable) — vs hash partitioning." },
+    { "name": "Lamport Clock",          "summary": "Scalar logical counter that captures happens-before across processes." },
+    { "name": "Leader and Followers",   "summary": "Single leader serializes writes; followers replicate. Foundation of single-leader replication." },
+    { "name": "Lease",                  "summary": "Time-bounded grant (lock, leadership, cache validity); auto-expires on holder failure." },
+    { "name": "Low-Water Mark",         "summary": "Offset below which the log can be safely garbage-collected (Kafka log retention, snapshot in Raft)." },
+    { "name": "Majority Quorum",        "summary": "Require strict majority for every decision so two disjoint groups can't both progress (Raft, Paxos)." },
+    { "name": "Paxos",                  "summary": "Two-phase consensus (prepare/accept) that tolerates node failures." },
+    { "name": "Replicated Log",         "summary": "Identical totally-ordered log on every replica; state machines deterministically derived from it (Raft, Kafka, Bookkeeper)." },
+    { "name": "Request Batch",          "summary": "Coalesce many small requests into one network round-trip to amortize overhead." },
+    { "name": "Request Pipeline",       "summary": "Send next request before previous response arrives; increases throughput on high-latency links." },
+    { "name": "Request Waiting List",   "summary": "Server parks a request until conditions (e.g., quorum acks) are met, then responds." },
+    { "name": "Segmented Log",          "summary": "Split append-only log into bounded-size segments for easier rotation, deletion, compaction (Kafka, BookKeeper)." },
+    { "name": "Single-Socket Channel",  "summary": "One TCP connection between two peers carries all messages in order; preserves FIFO." },
+    { "name": "Singular Update Queue",  "summary": "Single-threaded event loop serializes updates without locks (LMAX Disruptor, Node.js, Kafka controller)." },
+    { "name": "State Watch",            "summary": "Clients subscribe to changes on specific keys/paths; server notifies on change (ZooKeeper watches, etcd watches)." },
+    { "name": "Two-Phase Commit",       "summary": "Coordinator drives prepare + commit phases across all participants. Blocks on coordinator failure." },
+    { "name": "Version Vector",         "summary": "Vector of per-node counters attached to values; detects concurrent vs causal updates (Dynamo, Riak)." },
+    { "name": "Versioned Value",        "summary": "Store every update with a version (MVCC). Enables snapshot reads, conflict detection (Postgres, Spanner, CockroachDB)." },
+    { "name": "Write-Ahead Log",        "summary": "Persist every state change as an append-only command record before applying. Basis of crash recovery in all serious DBs." }
+  ],
+  "overlap_with_unified_registry": {
+    "duplicates_already_present": [
+      "Lamport Clock", "Paxos", "Two-Phase Commit", "Write-Ahead Log",
+      "Gossip Dissemination ↔ Gossip Protocol",
+      "Lease",
+      "Idempotent Receiver ↔ Idempotency Key",
+      "Majority Quorum ↔ Quorum (R+W>N)",
+      "Leader and Followers ↔ Leader-Follower Replication",
+      "Version Vector ↔ Vector Clock (commonly conflated; technically distinct)"
+    ],
+    "new_patterns_added_to_registry": [
+      "Clock-Bound Wait", "Consistent Core", "Emergent Leader",
+      "Fixed Partitions", "Follower Reads", "Generation Clock",
+      "HeartBeat (distinct from Health Endpoint Monitoring)",
+      "High-Water Mark", "Low-Water Mark", "Hybrid Clock",
+      "Key-Range Partitions", "Replicated Log",
+      "Request Batch", "Request Pipeline", "Request Waiting List",
+      "Segmented Log", "Single-Socket Channel",
+      "Singular Update Queue", "State Watch", "Versioned Value (MVCC)"
+    ]
+  },
+  "created": "2026-06-25T00:00:00Z",
+  "updated": "2026-06-25T00:00:00Z"
+}

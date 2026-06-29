@@ -1,0 +1,21 @@
+# Two ways to drain the outbox: Polling Publisher vs CDC
+direction: down
+
+Poll: "OPTION A \u2014 POLLING PUBLISHER (simple, application-level)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Detail: "A separate worker process (cron, scheduled job, sidecar)\nperiodically SELECTs unsent rows and publishes them.\n\nPROS:\n  \u2022 No new infrastructure \u2014 just SQL + Kafka client\n  \u2022 Works with any database, any messaging system\n  \u2022 Easy to reason about and operate\n  \u2022 Easy to backfill or replay (just unset sent_at)\nCONS:\n  \u2022 Latency = polling interval (typically 100ms\u20131s)\n  \u2022 Polling load on DB (mitigate: index, LIMIT, partial index on sent_at IS NULL)\n  \u2022 Multiple publishers need leader election or row-locking to avoid duplicates\n  \u2022 Outbox table grows; needs periodic cleanup" {
+    style: { fill: "#fff" }
+  }
+}
+
+CDC: "OPTION B \u2014 CDC (Change Data Capture, log-based)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  Detail: "A tool (Debezium, AWS DMS, Maxwell, Striim) tails the database's\nreplication log (Postgres WAL, MySQL binlog, MongoDB oplog) and\npushes inserts into the outbox table directly to Kafka.\n\nPROS:\n  \u2022 Very LOW LATENCY (~milliseconds)\n  \u2022 No DB polling load \u2014 reads from replication log\n  \u2022 Naturally ORDERED (replication-log order = commit order)\n  \u2022 Already monitored and operated for DB replication\nCONS:\n  \u2022 Extra infrastructure to operate (Debezium, Kafka Connect)\n  \u2022 Tied to DB-specific replication mechanism\n  \u2022 Initial setup complexity (slot management, snapshotting)\n  \u2022 Schema changes can break CDC pipelines" {
+    style: { fill: "#fff" }
+  }
+}
+
+Choice: "WHEN TO CHOOSE WHICH:\n  \u2022 SMALL TEAM, simple needs, modest scale \u2192 POLLING PUBLISHER\n  \u2022 LARGE SCALE, low-latency needs, polyglot stack \u2192 CDC\n  \u2022 OPERATIONALLY MATURE org running Kafka Connect anyway \u2192 CDC\n  \u2022 STARTING OUT \u2192 begin with POLLING; migrate to CDC if needed\n\nEither way, the OUTBOX TABLE is the contract:\nproducer writes there; one of these two mechanisms drains it." {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}

@@ -1,0 +1,43 @@
+# Raft log replication: client write through commit
+shape: sequence_diagram
+
+Client
+L: "Leader (term 7)"
+F1: "Follower 1"
+F2: "Follower 2"
+F3: "Follower 3"
+F4: "Follower 4"
+
+Client -> L: "POST /set { x = 5 }"
+
+phase_a: "Append to leader's log (uncommitted)" {
+  style: { fill: "#bbdefb"; font-color: "#0d47a1" }
+  L -> L: "append (term=7, index=12, cmd='SET x=5')\nlog: [..., (7,12,SETx=5)]\ncommitIndex still = 11"
+}
+
+phase_b: "Replicate to followers via AppendEntries RPC" {
+  style: { fill: "#fff4c2"; font-color: "#bf360c" }
+  L -> F1: "AppendEntries(prevIdx=11, entries=[(7,12,SETx=5)])"
+  L -> F2: "AppendEntries(...)"
+  L -> F3: "AppendEntries(...)"
+  L -> F4: "AppendEntries(...)"
+
+  F1 -> L: "ack"
+  F2 -> L: "ack"
+  F3 -> L: "ack (now 3 / 5 \u2014 majority!)"
+}
+
+phase_c: "Commit (majority replicated)" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20" }
+  L -> L: "commitIndex = 12\napply 'SET x=5' to state machine"
+  L -> Client: "200 OK (committed)"
+}
+
+phase_d: "Propagate commit index in next heartbeat" {
+  style: { fill: "#e3f2fd"; font-color: "#0d47a1" }
+  L -> F1: "AppendEntries(commitIdx=12) \u2014 also serves as heartbeat"
+  L -> F2: "..."
+  L -> F3: "..."
+  L -> F4: "..."
+  F1 -> F1: "apply 'SET x=5'\nto local state machine"
+}

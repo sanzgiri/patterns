@@ -1,0 +1,56 @@
+# Strangler Fig: gradual replacement via routing facade
+direction: down
+
+Phase1: "PHASE 1 \u2014 100% legacy" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+  C1: "Client" { style: { fill: "#fff" } }
+  F1: "Facade / Proxy\n(routes everything to legacy)" { style: { fill: "#ffe0b2" } }
+  L1: "LEGACY MONOLITH\n(orders, billing, users,\n  shipping, catalog, ...)" { style: { fill: "#ef9a9a" } }
+  C1 -> F1
+  F1 -> L1: "100%"
+}
+
+Phase2: "PHASE 2 \u2014 first service extracted (Users)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  C2: "Client" { style: { fill: "#fff" } }
+  F2: "Facade / Proxy\n(routes Users \u2192 new,\n everything else \u2192 legacy)" { style: { fill: "#ffe0b2" } }
+  N2: "NEW: Users Service\n(modern stack)" { style: { fill: "#a5d6a7" } }
+  L2: "LEGACY MONOLITH\n(orders, billing, shipping,\n catalog, [users removed])" { style: { fill: "#ef9a9a" } }
+  C2 -> F2
+  F2 -> N2: "Users requests"
+  F2 -> L2: "everything else"
+}
+
+Phase3: "PHASE 3 \u2014 mostly migrated, legacy shrinking" {
+  style: { fill: "#c5e1a5"; stroke: "#33691e"; stroke-width: 2; border-radius: 8 }
+  C3: "Client" { style: { fill: "#fff" } }
+  F3: "Facade / Proxy\n(most requests \u2192 new services)" { style: { fill: "#ffe0b2" } }
+  N3a: "Users svc" { style: { fill: "#a5d6a7" } }
+  N3b: "Orders svc" { style: { fill: "#a5d6a7" } }
+  N3c: "Billing svc" { style: { fill: "#a5d6a7" } }
+  N3d: "Catalog svc" { style: { fill: "#a5d6a7" } }
+  L3: "Legacy\n(only weird\nshipping rules left)" { style: { fill: "#ef9a9a" } }
+  C3 -> F3
+  F3 -> N3a
+  F3 -> N3b
+  F3 -> N3c
+  F3 -> N3d
+  F3 -> L3: "rare"
+}
+
+Phase4: "PHASE 4 \u2014 legacy 'strangled' (decommissioned)" {
+  style: { fill: "#81c784"; stroke: "#1b5e20"; stroke-width: 3; border-radius: 8 }
+  C4: "Client" { style: { fill: "#fff" } }
+  F4: "Facade / Proxy\n(optional now \u2014\n can be removed)" { style: { fill: "#c5e1a5" } }
+  N4a: "Users" { style: { fill: "#66bb6a" } }
+  N4b: "Orders" { style: { fill: "#66bb6a" } }
+  N4c: "Billing" { style: { fill: "#66bb6a" } }
+  N4d: "Catalog" { style: { fill: "#66bb6a" } }
+  N4e: "Shipping" { style: { fill: "#66bb6a" } }
+  C4 -> F4
+  F4 -> N4a
+  F4 -> N4b
+  F4 -> N4c
+  F4 -> N4d
+  F4 -> N4e
+}

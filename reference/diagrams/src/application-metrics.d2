@@ -1,0 +1,33 @@
+# Application metrics: types and aggregation pyramid
+direction: down
+
+Title: "APPLICATION METRICS: numeric time-series describing system behavior\n(complementary to logs and traces)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Types: "METRIC TYPES" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Counter: "COUNTER\nmonotonically increasing\nexamples: requests_total, errors_total\nrate() function converts to rate per sec" { style: { fill: "#fff" } }
+  Gauge: "GAUGE\ncurrent value, can go up or down\nexamples: memory_in_use, queue_depth,\n  connection_count, temperature" { style: { fill: "#fff" } }
+  Histogram: "HISTOGRAM\nbuckets of observations + count + sum\n\u2192 derive quantiles (p50, p99, p99.9)\nexamples: request latency, payload size" { style: { fill: "#fff" } }
+  Summary: "SUMMARY\nclient-side quantile computation\n(less flexible than histogram; less used now)" { style: { fill: "#fff" } }
+}
+
+Pyramid: "THE OBSERVABILITY 'GOLDEN SIGNALS' PYRAMID" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+
+  USE: "USE METHOD (per resource)\nUtilization, Saturation, Errors\nFor CPU, memory, disk, network" { style: { fill: "#fff" } }
+
+  RED: "RED METHOD (per service)\nRate, Errors, Duration\nDerived from traces / logs / counters" { style: { fill: "#fff" } }
+
+  GOLDEN: "GOOGLE 'FOUR GOLDEN SIGNALS' (per user-facing system)\nLatency, Traffic, Errors, Saturation\nFrom SRE book ch on monitoring" { style: { fill: "#fff" } }
+
+  Business: "BUSINESS METRICS (per product line)\nrevenue/sec, orders/min, signups/hour\n(detects business issues invisible to tech metrics)" { style: { fill: "#fff" } }
+}
+
+Flow: "FLOW\n  App emits metric \u2192 SDK aggregates locally \u2192 scrape or push \u2192\n  TSDB stores time-series \u2192 query / alert / dashboard\n\nWHY METRICS (vs logs):\n  \u2022 BOUNDED COST: aggregated; constant rate regardless of traffic\n  \u2022 ALERTABLE: latency_p99 > 2s for 5min \u2192 page\n  \u2022 DASHBOARDABLE: visual trends\n  \u2022 LOW LATENCY: alerts within seconds\n\nWHY NOT ONLY METRICS (need logs/traces too):\n  \u2022 Aggregates HIDE individual requests\n  \u2022 Can't answer 'WHY was that user's request slow?' from metrics alone" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Types -> Pyramid: "compose"
+Pyramid -> Flow

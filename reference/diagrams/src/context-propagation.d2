@@ -1,0 +1,40 @@
+# Context propagation: how trace and correlation IDs travel
+direction: down
+
+Title: "CONTEXT PROPAGATION: trace_id + span_id must travel with every request\n(via HTTP headers, message attributes, etc.) so children can link to parents." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Client: "USER REQUEST arrives\n(no trace ID yet)" {
+  style: { fill: "#fff" } }
+
+Gateway: "API GATEWAY\n  IF incoming traceparent header \u2192 use it (continue existing trace)\n  ELSE generate new trace_id, new root span_id\n  PROPAGATE via outgoing headers:\n    traceparent: 00-{trace_id}-{span_id}-{flags}\n    tracestate: vendor-specific extras\n    baggage: app-level context (user_id, tenant_id, ...)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+}
+
+OrderSvc: "ORDER SERVICE\n  receives traceparent header\n  creates child span with parent_span_id = caller's span\n  emits its own outgoing traceparent" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+PaySvc: "PAYMENT SERVICE\n  same pattern: receive, create child, propagate" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+Queue: "QUEUE (Kafka / SQS / RabbitMQ)\n  trace headers carried in message metadata\n  consumer's span links to producer's span\n  (async link, not parent\u2014the producer's span has already ended)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+Worker: "ASYNC WORKER\n  receives message + trace context\n  starts span linked to producer span" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+Standards: "W3C TRACE CONTEXT (the standard)\n  Header: traceparent\n  Format: version-traceid-spanid-flags\n  Example: 00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01\n\nW3C BAGGAGE (the related standard)\n  Header: baggage\n  Format: key=value, key=value\n  Used for: user-id, tenant-id, deployment-id, anything you want available in every downstream service\n\nBOTH are language- and vendor-neutral.\nOpenTelemetry SDKs implement them natively." {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Client -> Gateway
+Gateway -> OrderSvc: "traceparent: 00-abc-001-01"
+OrderSvc -> PaySvc: "traceparent: 00-abc-007-01"
+OrderSvc -> Queue: "msg + traceparent: 00-abc-009-01"
+Queue -> Worker: "deliver"
+Standards -> Gateway: "uses"

@@ -1,0 +1,16 @@
+# Sharding: router + shards
+direction: down
+
+Client: { shape: person }
+Router: "Shard Router\n(hash(user_id) % N)" { shape: rectangle; style: { fill: "#fff4c2"; stroke: "#f57c00"; stroke-width: 2; border-radius: 8 } }
+
+S0: "Shard 0\nusers A\u2013F" { shape: cylinder; style: { fill: "#bbdefb"; stroke: "#1565c0"; stroke-width: 2 } }
+S1: "Shard 1\nusers G\u2013M" { shape: cylinder; style: { fill: "#c8e6c9"; stroke: "#2e7d32"; stroke-width: 2 } }
+S2: "Shard 2\nusers N\u2013S" { shape: cylinder; style: { fill: "#f8bbd0"; stroke: "#ad1457"; stroke-width: 2 } }
+S3: "Shard 3\nusers T\u2013Z" { shape: cylinder; style: { fill: "#d1c4e9"; stroke: "#4527a0"; stroke-width: 2 } }
+
+Client -> Router: "query for user_id=K42"
+Router -> S1: "routed to shard 1\n(K \u2208 G\u2013M)" { style: { stroke: "#2e7d32"; stroke-width: 2 } }
+Router -> S0: " " { style: { stroke: "#bdbdbd"; stroke-dash: 4 } }
+Router -> S2: " " { style: { stroke: "#bdbdbd"; stroke-dash: 4 } }
+Router -> S3: " " { style: { stroke: "#bdbdbd"; stroke-dash: 4 } }

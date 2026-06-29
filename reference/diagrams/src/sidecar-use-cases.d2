@@ -1,0 +1,30 @@
+# Common sidecar use cases
+direction: down
+
+UC1: "1. SERVICE-MESH PROXY (Envoy/Linkerd sidecar)\n   ALL inbound + outbound traffic goes through the sidecar:\n     \u2022 mTLS termination\n     \u2022 retries, timeouts, circuit breakers\n     \u2022 traffic splitting (canary, blue/green)\n     \u2022 observability (metrics, traces of every call)\n     \u2022 access policy\n   \u2192 the dominant sidecar use case today (Istio, Linkerd, Consul Connect)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+}
+
+UC2: "2. LOG SHIPPING (Fluent Bit, Vector, Filebeat sidecar)\n   App writes logs to a shared volume.\n   Sidecar tails them, parses, ships to ELK / Loki / Datadog.\n   \u2192 app doesn't need to know about log infrastructure" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+}
+
+UC3: "3. SECRET INJECTION (Vault Agent sidecar)\n   Sidecar authenticates to Vault, fetches secrets,\n   renders them to disk for the app to read.\n   Rotates them on schedule.\n   \u2192 app reads from a file; secret lifecycle is sidecar's problem" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+UC4: "4. CONFIG SYNC (Consul Template, configMap reloader)\n   Sidecar watches remote config, writes file, sends SIGHUP to app.\n   \u2192 hot config reload without restart" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}
+
+UC5: "5. METRICS SCRAPER + EXPORTER\n   Sidecar exposes /metrics in Prometheus format, even if app\n   uses a non-Prom format (statsd, custom).\n   \u2192 app can be metric-protocol-agnostic" {
+  style: { fill: "#d7ccc8"; stroke: "#3e2723"; border-radius: 8 }
+}
+
+UC6: "6. PROTOCOL TRANSLATION (Ambassador-style sidecar)\n   App speaks REST; world speaks gRPC.\n   Sidecar translates both ways.\n   \u2192 see also: Ambassador pattern (essentially a specialized sidecar)" {
+  style: { fill: "#ffe0b2"; stroke: "#e65100"; border-radius: 8 }
+}
+
+UC7: "7. CACHE WARMER / LOCAL CACHE\n   Sidecar pre-loads & refreshes a local cache (Redis, in-memory).\n   App reads cache from sidecar via localhost.\n   \u2192 used by some content-delivery and ad-bidding stacks" {
+  style: { fill: "#b2dfdb"; stroke: "#004d40"; border-radius: 8 }
+}

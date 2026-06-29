@@ -1,0 +1,22 @@
+# Sync vs Async replication: trade-off latency vs durability
+shape: sequence_diagram
+
+Client
+Leader
+SyncFollower: "Sync Follower"
+AsyncFollower: "Async Follower"
+
+sync_mode: "SYNC REPLICATION (slow but durable)" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20"; bold: true }
+  Client -> Leader: "1. write"
+  Leader -> SyncFollower: "2. replicate"
+  SyncFollower -> Leader: "3. ack"
+  Leader -> Client: "4. ack \u2713\n(write durable on \u2265 2 nodes)" { style: { stroke: "#2e7d32" } }
+}
+
+async_mode: "ASYNC REPLICATION (fast but lossy on failover)" {
+  style: { fill: "#ffe0b2"; font-color: "#bf360c"; bold: true }
+  Client -> Leader: "1. write"
+  Leader -> Client: "2. ack \u2713\n(write durable on 1 node only)" { style: { stroke: "#f57c00" } }
+  Leader -> AsyncFollower: "3. replicate (later)" { style: { stroke: "#f57c00"; stroke-dash: 3 } }
+}

@@ -1,0 +1,32 @@
+# Progressive delivery: comparing strategies
+direction: right
+
+Recreate: "RECREATE\n(simplest)" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Stop v1.0\nDeploy v1.1\nStart v1.1\n\nDOWNTIME during switch\nINSTANT failure if v1.1 broken\nUse: dev, low-stakes"
+}
+
+Rolling: "ROLLING UPDATE" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Replace v1.0 pods one\nbatch at a time with v1.1\n\nNo extra infra needed\nMixed traffic during rollout\nRollback = roll back through batches\nUse: K8s default; safe for stateless"
+}
+
+BlueGreen: "BLUE-GREEN" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "Run two full envs in parallel\nFlip router atomically\n\nInstant rollback (flip back)\n2\u00d7 infra cost during transition\nDB changes harder (shared DB)\nUse: high-stakes; need fast rollback"
+}
+
+Canary: "CANARY" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "Route 1% \u2192 5% \u2192 25% \u2192 100% to v1.1\nMonitor metrics between stages\nAuto-rollback if metrics degrade\n\nMinimal blast radius if buggy\nNeeds metrics + automation\nMixed-version traffic during ramp\nUse: customer-facing services at scale"
+}
+
+FeatureFlag: "FEATURE FLAG" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Deploy v1.1 with new feature OFF\nTurn ON via runtime config\nTarget by user, %, region\n\nDecouples deploy from release\nNo redeploy to roll back feature\nCode complexity (branches)\nUse: anything where 'launch' \u2260 'deploy'"
+}
+
+ShadowMirror: "SHADOW / MIRROR" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Dup requests to v1.1\nv1.1 responses thrown away\nCompare with v1.0 offline\n\nReal traffic, no user impact\nDouble compute cost\nSide effects must be idempotent\nUse: high-risk changes (e.g., new ranking)"
+}

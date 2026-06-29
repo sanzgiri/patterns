@@ -1,0 +1,33 @@
+# Saga: orchestration vs choreography
+direction: down
+
+Orchestration: "ORCHESTRATION\n(central coordinator drives the saga)" {
+  style: { fill: "#e3f2fd"; stroke: "#1565c0"; stroke-width: 2; border-radius: 8 }
+
+  Coord: "Saga Orchestrator" { style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2 } }
+  Order: "Order Service" { style: { fill: "#fff" } }
+  Pay: "Payment Service" { style: { fill: "#fff" } }
+  Ship: "Shipping Service" { style: { fill: "#fff" } }
+
+  Coord -> Order: "1. CreateOrder"
+  Order -> Coord: "2. OrderCreated"
+  Coord -> Pay: "3. ChargeCard"
+  Pay -> Coord: "4. PaymentDone"
+  Coord -> Ship: "5. ShipOrder"
+  Ship -> Coord: "6. Shipped"
+}
+
+Choreography: "CHOREOGRAPHY\n(no coordinator \u2014 services react to each other's events)" {
+  style: { fill: "#e8f5e9"; stroke: "#2e7d32"; stroke-width: 2; border-radius: 8 }
+
+  Bus: "Event Bus" { shape: queue; style: { fill: "#fff4c2"; stroke: "#f57c00" } }
+  OrderC: "Order Service" { style: { fill: "#fff" } }
+  PayC: "Payment Service" { style: { fill: "#fff" } }
+  ShipC: "Shipping Service" { style: { fill: "#fff" } }
+
+  OrderC -> Bus: "OrderCreated"
+  Bus -> PayC: "consume"
+  PayC -> Bus: "PaymentDone"
+  Bus -> ShipC: "consume"
+  ShipC -> Bus: "Shipped"
+}

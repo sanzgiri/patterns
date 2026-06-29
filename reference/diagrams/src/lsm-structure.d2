@@ -1,0 +1,39 @@
+# LSM-tree: memtable, immutable SSTables, levels
+direction: down
+
+Mem: "MEMTABLE (in-memory)\nsorted structure: skiplist / red-black tree\n\u2022 all writes go here first\n\u2022 fast: O(log n), no disk\n\u2022 backed by WAL for durability" {
+  shape: rectangle
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 3; border-radius: 8 }
+}
+
+L0: "LEVEL 0 (recent flushes \u2014 may overlap)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 6 }
+  S0a: "SSTable\nkeys 1\u201320, 50\u201355"
+  S0b: "SSTable\nkeys 15\u201340"
+  S0c: "SSTable\nkeys 30\u201370"
+}
+
+L1: "LEVEL 1 (sorted, non-overlapping, 10 MB each)" {
+  style: { fill: "#c5cae9"; stroke: "#283593"; stroke-width: 2; border-radius: 6 }
+  S1a: "SST\n1\u201320"
+  S1b: "SST\n21\u201340"
+  S1c: "SST\n41\u201360"
+}
+
+L2: "LEVEL 2 (sorted, ~10\u00d7 larger total)" {
+  style: { fill: "#9fa8da"; stroke: "#1a237e"; stroke-width: 2; border-radius: 6 }
+  S2a: "SST 1\u20137"
+  S2b: "SST 8\u201315"
+  S2c: "SST 16\u201323"
+  S2d: "SST 24\u201340"
+  S2e: "SST 41\u201360"
+}
+
+L3: "LEVEL 3 (oldest, ~100\u00d7 larger total)" {
+  style: { fill: "#7986cb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 6 }
+}
+
+Mem -> L0: "FLUSH when memtable\nis full \u2014 write whole\nsorted SSTable to disk\n(SEQUENTIAL I/O)"
+L0 -> L1: "COMPACTION\nmerge-sort L0 + L1 into\nnew non-overlapping L1 SSTables\n(drops superseded values)"
+L1 -> L2: "COMPACTION"
+L2 -> L3: "COMPACTION"

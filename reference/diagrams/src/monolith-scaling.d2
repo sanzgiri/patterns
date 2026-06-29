@@ -1,0 +1,19 @@
+# Monolith scaled by replication (still one binary, many copies)
+direction: right
+
+Client: { shape: person }
+LB: "Load Balancer" { shape: rectangle; style: { fill: "#f5f5f5"; stroke: "#616161"; border-radius: 8 } }
+
+I1: "Monolith\ninstance 1" { style: { fill: "#e3f2fd"; stroke: "#1565c0"; border-radius: 8 } }
+I2: "Monolith\ninstance 2" { style: { fill: "#e3f2fd"; stroke: "#1565c0"; border-radius: 8 } }
+I3: "Monolith\ninstance N" { style: { fill: "#e3f2fd"; stroke: "#1565c0"; border-radius: 8 } }
+
+DB: "Shared DB\n(potential bottleneck)" { shape: cylinder; style: { fill: "#c5cae9"; stroke: "#283593"; stroke-width: 2 } }
+
+Client -> LB
+LB -> I1
+LB -> I2
+LB -> I3
+I1 -> DB
+I2 -> DB
+I3 -> DB

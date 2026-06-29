@@ -1,0 +1,26 @@
+# Ambassador pattern: client-side proxy to external services
+direction: right
+
+App: "MAIN APP\n(business logic)\n\u2022 calls 3 external APIs\n\u2022 doesn't want to think about\n  network failure, retries,\n  rate-limits, auth refresh,\n  circuit breakers" {
+  shape: rectangle
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+Amb: "AMBASSADOR\n(in-pod sidecar proxy on behalf of the app)\n\u2022 the only one that talks to external world\n\u2022 handles retries, timeouts, circuit breakers\n\u2022 refreshes OAuth tokens, manages API keys\n\u2022 enforces per-endpoint rate limits\n\u2022 exposes observability of external calls\n\u2022 hides which DC/region/CDN we're calling\n\u2022 caches stable responses" {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+Stripe: "Stripe API" { style: { fill: "#bbdefb" } }
+Twilio: "Twilio API" { style: { fill: "#bbdefb" } }
+SendGrid: "SendGrid API" { style: { fill: "#bbdefb" } }
+
+App -> Amb: "calls 'charge customer'\n via localhost\n no auth, no retry config"
+Amb -> Stripe: "POST /v1/charges\n with OAuth token,\n retry on 429,\n circuit break on 5xx"
+Amb -> Twilio: "POST /Messages.json\n with API key,\n rate-limited 30/sec"
+Amb -> SendGrid: "POST /v3/mail/send\n with bearer token,\n cached templates"
+
+Note: "AMBASSADOR \u2248 OUTBOUND-ONLY SIDECAR specialized for external clients.\nA service mesh sidecar handles BOTH inbound + outbound + mesh-internal traffic;\nan ambassador is typically just for outbound to external services.\n\nWHEN ENVOY/ISTIO MESH IS ALREADY DEPLOYED: same effect via mesh egress filters.\nWHEN NOT: ambassador is a simple, focused, easy-to-reason-about pattern.\n\nMain language: e.g. Python (data-science app).\nAmbassador language: e.g. Go (high-performance, retry-aware proxy).\nLanguage-agnostic decoupling: the data-science team doesn't need to learn\nStripe's retry semantics; the platform team owns that in the ambassador." {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}

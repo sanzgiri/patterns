@@ -1,0 +1,36 @@
+# Bulkhead: isolating failure domains
+direction: down
+
+Title: "BULKHEAD: name comes from SHIP DESIGN \u2014\nships are divided into watertight compartments so one breach doesn't sink the ship.\nApplied to software: isolate resources so one component's failure can't drain shared pools." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Without: "WITHOUT BULKHEAD: shared resource pool" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 10 }
+  Service: "App Server" { style: { fill: "#fff" } }
+  Pool: "One 200-thread shared pool" { style: { fill: "#fff" } }
+  D1: "Service A (healthy)" { style: { fill: "#a5d6a7" } }
+  D2: "Service B (SLOW, 5s latency)" { style: { fill: "#fff59d" } }
+  D3: "Service C (healthy)" { style: { fill: "#a5d6a7" } }
+
+  Service -> Pool
+  Pool -> D1
+  Pool -> D2
+  Pool -> D3
+
+  Note1: "Service B's slow calls hold threads.\nQueue grows. ALL 200 threads stuck on B.\nA and C calls have no threads available.\n\u2192 CASCADING FAILURE." { style: { fill: "#ffcdd2"; stroke-dash: 4 } }
+}
+
+With: "WITH BULKHEAD: separate pools per dependency" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  ServiceB: "App Server" { style: { fill: "#fff" } }
+  PoolA: "Pool for Service A (50 threads)" { style: { fill: "#a5d6a7" } }
+  PoolB: "Pool for Service B (50 threads)" { style: { fill: "#fff59d" } }
+  PoolC: "Pool for Service C (50 threads)" { style: { fill: "#a5d6a7" } }
+
+  ServiceB -> PoolA -> "Service A (healthy)"
+  ServiceB -> PoolB -> "Service B (SLOW)"
+  ServiceB -> PoolC -> "Service C (healthy)"
+
+  Note2: "B's slow calls fill ONLY pool B.\nA and C have full 50-thread capacity.\nApp continues serving requests that don't need B.\n\u2192 ISOLATED FAILURE." { style: { fill: "#c8e6c9"; stroke-dash: 4 } }
+}

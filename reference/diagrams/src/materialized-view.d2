@@ -1,0 +1,24 @@
+# Materialized View: precomputed query results
+direction: down
+
+Problem: "PROBLEM: this query is expensive (joins 5 tables, aggregates 100M rows, runs 30 seconds).\nIt runs 10,000 times per minute. Most of the underlying data doesn't change minute-to-minute.\nWHAT YOU WANT: compute the answer ONCE, store it, serve it cheaply." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+MV: "MATERIALIZED VIEW: a stored, pre-computed result\nReads are fast (just a lookup); writes drift the underlying data and the view must be refreshed." {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+}
+
+Refresh: "REFRESH STRATEGIES" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Detail: "1. FULL REFRESH: rebuild the entire view on a schedule (every N minutes)\n   + simple, correct, predictable\n   \u2212 view is stale between refreshes; large views are slow to rebuild\n\n2. INCREMENTAL REFRESH: only update affected rows when source changes\n   + much faster, near-real-time\n   \u2212 complex to implement; depends on tracking source-data changes (CDC, triggers)\n\n3. ON-DEMAND: compute only when queried, cache result\n   + bounded cost per query\n   \u2212 first query is slow; cache invalidation is tricky\n\n4. EVENT-DRIVEN: source-system events trigger view updates\n   + near-real-time; explicit, observable\n   \u2212 requires event infrastructure (Kafka, CDC)"
+}
+
+Where: "WHERE IT'S BUILT" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+  Detail: "\u2022 In the SAME DB (Postgres MATERIALIZED VIEW, Oracle, SQL Server indexed views)\n\u2022 In a SECONDARY DB tuned for reads (read replica, Elasticsearch, columnar store)\n\u2022 In a CACHE layer fed by events\n\u2022 In a STREAM PROCESSOR (Kafka Streams, Flink, ksqlDB) writing to a serving store\n\u2022 In a SEPARATE READ MODEL (CQRS pattern)"
+}
+
+Problem -> MV
+MV -> Refresh
+Refresh -> Where

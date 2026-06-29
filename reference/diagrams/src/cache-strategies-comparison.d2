@@ -1,0 +1,31 @@
+# Four caching strategies side-by-side
+direction: down
+
+Top: "THE FOUR CACHING STRATEGIES\nDifferences boil down to: who manages reads? who manages writes? sync or async?" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+CA: "1. CACHE-ASIDE (lazy loading)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "App reads cache; on MISS, app loads from DB and populates cache.\nApp writes to DB and invalidates cache.\n\n+ simple, no cache library needed beyond a key-value store\n+ cache stays small (only what's been read)\n+ cache failure doesn't break the app (just slower)\n\u2212 cold cache penalty on first access\n\u2212 app code is responsible for cache logic everywhere\n\u2212 stale-read race window between DB write and cache invalidate\nUSED BY: nearly everyone using Redis/Memcached"
+}
+
+RT: "2. READ-THROUGH" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "App reads CACHE LAYER (not DB). On MISS, cache layer fetches\nfrom DB transparently and caches it. App never sees the DB on reads.\n\n+ app code is simpler (one read API)\n+ uniform caching logic in one place\n\u2212 requires a cache layer that supports loaders (EHCache, Caffeine, NCache)\n\u2212 cache layer is on the critical path; harder to bypass\nUSED BY: Java in-process caches; CDN read paths"
+}
+
+WT: "3. WRITE-THROUGH" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "App writes to CACHE LAYER. Cache writes SYNCHRONOUSLY to DB\nbefore returning. Cache and DB always consistent.\n\n+ no stale-cache issue (cache and DB written together)\n+ reads always hit cache after write\n\u2212 every write pays DB latency (no faster than direct DB write)\n\u2212 cache must be available for writes to succeed\nUSED BY: caching layers in Hibernate L2, some CDNs"
+}
+
+WB: "4. WRITE-BEHIND / WRITE-BACK" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+  Detail: "App writes to CACHE. Cache acknowledges immediately.\nCache flushes to DB ASYNCHRONOUSLY (batched, queued).\n\n+ very fast writes (cache speed, not DB speed)\n+ coalesces multiple writes to same key\n+ smooths burst load on DB\n\u2212 RISK OF DATA LOSS if cache crashes before flush\n\u2212 read-your-writes from DB is delayed\n\u2212 complex failure recovery\nUSED BY: high-write OLAP staging; metrics counters;\n         write-back disk caches (CPU L1, SSD)"
+}
+
+Top -> CA
+Top -> RT
+Top -> WT
+Top -> WB

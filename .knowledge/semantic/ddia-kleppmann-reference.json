@@ -1,0 +1,50 @@
+{
+  "id": "ddia-kleppmann-reference",
+  "topic": "system design patterns",
+  "subtopic": "Designing Data-Intensive Applications — Martin Kleppmann (conceptual reference, NOT a pattern catalog)",
+  "source": {
+    "title": "Designing Data-Intensive Applications",
+    "author": "Martin Kleppmann",
+    "publisher": "O'Reilly",
+    "first_edition": "2017-03",
+    "second_edition_in_progress_as_of_fetch": true,
+    "url": "https://dataintensive.net/",
+    "fetched": "2026-06-25"
+  },
+  "provenance": "verified_by_fetch_of_author_site_and_publisher_page",
+  "confidence": 0.95,
+  "important_framing": "DDIA is a textbook organized by problem area, NOT a pattern catalog. It does not enumerate numbered named patterns the way Azure / microservices.io / Joshi do. To include DDIA material in this registry honestly, treat it as the conceptual foundation behind many of Joshi's patterns and the data-tier patterns in microservices.io.",
+  "structure_part_1_foundations": [
+    "Ch 1: Reliability, Scalability, Maintainability",
+    "Ch 2: Data Models and Query Languages (relational, document, graph)",
+    "Ch 3: Storage and Retrieval (B-trees vs LSM trees, OLTP vs OLAP, column stores)",
+    "Ch 4: Encoding and Evolution (Avro, Protobuf, Thrift; schema evolution; dataflow)"
+  ],
+  "structure_part_2_distributed_data": [
+    "Ch 5: Replication (single-leader, multi-leader, leaderless; sync vs async; read-your-writes, monotonic reads; conflict resolution; CRDTs)",
+    "Ch 6: Partitioning (key-range vs hash; rebalancing; routing; secondary indexes — local vs global)",
+    "Ch 7: Transactions (ACID; weak isolation levels; snapshot isolation/MVCC; serializability; 2PL; SSI)",
+    "Ch 8: Trouble with Distributed Systems (unreliable networks/clocks; partial failures; Byzantine; safety vs liveness)",
+    "Ch 9: Consistency and Consensus (linearizability; CAP; ordering guarantees; total order broadcast; 2PC; consensus = Paxos/Raft/ZAB; membership and coordination services)"
+  ],
+  "structure_part_3_derived_data": [
+    "Ch 10: Batch Processing (MapReduce, dataflow engines, joins, materialized views)",
+    "Ch 11: Stream Processing (event logs, change data capture, exactly-once, stream joins, windowing)",
+    "Ch 12: The Future of Data Systems (unbundled databases, dataflow, end-to-end argument, ethics)"
+  ],
+  "concepts_referenced_by_other_pattern_sources": [
+    "Linearizability — referenced by consensus patterns",
+    "Eventual consistency — referenced by Dynamo-style stores",
+    "Snapshot isolation / MVCC — Joshi's Versioned Value",
+    "Read-your-writes / monotonic reads — consistency models",
+    "Leader-based vs leaderless replication — Joshi's Leader-and-Followers",
+    "Hash vs range partitioning — Joshi's Fixed/Key-Range Partitions",
+    "Change Data Capture — microservices.io's Transaction Log Tailing",
+    "Total order broadcast ≡ Consensus — Raft/Paxos",
+    "Lambda Architecture (batch + speed layers) — discussed in Ch 12",
+    "Kappa Architecture (stream-only) — discussed in Ch 12"
+  ],
+  "how_to_use_this_in_the_registry": "When building the per-pattern reference pages, cite the relevant DDIA chapter as the canonical conceptual treatment, and Joshi as the named-pattern formulation. Example: Consensus → pattern names 'Paxos' and 'Raft' (Joshi); deep treatment DDIA Ch 9.",
+  "created": "2026-06-25T00:00:00Z",
+  "updated": "2026-06-25T00:00:00Z"
+}

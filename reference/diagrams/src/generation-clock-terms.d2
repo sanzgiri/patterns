@@ -1,0 +1,32 @@
+# Generation Clock: term/epoch numbers across leader changes
+direction: down
+
+T1: "TERM 1\nLeader: A\n(initial)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  L1: "Leader A\nappends entries\n[1,1,SETx=1]\n[2,1,SETy=2]"
+}
+
+Crash1: "Node A crashes (or network partition)\nFollowers detect via heartbeat timeout" {
+  shape: rectangle
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; border-radius: 8 }
+}
+
+T2: "TERM 2\nLeader: B\n(elected by majority)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  L2: "Leader B\nincrements term to 2\nrequests votes\nwins majority\nappends [3,2,DEL x]"
+}
+
+Note1: "Network partition heals \u2014 A comes back thinking it's still leader of term 1\nWhat happens? \u2192" {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Reject: "OLD-TERM REJECTION\nA tries to AppendEntries(term=1)\nFollowers reply 'I'm at term 2, reject'\nA learns of higher term \u2192 demotes itself to Follower\n\nGeneration clock = the safety mechanism\nthat keeps split-brain from causing data loss." {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+}
+
+T1 -> Crash1
+Crash1 -> T2
+T2 -> Note1
+Note1 -> Reject

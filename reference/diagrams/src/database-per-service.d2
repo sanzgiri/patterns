@@ -1,0 +1,39 @@
+# Database per Service: each service owns its own data
+direction: down
+
+Wrong: "ANTI-PATTERN: SHARED DATABASE\n(multiple services reading/writing the same tables)" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 10 }
+
+  Sv1: "Orders\nservice" { style: { fill: "#fff" } }
+  Sv2: "Inventory\nservice" { style: { fill: "#fff" } }
+  Sv3: "Reporting\nservice" { style: { fill: "#fff" } }
+
+  DB1: "SHARED MONOLITHIC DATABASE\n   orders | products | inventory | customers" { style: { fill: "#ffe0b2" } }
+
+  Sv1 -> DB1: "SELECT/INSERT\non orders, products"
+  Sv2 -> DB1: "SELECT/UPDATE\non products, inventory"
+  Sv3 -> DB1: "JOIN across\nALL tables"
+
+  Problems: "PROBLEMS:\n  \u2022 Schema change in 'products' table \u2192 break 3 services at once\n  \u2022 No clear ownership; everyone touches everything\n  \u2022 No independent deployment \u2014 DB is the coupling\n  \u2022 Reporting query locks contended tables\n  \u2022 Can't scale services independently (one DB capacity)\n  \u2022 'Microservices' in name only \u2014 still a distributed monolith" { style: { fill: "#fff" } }
+}
+
+Right: "DATABASE PER SERVICE" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+
+  Sv1b: "Orders\nservice" { style: { fill: "#fff" } }
+  Sv2b: "Inventory\nservice" { style: { fill: "#fff" } }
+  Sv3b: "Reporting\nservice" { style: { fill: "#fff" } }
+
+  DBa: "Orders DB\n(Postgres)\norders, line_items" { style: { fill: "#a5d6a7" } }
+  DBb: "Inventory DB\n(Cassandra)\nstock_levels" { style: { fill: "#a5d6a7" } }
+  DBc: "Reporting DB\n(Snowflake)\ndenormalized read model" { style: { fill: "#a5d6a7" } }
+
+  Sv1b -> DBa: "owns"
+  Sv2b -> DBb: "owns"
+  Sv3b -> DBc: "owns"
+
+  Sv1b -> Sv2b: "API: 'reserve stock'\nNOT direct DB access"
+  Sv1b -> Sv3b: "events via Kafka\nfor read model"
+
+  Benefits: "BENEFITS:\n  \u2022 Each service evolves its schema FREELY (no coordination)\n  \u2022 POLYGLOT PERSISTENCE \u2014 right tool per service\n  \u2022 INDEPENDENT SCALING (Cassandra cluster ! Postgres cluster)\n  \u2022 FAILURE ISOLATION (Reporting DB down !! orders broken)\n  \u2022 Crystal-clear OWNERSHIP" { style: { fill: "#fff" } }
+}

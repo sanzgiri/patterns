@@ -1,0 +1,24 @@
+# Saga compensation flow: failure triggers reverse compensating actions
+shape: sequence_diagram
+
+Coordinator: "Saga Coordinator"
+Order: "Order Svc"
+Payment: "Payment Svc"
+Shipping: "Shipping Svc"
+
+forward: "FORWARD PATH" {
+  style: { fill: "#c8e6c9"; font-color: "#1b5e20"; bold: true }
+  Coordinator -> Order: "1. Create order (ok)"
+  Order -> Coordinator: "ok"
+  Coordinator -> Payment: "2. Charge 100 USD (ok)"
+  Payment -> Coordinator: "ok"
+  Coordinator -> Shipping: "3. Ship package - FAILS (out of stock)"
+}
+
+compensation: "COMPENSATION (rollback in reverse)" {
+  style: { fill: "#ffcdd2"; font-color: "#b71c1c"; bold: true }
+  Coordinator -> Payment: "4. Refund 100 USD (compensates step 2)"
+  Payment -> Coordinator: "ok"
+  Coordinator -> Order: "5. Cancel order (compensates step 1)"
+  Order -> Coordinator: "ok"
+}

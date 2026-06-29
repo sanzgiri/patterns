@@ -1,0 +1,19 @@
+# Vector Clock: per-process counter vector
+shape: sequence_diagram
+
+A: "Process A"
+B: "Process B"
+C: "Process C"
+
+A -> A: "local event\nV = [1, 0, 0]"
+B -> B: "local event\nV = [0, 1, 0]"
+C -> C: "local event\nV = [0, 0, 1]"
+
+A -> B: "msg m1, V=[1,0,0]" { style: { stroke: "#1565c0" } }
+B -> B: "receive\nV = max([0,1,0], [1,0,0]) + (own +1)\nV = [1, 2, 0]"
+
+C -> B: "msg m2, V=[0,0,1]" { style: { stroke: "#ad1457" } }
+B -> B: "receive\nV = max([1,2,0], [0,0,1]) + (own +1)\nV = [1, 3, 1]"
+
+B -> A: "msg m3, V=[1,3,1]" { style: { stroke: "#2e7d32" } }
+A -> A: "receive\nV = max([1,0,0], [1,3,1]) + (own +1)\nV = [2, 3, 1]"

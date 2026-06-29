@@ -1,0 +1,25 @@
+# Modulo hashing vs consistent hashing: the rebalance
+direction: down
+
+Title: "WHY CONSISTENT HASHING MATTERS:\nadding/removing one server shouldn't move every key" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Modulo: "MODULO HASHING: server = hash(key) % N" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+  Detail: "BEFORE (N=4):  key 'alice' -> hash=12345 -> 12345 % 4 = 1 -> server[1]\nAFTER (N=5):   key 'alice' -> hash=12345 -> 12345 % 5 = 0 -> server[0]\n\n  \u2192 alice MOVED. So did about 80% of all keys.\n  \u2192 every key needs re-checking. Cache invalidation storm.\n  \u2192 catastrophic for stateful clusters."
+}
+
+Consistent: "CONSISTENT HASHING: ring lookup" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "BEFORE (N=4):  key 'alice' -> hash=12345 -> next clockwise server on ring\nAFTER (N=5):   adding server E changes ownership ONLY in E's arc\n\n  \u2192 alice MAY have moved (if E sits between alice and her old server)\n  \u2192 but on average only K/N keys move when adding 1 server\n  \u2192 ~80% of keys keep their current ownership\n  \u2192 cache hit rate barely dips; rebalance is gradual"
+}
+
+Math: "FORMAL: modulo hashing moves O(K) keys on resize.\n        consistent hashing moves O(K/N) keys on resize.\n\nFor K=1B keys and N=100 servers, that's 10M moves instead of ~1B \u2014\nthe difference between 'do it during business hours' and 'maintenance window'." {
+  shape: rectangle
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+}
+
+Title -> Modulo
+Title -> Consistent
+Consistent -> Math

@@ -1,0 +1,37 @@
+# CRDT types: catalog of common conflict-free replicated data types
+direction: down
+
+Top: "COMMON CRDT TYPES \u2014 each guarantees convergence with no coordination" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Counter: "G-COUNTER (grow-only) and PN-COUNTER (positive-negative)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "Per-replica counter. G-counter: each replica only increments its OWN slot.\n  state = {A: 5, B: 3, C: 7}\n  value = sum = 15\n  merge(state1, state2) = element-wise max\nPN-counter: a pair of G-counters (one for inc, one for dec).\n\nUSED FOR: like counts, view counts, vote counts across replicas"
+}
+
+GSet: "G-SET, 2P-SET, OR-SET (sets)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "G-Set: add-only set; merge = union. Trivially CRDT.\n2P-Set: two G-sets (added, removed); element 'in set' if added and not removed.\nOR-Set: tags each add with a unique ID; remove only removes adds you saw.\n  \u2192 OR-Set solves the 'add-after-remove' race that 2P-Set can't.\n\nUSED FOR: tag lists, collaborative sets, shared inventories"
+}
+
+Reg: "LWW-REGISTER (last-writer-wins) and MV-REGISTER (multi-value)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "LWW-Register: timestamp each write; on merge, keep highest-timestamp value.\n  \u2192 simple but DROPS concurrent writes; needs synced clocks (HLC helps)\nMV-Register: returns ALL concurrent values; app resolves conflict.\n  \u2192 e.g., Riak/Dynamo show 'siblings' for the app to resolve\n\nUSED FOR: single-value fields where concurrent writes are rare or app handles them"
+}
+
+RGA: "RGA (Replicated Growable Array), Y.js, Automerge \u2014 sequence types" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "ORDERED sequences that support concurrent inserts/deletes at any position.\nThe hard CRDT case \u2014 text editing, collaborative documents.\nUses tombstones, intent-preserving operation transforms, unique IDs per char.\n\nUSED FOR: collaborative text editors (Google Docs uses OT, not CRDT;\nbut Figma, Apple Notes, Notion's offline mode, Yjs all use CRDTs)"
+}
+
+Map: "OR-MAP, JSON CRDTs" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Maps where keys can be added/removed, values are themselves CRDTs.\nNested JSON CRDTs (Automerge, Yjs) compose all the above into arbitrary docs.\n\nUSED FOR: shared JSON documents, real-time collaborative apps"
+}
+
+Top -> Counter
+Top -> GSet
+Top -> Reg
+Top -> RGA
+Top -> Map

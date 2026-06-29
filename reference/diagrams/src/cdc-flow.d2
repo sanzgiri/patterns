@@ -1,0 +1,36 @@
+# Change Data Capture (CDC) flow
+direction: down
+
+Source: "SOURCE DATABASE\n(Postgres, MySQL, MongoDB, Oracle, SQL Server, ...)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+
+  Tables: "App writes normally:\n  INSERT INTO orders ...\n  UPDATE customers SET ...\n  DELETE FROM cart_items ..." { style: { fill: "#fff" } }
+
+  Log: "REPLICATION LOG\n  \u2022 Postgres: WAL (write-ahead log)\n  \u2022 MySQL: binlog\n  \u2022 MongoDB: oplog\n  \u2022 SQL Server: change tracking / CDC tables\n  \u2022 already used internally for DB replication" { style: { fill: "#e3f2fd" } }
+
+  Tables -> Log: "every committed change\n recorded here, in COMMIT ORDER"
+}
+
+Connector: "CDC CONNECTOR\n(Debezium, AWS DMS, Maxwell, GoldenGate, Striim, Fivetran)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+
+  Detail: "\u2022 connects to the DB as a 'replication client'\n\u2022 reads the replication log in real time\n\u2022 parses each change (INSERT/UPDATE/DELETE) into a structured event\n  { op: 'INSERT', table: 'orders', after: {...}, ts: ... }\n\u2022 publishes to a message broker\n\u2022 tracks LSN/offset for resume after crash" { style: { fill: "#fff" } }
+}
+
+Broker: "MESSAGE BROKER\n(Kafka, Pulsar, Kinesis)" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 10 }
+  Topics: "Per-table topics:\n  orders, customers, cart_items\nOrdered per row (partition by primary key)\nRetained for days/weeks" { style: { fill: "#fff" } }
+}
+
+Consumers: "Downstream consumers" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  C1: "Search index (Elasticsearch sync)" { style: { fill: "#fff" } }
+  C2: "Cache invalidator (Redis)" { style: { fill: "#fff" } }
+  C3: "Data lake (S3 / Snowflake)" { style: { fill: "#fff" } }
+  C4: "Other microservices (Outbox-style)" { style: { fill: "#fff" } }
+  C5: "Audit log / SIEM" { style: { fill: "#fff" } }
+}
+
+Source -> Connector: "reads replication log"
+Connector -> Broker: "publishes change events"
+Broker -> Consumers: "consumers subscribe"

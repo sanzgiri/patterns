@@ -1,0 +1,25 @@
+# Time-series workload characteristics
+direction: down
+
+Title: "TIME-SERIES WORKLOADS: have very specific access patterns that general-purpose DBs do poorly" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Pattern: "ACCESS PATTERN" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Detail: "WRITE:\n  \u2022 append-only, sequential, very high QPS (100k\u20131M+/sec)\n  \u2022 always 'now' \u2014 keys are monotonically increasing timestamps\n  \u2022 essentially no updates or deletes (data immutable after write)\nREAD:\n  \u2022 by time range ('last 5 minutes', 'last 30 days at 1-hour resolution')\n  \u2022 grouped by tag/dimension ('CPU per host', 'latency per endpoint')\n  \u2022 aggregated (sum, avg, p99) over the range\n  \u2022 rarely point lookups; almost always range scans + aggregation\nRETENTION:\n  \u2022 raw data for hours/days; downsampled for months/years\n  \u2022 delete oldest as part of normal operation"
+}
+
+Specialized: "WHY SPECIALIZED STORES" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  Detail: "\u2022 Time-partitioned storage \u2014 each chunk holds one time window\n  \u2192 cheap deletion of expired chunks (drop the partition)\n  \u2192 efficient range queries (scan only relevant partitions)\n\n\u2022 Heavy compression \u2014 timestamps and metric values are highly compressible\n  (delta-of-delta encoding, Gorilla compression \u2014 100\u00d7 better than naive)\n\n\u2022 Downsampling rollups \u2014 maintain pre-aggregated lower-resolution copies\n  \u2192 5s-resolution kept for 1 day; 1m for 30 days; 1h for 1 year\n\n\u2022 Retention policies \u2014 auto-drop chunks older than N days\n\n\u2022 Cardinality awareness \u2014 every tag combination creates a unique series;\n  TSDBs index by series ID, not row\n\n\u2022 Specialized query languages (PromQL, InfluxQL, Flux, M3QL) tailored for\n  time-aware operations: rate(), increase(), windowing, alignment"
+}
+
+Tools: "MAJOR TSDBs" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+  Detail: "\u2022 Prometheus  \u2014 monitoring; pull-based; PromQL\n\u2022 InfluxDB    \u2014 general TSDB; push or pull\n\u2022 TimescaleDB \u2014 Postgres extension; SQL-friendly\n\u2022 VictoriaMetrics, M3, Cortex, Thanos \u2014 Prometheus at scale\n\u2022 QuestDB    \u2014 SQL-first TSDB; very fast\n\u2022 KDB+        \u2014 financial market data; proprietary; expensive\n\u2022 Druid, Pinot \u2014 OLAP-style time-aware\n\u2022 ClickHouse  \u2014 column store popular for time-series and logs"
+}
+
+Title -> Pattern
+Pattern -> Specialized
+Specialized -> Tools

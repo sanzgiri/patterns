@@ -1,0 +1,61 @@
+{
+  "id": "llm-patterns-eugene-yan",
+  "topic": "llm patterns",
+  "subtopic": "Patterns for Building LLM-based Systems & Products",
+  "source": {
+    "title": "Patterns for Building LLM-based Systems & Products",
+    "author": "Eugene Yan (Ziyou Yan)",
+    "publisher": "eugeneyan.com",
+    "url": "https://eugeneyan.com/writing/llm-patterns/",
+    "published": "2023-07",
+    "fetched": "2026-06-25"
+  },
+  "provenance": "verified_by_fetch",
+  "confidence": 0.95,
+  "framing": "Seven key patterns organized along two axes: (a) improving performance vs. reducing cost/risk, and (b) closer to the data vs. closer to the user.",
+  "patterns": [
+    {
+      "name": "Evals",
+      "purpose": "To measure performance",
+      "summary": "A set of measurements (benchmark data + metrics) used to assess a model's performance on a task. Foundation for detecting regressions and guiding system change. Yan recommends task-specific evals (Eval-Driven Development) over generic benchmarks like MMLU, and notes the rise of LLM-as-judge (G-Eval, Vicuna paper) with caveats about position, verbosity, and self-enhancement biases."
+    },
+    {
+      "name": "RAG (Retrieval-Augmented Generation)",
+      "purpose": "To add recent, external knowledge",
+      "summary": "Fetches relevant data from outside the foundation model and enhances the input with this data. Grounds the model to reduce hallucination; cheaper to keep a retrieval index fresh than to re-train. Hybrid retrieval (BM25 + dense embeddings) typically beats either alone."
+    },
+    {
+      "name": "Fine-tuning",
+      "purpose": "To get better at specific tasks",
+      "summary": "Further training of a pre-trained model on task-specific data. Covers continued pre-training, instruction fine-tuning, single-task fine-tuning, and RLHF. Modern parameter-efficient techniques: soft-prompt tuning, prefix tuning, adapters, LoRA, QLoRA."
+    },
+    {
+      "name": "Caching",
+      "purpose": "To reduce latency & cost",
+      "summary": "Store previously computed LLM responses to serve repeat or similar requests quickly. Pure semantic caching is risky (similar prompts may need different answers); safer keys include item IDs, item-ID pairs, and constrained inputs. Can be on-the-fly or pre-computed offline."
+    },
+    {
+      "name": "Guardrails",
+      "purpose": "To ensure output quality",
+      "summary": "Validate LLM outputs for syntactic correctness, factuality, safety, and adversarial input. Approaches include structural guidance (Microsoft Guidance), Pydantic-style validators (Guardrails), and LLM-based semantic checks (NeMo Guardrails, SelfCheckGPT)."
+    },
+    {
+      "name": "Defensive UX",
+      "purpose": "To anticipate & manage errors gracefully",
+      "summary": "Design strategy that assumes ML/LLM output can be wrong. Draws on Human-AI guidelines from Microsoft (18 rules), Google (23 patterns), and Apple. Key moves: set the right expectations, enable efficient dismissal, provide attribution, anchor on familiar UX."
+    },
+    {
+      "name": "Collect user feedback",
+      "purpose": "To build our data flywheel",
+      "summary": "Gather explicit (thumbs up/down, regenerate, edit) and implicit (acceptance, dwell time, downstream actions) feedback to improve evals, fine-tuning data, and guardrails. Examples: ChatGPT thumbs, Midjourney upscale/variation, Copilot accept/edit/ignore."
+    }
+  ],
+  "pattern_count": 7,
+  "also_mentioned_briefly_at_end": [
+    "Data flywheel — continuous data collection improves the model and UX, creating a virtuous cycle",
+    "Cascade — break a complex task into simpler subtasks the LLM is good at (e.g., RAG is one instance)",
+    "Monitoring — production observability to confirm the AI system is adding value"
+  ],
+  "created": "2026-06-25T00:00:00Z",
+  "updated": "2026-06-25T00:00:00Z"
+}

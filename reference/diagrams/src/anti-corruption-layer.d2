@@ -1,0 +1,30 @@
+# Anti-Corruption Layer (ACL): isolating a clean model from a messy one
+direction: right
+
+New: "NEW SERVICE\n(clean domain model)" {
+  shape: rectangle
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Model: "Order {\n  id, customer_id,\n  line_items, total,\n  status: { PLACED |\n            SHIPPED |\n            DELIVERED }\n}"
+}
+
+ACL: "ANTI-CORRUPTION LAYER\n(translator + adapter)" {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 3; border-radius: 8 }
+  Translate: "Responsibilities:\n\u2022 translate calls New \u2192 Legacy\n\u2022 translate responses Legacy \u2192 New\n\u2022 map IDs, types, statuses, error codes\n\u2022 hide legacy-specific weirdness:\n  - 1970-style date encoding\n  - mixed-case enum strings\n  - missing-fields-mean-X conventions\n  - 'success' field that's sometimes int\n\u2022 cache lookups, retry on transients\n\u2022 NEVER let legacy concepts leak\n  into the new model"
+}
+
+Legacy: "LEGACY SYSTEM\n(messy / coupled model)" {
+  shape: rectangle
+  style: { fill: "#ef9a9a"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+  LModel: "ORD_HDR / ORD_DTL tables\n  ORD_STATUS: '01'|'02'|'07'|'9'\n  CUST_NO  (different format)\n  ORD_DT   (MMDDYY string)\n  + 200 columns of historical baggage\n  + cancelled orders linger 'soft-deleted'\n  + 'rush_flag' field nobody understands"
+}
+
+New -> ACL: "calls clean API:\nplaceOrder(...)"
+ACL -> Legacy: "SOAP call: SO_INS / CUST_LKP\n  with legacy field names"
+Legacy -> ACL: "raw legacy response"
+ACL -> New: "clean Order { ... }"
+
+Why: "WHY this layer matters:\n  \u2022 the new service stays decoupled from legacy's accidents of history\n  \u2022 when legacy is finally retired, only the ACL changes \u2014 new service untouched\n  \u2022 legacy's weird conventions don't poison the new domain model\n  \u2022 single place to add caching, rate-limiting, fallback\n  \u2022 testable in isolation: mock legacy or mock ACL\n  \u2022 ACL is often disposable \u2014 thrown away when legacy is gone" {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}

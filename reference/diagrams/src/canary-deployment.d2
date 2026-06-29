@@ -1,0 +1,50 @@
+# Canary deployment: gradual traffic ramp with watch
+direction: down
+
+Title: "CANARY DEPLOYMENT: route a small fraction of traffic to v1.1; watch metrics; ramp up if healthy" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+T0: "T0 \u2014 1% canary" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+
+  LB0: "Load Balancer" { style: { fill: "#fff" } }
+  Old0: "v1.0 (stable)\n99% of traffic" { style: { fill: "#a5d6a7" } }
+  New0: "v1.1 (canary)\n1% of traffic" { style: { fill: "#ffe0b2" } }
+
+  LB0 -> Old0: "99%"
+  LB0 -> New0: "1%"
+
+  Watch0: "Watch: error rate, latency p99, business metrics\nIf bad \u2192 ROLLBACK (route 100% back to v1.0)\nIf good \u2192 ramp to next stage" { style: { fill: "#fff59d" } }
+
+  New0 -> Watch0
+  Old0 -> Watch0
+}
+
+T1: "T1 \u2014 5%" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  LB1: "Load Balancer" { style: { fill: "#fff" } }
+  Old1: "v1.0 \u2014 95%" { style: { fill: "#a5d6a7" } }
+  New1: "v1.1 \u2014 5%" { style: { fill: "#fff59d" } }
+  LB1 -> Old1; LB1 -> New1
+}
+
+T2: "T2 \u2014 25%" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  LB2: "Load Balancer" { style: { fill: "#fff" } }
+  Old2: "v1.0 \u2014 75%" { style: { fill: "#a5d6a7" } }
+  New2: "v1.1 \u2014 25%" { style: { fill: "#ffcc80" } }
+  LB2 -> Old2; LB2 -> New2
+}
+
+T3: "T3 \u2014 100%" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  LB3: "Load Balancer" { style: { fill: "#fff" } }
+  New3: "v1.1 \u2014 100% (now stable)" { style: { fill: "#66bb6a" } }
+  LB3 -> New3
+}
+
+Title -> T0
+T0 -> T1: "watch good \u2192 ramp"
+T1 -> T2: "watch good \u2192 ramp"
+T2 -> T3: "watch good \u2192 full rollout"

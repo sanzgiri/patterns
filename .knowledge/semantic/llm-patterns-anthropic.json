@@ -1,0 +1,66 @@
+{
+  "id": "llm-patterns-anthropic",
+  "topic": "llm patterns",
+  "subtopic": "Building Effective Agents — workflows and agents",
+  "source": {
+    "title": "Building effective agents",
+    "authors": ["Erik Schluntz", "Barry Zhang"],
+    "publisher": "Anthropic Engineering",
+    "url": "https://www.anthropic.com/engineering/building-effective-agents",
+    "published": "2024-12-19",
+    "fetched": "2026-06-25"
+  },
+  "provenance": "verified_by_fetch",
+  "confidence": 0.95,
+  "framing": "Anthropic distinguishes Workflows (LLMs and tools orchestrated through predefined code paths) from Agents (LLMs dynamically directing their own processes and tool usage). The post advocates simple, composable patterns over heavy frameworks.",
+  "building_block": {
+    "name": "The Augmented LLM",
+    "summary": "Foundational unit: an LLM enhanced with retrieval, tools, and memory. The model generates its own search queries, selects tools, and decides what to retain. All higher patterns assume each LLM call has these capabilities."
+  },
+  "workflows": [
+    {
+      "name": "Prompt chaining",
+      "summary": "Decompose a task into a sequence of steps where each LLM call processes the previous one's output. Programmatic 'gate' checks can validate intermediate steps.",
+      "when_to_use": "Task cleanly decomposes into fixed subtasks; trades latency for higher per-step accuracy.",
+      "examples": ["Generate marketing copy, then translate it", "Write an outline, validate it, then write the document"]
+    },
+    {
+      "name": "Routing",
+      "summary": "Classify an input and direct it to a specialized follow-up task, enabling separation of concerns and more specialized prompts.",
+      "when_to_use": "Distinct input categories that are better handled separately and where classification is reliable.",
+      "examples": ["Route customer-service queries (general / refund / technical) to different downstream prompts", "Route easy queries to Claude Haiku, hard ones to Claude Sonnet"]
+    },
+    {
+      "name": "Parallelization",
+      "summary": "Run LLMs simultaneously on a task and aggregate outputs programmatically. Two variants: Sectioning (independent subtasks in parallel) and Voting (same task multiple times for diverse outputs).",
+      "when_to_use": "Subtasks parallelize for speed, or multiple perspectives/attempts increase confidence.",
+      "examples": ["Sectioning: one model handles user query while another screens for inappropriate content", "Voting: multiple prompts review code for vulnerabilities"]
+    },
+    {
+      "name": "Orchestrator-workers",
+      "summary": "A central LLM dynamically breaks down tasks, delegates them to worker LLMs, and synthesizes their results. Subtasks are determined by the orchestrator based on input — not pre-defined.",
+      "when_to_use": "Complex tasks where subtasks can't be predicted in advance.",
+      "examples": ["Coding products that make complex changes across multiple files", "Search tasks gathering and analyzing from multiple sources"]
+    },
+    {
+      "name": "Evaluator-optimizer",
+      "summary": "One LLM call generates a response while another provides evaluation and feedback in a loop.",
+      "when_to_use": "Clear evaluation criteria exist and iterative refinement provides measurable value; analogous to a human writer's iterative drafting.",
+      "examples": ["Literary translation where an evaluator LLM critiques nuance", "Complex search needing multiple rounds until 'good enough'"]
+    }
+  ],
+  "agent_category": {
+    "name": "Agents",
+    "summary": "LLMs using tools in a loop based on environmental feedback. Plan and operate independently after task is clear; gain ground truth from the environment at each step; can pause for human feedback at checkpoints; typically include stopping conditions (e.g., max iterations).",
+    "when_to_use": "Open-ended problems where the number of steps cannot be predicted and a fixed path can't be hardcoded; trusted environments justify higher cost and risk of compounding errors.",
+    "examples": ["Coding agent resolving SWE-bench tasks", "Anthropic's 'computer use' reference implementation"]
+  },
+  "three_core_principles": [
+    "Maintain simplicity in your agent's design.",
+    "Prioritize transparency by explicitly showing the agent's planning steps.",
+    "Carefully craft your agent-computer interface (ACI) through thorough tool documentation and testing."
+  ],
+  "pattern_count": "5 workflows + 1 building block + 1 agent category",
+  "created": "2026-06-25T00:00:00Z",
+  "updated": "2026-06-25T00:00:00Z"
+}

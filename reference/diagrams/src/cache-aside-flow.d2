@@ -1,0 +1,37 @@
+# Cache-Aside (Lazy Loading): the application is in charge
+direction: down
+
+Title: "CACHE-ASIDE: the application talks to BOTH cache and DB.\nThe cache is a separate, independent store; nothing keeps them in sync automatically." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Read: "READ PATH" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+
+  App1: "Application" { style: { fill: "#bbdefb" } }
+  Cache1: "Cache (Redis, Memcached)" { style: { fill: "#fff59d" } }
+  DB1: "Database (Postgres, MySQL, ...)" { style: { fill: "#a5d6a7" } }
+
+  App1 -> Cache1: "1. GET key"
+  Cache1 -> App1: "2a. HIT \u2192 return value \u2705 (done, fast)"
+  Cache1 -> App1: "2b. MISS \u2192 nil"
+  App1 -> DB1: "3. SELECT (only on miss)"
+  DB1 -> App1: "4. row"
+  App1 -> Cache1: "5. SET key=value, TTL=...\n   (populate for next time)"
+}
+
+Write: "WRITE PATH (most common: write-through-DB, invalidate cache)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+
+  App2: "Application" { style: { fill: "#bbdefb" } }
+  Cache2: "Cache" { style: { fill: "#fff59d" } }
+  DB2: "Database" { style: { fill: "#a5d6a7" } }
+
+  App2 -> DB2: "1. UPDATE row (source of truth wins)"
+  App2 -> Cache2: "2. DELETE key (invalidate \u2014 NOT update)\n   next read will re-populate from DB"
+}
+
+Note: "WHY INVALIDATE INSTEAD OF UPDATE?\n  \u2022 cache update + DB update can race\n  \u2022 if cache write succeeds but DB write fails \u2192 cache holds wrong value forever\n  \u2022 deleting is idempotent and safe \u2014 worst case: extra DB read\n  \u2022 'cache is a cache, not a database' \u2014 it can always be rebuilt" {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}

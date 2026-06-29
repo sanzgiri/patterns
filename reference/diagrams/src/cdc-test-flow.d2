@@ -1,0 +1,31 @@
+# Consumer-Driven Contract Test (CDC test) flow
+direction: down
+
+Setup: "STARTING POINT \u2014 Orders service calls Customers service via REST" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+  O: "ORDERS (consumer)" { style: { fill: "#bbdefb" } }
+  C: "CUSTOMERS (producer)" { style: { fill: "#c8e6c9" } }
+  O -> C: "GET /customers/{id}\n\u2192 { id, name, email, address }"
+}
+
+Step1: "1. CONSUMER expresses its expectations" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  Detail: "Orders team writes a CONTRACT TEST (using Pact or Spring Cloud Contract):\n  'When I GET /customers/42,\n   I expect status 200 and body matching:\n     { id: number, name: string, email: string, address: { ... } }'\n\nGenerates a CONTRACT FILE (JSON describing the expectation).\nUploads to a contract broker (Pact Broker, Git repo, S3)."
+}
+
+Step2: "2. CI on Orders runs the test against a STUB of Customers" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  Detail: "Pact spins up a local stub that satisfies the contract.\nOrders code calls the stub \u2192 verifies its own behavior.\n\u2192 Orders is confident: 'if Customers honors this contract, I work.'"
+}
+
+Step3: "3. PRODUCER's CI verifies it satisfies the contract" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 10 }
+  Detail: "When Customers CI runs:\n  pull all contracts from the broker that mention Customers.\n  For each: replay the request against the REAL Customers service.\n  If response matches the contract \u2192 PASS\n  If not \u2192 BREAKING CHANGE; FAIL THE BUILD\n\u2192 Producer can't ship a breaking change without consumer's knowledge."
+}
+
+Step4: "4. Producer wants to change something (e.g. remove 'email' field)" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 10 }
+  Detail: "Producer changes field; CI fails because Orders' contract still expects email.\n\u2192 Producer KNOWS the change breaks Orders.\nOptions:\n  \u2022 talk to Orders team \u2014 do they still need it?\n  \u2022 deprecate via versioning (add /v2 endpoint without email)\n  \u2022 wait for Orders to update their contract first\n\u2192 NO surprise breakages in production."
+}
+
+Setup -> Step1 -> Step2 -> Step3 -> Step4

@@ -1,0 +1,33 @@
+# Distributed tracing: spans, traces, parent links
+direction: down
+
+Title: "DISTRIBUTED TRACING: one user request becomes a TREE of SPANS\nacross many services; each span = one unit of work" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Trace: "TRACE = entire user request (trace_id: abc123)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+
+  S0: "span 0 (root)\nAPI Gateway /checkout\nT0\u2192T180ms" { style: { fill: "#a5d6a7" } }
+  S1: "span 1\nAuth Service /verify\nT5\u2192T15ms\nparent=0" { style: { fill: "#bbdefb" } }
+  S2: "span 2\nOrder Service /create\nT20\u2192T170ms\nparent=0" { style: { fill: "#bbdefb" } }
+  S3: "span 3\nDB INSERT order\nT25\u2192T55ms\nparent=2" { style: { fill: "#fff59d" } }
+  S4: "span 4\nPayment Service /charge\nT60\u2192T160ms\nparent=2" { style: { fill: "#ffe0b2" } }
+  S5: "span 5\nStripe API call\nT70\u2192T155ms\nparent=4" { style: { fill: "#ffcdd2" } }
+  S6: "span 6\nInventory Service /reserve\nT60\u2192T120ms\nparent=2" { style: { fill: "#bbdefb" } }
+
+  S0 -> S1
+  S0 -> S2
+  S2 -> S3
+  S2 -> S4
+  S4 -> S5
+  S2 -> S6
+}
+
+Properties: "EACH SPAN HAS\n  trace_id (same across all spans for one trace)\n  span_id (unique to this span)\n  parent_span_id (the span that caused this one)\n  name, service, start_time, duration\n  attributes (k\u2192v): user_id, http_status, db_table, error\n  events (logs scoped to the span)\n  status (OK / ERROR)\n\nVISUALIZED as a flame graph / waterfall \u2192 answers:\n  'Why was this request slow? Which service / DB call is the long bar?'\n  'What downstream services were called for THIS request?'\n  'Did Stripe fail for the affected users?'" {
+  shape: rectangle
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Trace
+Trace -> Properties

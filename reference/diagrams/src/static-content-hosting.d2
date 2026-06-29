@@ -1,0 +1,39 @@
+# Static content hosting: serve static directly from blob/CDN
+direction: down
+
+Title: "STATIC CONTENT HOSTING: don't serve static assets from your app servers.\nServe them DIRECTLY from blob storage (S3/Azure Blob/GCS) + CDN." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Bad: "BAD: app serves all assets\n  CLIENT \u2192 APP SERVER \u2192 disk reads images/CSS/JS\n  \u2192 every static asset request uses an app server thread\n  \u2192 the same 100 KB CSS file fetched 1M times from your app\n  \u2192 wasted bandwidth, memory, CPU" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+}
+
+Good: "GOOD: serve static assets from blob + CDN" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+
+  Upload: "DEPLOY PIPELINE\n  build step generates static assets\n  pipeline UPLOADS to blob store (S3 / Azure Blob / GCS)\n  with content-hash filename (cache-bust forever)\n  e.g. /assets/main.a3f8c9.js" { style: { fill: "#fff" } }
+
+  Blob: "BLOB STORE (S3 / Azure Blob / GCS / R2)\n  cheap object storage; 99.99% available;\n  scales infinitely; pay per GB stored + GB transferred" { style: { fill: "#fff" } }
+
+  CDN: "CDN (CloudFront, Cloudflare, Fastly, Akamai, Azure CDN)\n  caches blob content at edge PoPs worldwide\n  origin = blob store; CDN handles most traffic\n  see [CDN page](../scale/cdn.md)" { style: { fill: "#fff" } }
+
+  Client: "CLIENT\n  HTML from app: <script src='https://cdn.example.com/main.a3f8c9.js'>\n  Browser fetches script from CDN (\u226550ms global)\n  CDN cache hit: served from edge\n  CDN miss: CDN fetches from blob; re-caches" { style: { fill: "#fff" } }
+
+  Upload -> Blob
+  Blob -> CDN: "origin"
+  CDN -> Client: "edge delivery"
+}
+
+App: "YOUR APP SERVER\n  serves only DYNAMIC content (API responses, server-rendered HTML)\n  static asset URLs reference CDN\n  free of static-content load" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+Why: "WHY THIS WINS\n  \u2022 app servers handle ONLY dynamic traffic \u2192 smaller, fewer\n  \u2022 static assets cached at edge \u2192 fast global delivery\n  \u2022 cost: object storage + CDN is cheaper than app-server bandwidth\n  \u2022 deployments via blob upload, not app redeploy\n  \u2022 cache busting via content-hash URLs: immutable forever-cacheable assets\n\nPATTERN VARIANTS\n  \u2022 Single-Page App: HTML + JS shell served from CDN; API calls to backend\n  \u2022 Server-rendered + static: SSR HTML from app; assets from CDN\n  \u2022 Static-site generator: prebuilt HTML to CDN (Hugo, Jekyll, Astro, 11ty)\n  \u2022 Jamstack: build-time static + dynamic via APIs\n  \u2022 Edge functions: compute at CDN edge (Workers, Lambda@Edge)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Bad
+Title -> Good
+Client -> App: "dynamic API calls"
+Good -> Why

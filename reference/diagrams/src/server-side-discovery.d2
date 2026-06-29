@@ -1,0 +1,29 @@
+# Server-side service discovery
+direction: right
+
+Client: "CALLER SERVICE\n(no discovery code \u2014\ncalls a fixed address)" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+LB: "LOAD BALANCER / PROXY\n(K8s Service, AWS ALB,\nEnvoy, NGINX, HAProxy)" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 3; border-radius: 8 }
+  Logic: "Lookup orders-svc \u2192\n  [10.0.0.5, 10.0.0.6]\n(routinely refreshed\n from the registry or via\n control-plane push)"
+}
+
+Registry: "Service Registry\n(K8s endpoints, AWS Cloud Map, Consul)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+Inst1: "orders-svc\n10.0.0.5:8080" { style: { fill: "#bbdefb" } }
+Inst2: "orders-svc\n10.0.0.6:8080" { style: { fill: "#bbdefb" } }
+
+Registry -> LB: "syncs healthy\nendpoints"
+
+Client -> LB: "1. http://orders-svc/ \n   (DNS or virtual IP)"
+LB -> Inst1: "2. proxy picks one,\n   forwards request"
+LB -> Inst2: "(or this one)"
+
+Properties: "SERVER-SIDE PROPERTIES\nPROS:\n  \u2022 NO discovery code in caller \u2014 language-agnostic\n  \u2022 LB logic centralized (one place to upgrade, debug)\n  \u2022 caller just uses DNS or a stable virtual IP\n  \u2022 great for polyglot orgs \u2014 every service treats discovery as 'just call this name'\nCONS:\n  \u2022 EXTRA HOP through proxy (latency, throughput limit)\n  \u2022 proxy is critical infrastructure (HA matters)\n  \u2022 client can't make smart routing decisions (e.g. prefer same-zone)\n  \u2022 fan-out workloads stress the LB\nEXAMPLES: Kubernetes Service (kube-proxy or eBPF), AWS ALB/NLB,\n  NGINX/Envoy + control plane, Google Internal LB" {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}

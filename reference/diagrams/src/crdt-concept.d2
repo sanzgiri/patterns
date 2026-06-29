@@ -1,0 +1,24 @@
+# CRDT: conflict-free replicated data type
+direction: down
+
+Problem: "PROBLEM: multiple replicas of the same data, edited CONCURRENTLY without coordination.\nE.g., your Google Doc: you and a colleague type at the same time. Both edits must merge.\nE.g., your shopping cart: synced across phone and laptop while offline; reconnect \u2192 must merge.\n\nCAN'T use lock + leader (latency, single point of failure, offline impossible).\nCAN'T accept 'last write wins' for everything (loses concurrent edits)." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+CRDT: "CRDT IDEA: design data types whose merge function is\n  COMMUTATIVE  (order doesn't matter)\n  ASSOCIATIVE  (grouping doesn't matter)\n  IDEMPOTENT   (applying twice = applying once)\n\nIf merge has these properties, all replicas EVENTUALLY CONVERGE\nto the same value, no matter the order or path of message delivery." {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+}
+
+Families: "TWO FAMILIES" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+
+  State: "STATE-BASED (CvRDT)\nReplicas exchange FULL STATE periodically.\nMerge = a function that takes two states, returns combined.\nThe merge must be a 'join semi-lattice'." {
+    style: { fill: "#fff59d" }
+  }
+
+  Op: "OP-BASED (CmRDT)\nReplicas exchange OPERATIONS via reliable broadcast.\nOperations must commute.\nRequires causal delivery (vector clocks)." {
+    style: { fill: "#fff59d" }
+  }
+}
+
+CRDT -> Families

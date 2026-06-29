@@ -1,0 +1,18 @@
+# Microservices independent deployability: each service has its own pipeline + runtime
+direction: right
+
+Repo_A: "Orders\nrepo" { style: { fill: "#e3f2fd"; stroke: "#1565c0"; border-radius: 8 } }
+Repo_B: "Inventory\nrepo" { style: { fill: "#e8f5e9"; stroke: "#2e7d32"; border-radius: 8 } }
+Repo_C: "Billing\nrepo" { style: { fill: "#fce4ec"; stroke: "#ad1457"; border-radius: 8 } }
+
+CI_A: "CI/CD" { style: { fill: "#fff4c2"; stroke: "#f57c00" } }
+CI_B: "CI/CD" { style: { fill: "#fff4c2"; stroke: "#f57c00" } }
+CI_C: "CI/CD" { style: { fill: "#fff4c2"; stroke: "#f57c00" } }
+
+Pod_A: "Orders v2.3\npods x4" { style: { fill: "#bbdefb"; stroke: "#1565c0"; border-radius: 8 } }
+Pod_B: "Inventory v5.1\npods x2" { style: { fill: "#c8e6c9"; stroke: "#2e7d32"; border-radius: 8 } }
+Pod_C: "Billing v1.9\npods x3" { style: { fill: "#f8bbd0"; stroke: "#ad1457"; border-radius: 8 } }
+
+Repo_A -> CI_A -> Pod_A: "deploy independently"
+Repo_B -> CI_B -> Pod_B: "deploy independently"
+Repo_C -> CI_C -> Pod_C: "deploy independently"

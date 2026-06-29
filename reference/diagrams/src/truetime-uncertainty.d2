@@ -1,0 +1,24 @@
+# TrueTime uncertainty: \u03b5 over the commit-wait window
+direction: down
+
+T1: "t=0      Leader calls TT.now()" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+  D: "TT returns { earliest: -\u03b5, latest: +\u03b5 }\n\u2192 actual time is somewhere in this interval"
+}
+
+T2: "Leader picks commit_ts = +\u03b5 (latest possible)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+  D2: "All replicas agree to commit at this timestamp via Paxos.\nAt this point, the 'commit' has been agreed,\nbut not yet acknowledged to the client."
+}
+
+T3: "COMMIT WAIT: pause until TT.now().earliest > commit_ts" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+  D3: "Wait until time has definitely advanced past +\u03b5.\nDuring this 1\u20137 ms wait, the leader does no work \u2014\nbut the txn is durable in Paxos already.\n\nUncertainty \u03b5 is SMALL because Spanner uses:\n\u2022 GPS receivers in every datacenter\n\u2022 Atomic clocks as backup\n\u2022 Multiple time-masters per region\n\u2022 NTP-style protocol with bounded uncertainty"
+}
+
+T4: "Client gets ack. By now, true time > commit_ts everywhere." {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+  D4: "External consistency:\nany action observed by clients AFTER the ack\ngets a timestamp > commit_ts.\n\nThis enables LINEARIZABLE reads + EXTERNALLY CONSISTENT writes\nat global scale \u2014 without expensive cross-DC coordination per read."
+}
+
+T1 -> T2 -> T3 -> T4

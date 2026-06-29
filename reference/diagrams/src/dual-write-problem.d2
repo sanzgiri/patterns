@@ -1,0 +1,33 @@
+# Dual-write problem: why naive "DB + queue" fails
+direction: down
+
+DualWrite: "NAIVE DUAL WRITE \u2014 the problem we're trying to solve" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 10 }
+}
+
+Step1: "Service handles 'PlaceOrder':" {
+  style: { fill: "#fff"; border-radius: 8 }
+  Code: "BEGIN;\n  INSERT INTO orders ...;\nCOMMIT;\n\nkafka.publish('OrderPlaced', ...);  // separate I/O"
+}
+
+Failure1: "FAILURE MODE A:\nDB commit SUCCEEDS, Kafka publish FAILS\n  \u2192 order EXISTS in DB\n  \u2192 downstream services never hear about it\n  \u2192 INCONSISTENT: shipping, billing, analytics all miss this order" {
+  style: { fill: "#ef9a9a"; border-radius: 8 }
+}
+
+Failure2: "FAILURE MODE B:\nDB commit SUCCEEDS, Kafka publish SUCCEEDS,\n  but process CRASHES before client got the ACK\n  \u2192 client retries \u2192 ORDER DUPLICATED (DB + Kafka)\n  \u2192 BUT if we add idempotency:\n     client retries with same key \u2192 DB rejects duplicate \u2192 but ALSO skips publish\n  \u2192 second message LOST" {
+  style: { fill: "#ef9a9a"; border-radius: 8 }
+}
+
+Failure3: "FAILURE MODE C:\nKafka publish goes first, then DB commit FAILS\n  \u2192 message PUBLISHED but order NEVER persisted\n  \u2192 downstream services act on a non-existent order" {
+  style: { fill: "#ef9a9a"; border-radius: 8 }
+}
+
+Root: "ROOT CAUSE: there is no DISTRIBUTED TRANSACTION across the DB and Kafka.\nWe're writing to two separate systems; ATOMICITY is impossible without 2PC\n(which Kafka doesn't support, and which has its own problems).\n\nSOLUTION: write to ONE system atomically \u2014 the database.\nThen RELIABLY DERIVE the message from the database state.\n\u2192 This is the OUTBOX pattern." {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+DualWrite -> Step1 -> Failure1
+Step1 -> Failure2
+Step1 -> Failure3
+Failure3 -> Root

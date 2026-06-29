@@ -1,0 +1,24 @@
+# Emergent leader: SWIM-style 'highest ID alive' selection
+direction: down
+
+t1: "STEP 1: every node knows current membership via gossip" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+  Members: "Alive members (gossiped, every node has same view):\n  Node A (id=42)\n  Node B (id=17)\n  Node C (id=88)  \u2190 highest\n  Node D (id=53)"
+}
+
+t2: "STEP 2: each node deterministically computes 'leader'" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+  Decision: "leader(members) = node with max(id)\n\u2192 every node computes: leader = C\n\u2192 no messages exchanged \u2014 just local computation\n  over the gossip view"
+}
+
+t3: "STEP 3: C 'emerges' as leader without holding an election" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+  Action: "C accepts leader-only operations.\nOther nodes route requests to C.\nNo election RPCs, no votes, no terms.\n\nWhen C fails:\n\u2022 gossip propagates 'C is down' (within seconds)\n\u2022 every node re-computes: leader = max(remaining) = D (id=53)\n\u2022 D begins accepting leader-only operations\n\u2022 NO ELECTION \u2014 leadership simply emerges from membership"
+}
+
+t4: "SAFETY HAZARD: split-brain during gossip lag" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; border-radius: 8 }
+  Hazard: "Problem: during the few seconds between\n'C fails' and 'all nodes know C failed',\nsome nodes still think C is leader, others think D is.\n\nIf C wakes up just then \u2014 split brain!\nBoth C and D might process leader-only operations.\n\nDefenses:\n\u2022 pair with fencing tokens (generation-clock.md)\n\u2022 use a 'stable' view (require N rounds of agreement)\n\u2022 accept eventual consistency for the operations involved\n\nUsed by: SWIM-based service discovery, some control planes,\nApache Zookeeper for some scenarios, leader-by-min-id schemes."
+}
+
+t1 -> t2 -> t3 -> t4

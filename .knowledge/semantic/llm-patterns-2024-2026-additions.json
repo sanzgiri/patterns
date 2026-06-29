@@ -1,0 +1,94 @@
+{
+  "id": "llm-patterns-2024-2026-additions",
+  "topic": "llm patterns",
+  "subtopic": "Patterns that emerged after the 2023 Yan/Weng baseline",
+  "source": {
+    "title": "Synthesized from multiple verified sources (2024-2026)",
+    "fetched": "2026-06-25"
+  },
+  "provenance": "model_synthesis_with_cited_anchors_pending_verification",
+  "confidence": 0.7,
+  "note": "This entry catalogs patterns that did not exist or were not widespread when Yan (Jul 2023) and Weng (Jun 2023) wrote. Each item should be re-verified before relied on. Anchored sources are listed; individual facts are NOT individually verified by fetch.",
+  "patterns": [
+    {
+      "name": "Reasoning models / test-time compute scaling",
+      "summary": "Models trained (often via RL on verifiable rewards) to produce long internal chain-of-thought before answering. Quality scales with thinking-time budget, not just parameter count.",
+      "examples": ["OpenAI o1 (Sept 2024)", "o3 (2024-2025)", "DeepSeek-R1 (Jan 2025)", "Claude with extended thinking (2025)"],
+      "implication": "Some problems are now better solved by giving one big model more think-time than by orchestrating many agents.",
+      "verification_status": "well-known, not individually fetched"
+    },
+    {
+      "name": "Model Context Protocol (MCP)",
+      "summary": "Open standard from Anthropic for connecting LLMs to tools/data sources. Decouples agent code from tool implementations; turns tool integration into a plug-in ecosystem.",
+      "source_anchor": "https://www.anthropic.com/news/model-context-protocol",
+      "date": "2024-11",
+      "verification_status": "well-known, not individually fetched"
+    },
+    {
+      "name": "Prompt caching (as API feature)",
+      "summary": "Provider-level caching of long static prompt prefixes (system prompts, tool defs, RAG context). Dramatic latency/cost reduction for repeat calls with shared prefix.",
+      "providers": ["Anthropic (Aug 2024)", "OpenAI (Oct 2024)", "Gemini"],
+      "relationship_to_yan_caching": "Yan's 'Caching' pattern (2023) anticipated this but was framed around semantic response caching; prompt caching is a different, complementary mechanism now native to APIs.",
+      "verification_status": "well-known, not individually fetched"
+    },
+    {
+      "name": "Native structured outputs",
+      "summary": "API-level guarantee that model output conforms to a JSON schema (or grammar). Eliminates much of the parsing/repair code that dominated 2023 agent frameworks.",
+      "providers": ["OpenAI Structured Outputs (Aug 2024)", "Anthropic tool-use schema", "Gemini response schemas"],
+      "verification_status": "well-known, not individually fetched"
+    },
+    {
+      "name": "Long-context patterns (and the RAG-vs-long-context debate)",
+      "summary": "Context windows of 1M+ tokens (Gemini 1.5+, Claude) shift some problems from 'retrieve and inject' to 'just dump everything in'. Active research on retrieval quality vs. cost vs. attention dilution.",
+      "verification_status": "well-known, not individually fetched"
+    },
+    {
+      "name": "Agentic RAG",
+      "summary": "RAG where retrieval is performed by an agent that can plan multi-hop queries, re-rank, decide when to retrieve again, and verify before answering. Combines Yan's RAG with Anthropic's Agents.",
+      "verification_status": "well-known, not individually fetched"
+    },
+    {
+      "name": "GraphRAG",
+      "summary": "Microsoft Research pattern (2024): build a knowledge graph from a corpus first, then retrieve and reason over graph structure rather than flat embeddings. Better for multi-hop questions over large corpora.",
+      "source_anchor": "https://www.microsoft.com/en-us/research/blog/graphrag-unlocking-llm-discovery-on-narrative-private-data/",
+      "verification_status": "well-known, not individually fetched"
+    },
+    {
+      "name": "Computer use / browser use agents",
+      "summary": "Models that operate a GUI directly via screenshots and synthesized mouse/keyboard actions, rather than via APIs.",
+      "examples": ["Anthropic Computer Use (Oct 2024)", "OpenAI Operator (2025)"],
+      "verification_status": "well-known, not individually fetched"
+    },
+    {
+      "name": "DPO/KTO/ORPO (preference optimization beyond RLHF)",
+      "summary": "Direct Preference Optimization and successors replace the reward-model + PPO pipeline of classic RLHF with simpler, more stable training. Now standard for alignment fine-tuning.",
+      "source_anchor": "Rafailov et al. 2023 (DPO), https://arxiv.org/abs/2305.18290",
+      "verification_status": "well-known, not individually fetched"
+    },
+    {
+      "name": "Context engineering (as a named discipline)",
+      "summary": "Explicit pattern from 12-Factor Agents Factor 3: deliberately curate what goes into every LLM call rather than passively accumulating chat history. Includes summarization, pruning, and structured-state injection.",
+      "source_anchor": "https://github.com/humanlayer/12-factor-agents/blob/main/content/factor-03-own-your-context-window.md",
+      "verification_status": "verified via 12-factor agents README fetch"
+    },
+    {
+      "name": "Speculative decoding",
+      "summary": "Performance pattern: a small draft model proposes tokens, a large model verifies in parallel. 2-3x latency reduction. Now standard in production inference stacks (vLLM, TGI, TensorRT-LLM).",
+      "verification_status": "well-known, not individually fetched"
+    }
+  ],
+  "patterns_that_aged_well_from_2023": [
+    "Evals", "RAG (the core idea)", "Caching (the core idea)",
+    "Guardrails", "Defensive UX", "Feedback collection",
+    "Chain-of-Thought", "ReAct", "Self-Consistency", "Reflection"
+  ],
+  "patterns_that_aged_poorly_or_were_superseded": [
+    { "pattern": "MRKL", "superseded_by": "Native function calling + MCP" },
+    { "pattern": "Toolformer (self-supervised tool learning)", "superseded_by": "Native function calling — most models now ship with tool-use trained in" },
+    { "pattern": "HuggingGPT-style task-planning orchestrators", "superseded_by": "Orchestrator-workers (Anthropic), Magentic (Microsoft), Agent SDKs" },
+    { "pattern": "AutoGPT / BabyAGI as production blueprints", "superseded_by": "Claude Agent SDK, OpenAI Agents SDK, LangGraph, AutoGen, Agent Framework" },
+    { "pattern": "RLHF (classic PPO pipeline)", "superseded_by": "DPO / KTO / ORPO" }
+  ],
+  "created": "2026-06-25T00:00:00Z",
+  "updated": "2026-06-25T00:00:00Z"
+}

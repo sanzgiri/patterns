@@ -1,0 +1,33 @@
+# Thundering Herd mitigations
+direction: down
+
+Top: "MITIGATIONS \u2014 several layered approaches" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Single: "1. SINGLE-FLIGHT / REQUEST COALESCING (the primary fix)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Detail: "On a MISS, the FIRST request acquires a 'compute in progress' lock for that key.\nSubsequent requests for the same key WAIT for the first to finish, then read its result.\nOnly ONE DB query happens regardless of concurrency.\n\nLIBRARIES:\n  \u2022 Go: golang.org/x/sync/singleflight\n  \u2022 Java: Caffeine's CacheLoader (built in)\n  \u2022 Python: aiocache, request_coalescer\n  \u2022 Ruby: identity_cache, dalli with race_condition_ttl\n\nThis alone solves 80% of stampedes."
+}
+
+Prob: "2. PROBABILISTIC EARLY EXPIRATION (XFetch / Beta)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "Each read of a value near its TTL has a small (and growing) probability\nof being chosen to refresh EARLY, before actual expiry.\nDistributes refreshes across time \u2192 no synchronized expiry stampede.\n\nFormula (Vattani et al. 2015 'Optimal Probabilistic Cache Stampede Prevention'):\n  if now - (delta \u00d7 beta \u00d7 ln(random())) > expiry, refresh now\n\nNo locks needed; statistically smooth."
+}
+
+Bg: "3. BACKGROUND REFRESH (refresh-ahead)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Identify hot keys; refresh them on a schedule BEFORE they expire.\nApp reads always hit a populated cache. Background worker handles all DB load.\n\nWORKS FOR: a small set of well-known hot keys.\nDOESN'T HELP: long-tail or unpredictable hot keys."
+}
+
+Stale: "4. SERVE-STALE-WHILE-REFRESH" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Keep an OLD value past its expiry. On MISS:\n  \u2022 first request triggers async refresh\n  \u2022 all requests (including the trigger) get the STALE value immediately\n  \u2022 once refresh completes, future reads get fresh\n\nHTTP standard: stale-while-revalidate header (Vercel CDN, Cloudflare, browsers).\nVarnish: 'grace mode'. CDN folks have always done this."
+}
+
+Jitter: "5. TTL JITTER (entropy)" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Don't use TTL = exactly 300s for everything. Use 300 + random(0, 30)s.\nDeployed at the same time? Cache entries still expire at slightly different times.\nPrevents 'fleet-wide synchronized expiry'.\n\nEasy, cheap, prevents one whole class of stampedes."
+}
+
+Top -> Single; Top -> Prob; Top -> Bg; Top -> Stale; Top -> Jitter

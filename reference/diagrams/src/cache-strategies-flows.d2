@@ -1,0 +1,44 @@
+# Cache-managed strategy flows: read-through, write-through, write-behind
+direction: down
+
+RT: "READ-THROUGH (cache pulls from DB on miss)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 10 }
+  AppR: "Application" { style: { fill: "#bbdefb" } }
+  CacheR: "CACHE LAYER (with loader)" { style: { fill: "#fff59d" } }
+  DBR: "Database" { style: { fill: "#a5d6a7" } }
+
+  AppR -> CacheR: "1. GET key  (only talks to cache)"
+  CacheR -> DBR: "2. on MISS: SELECT (cache calls DB transparently)"
+  DBR -> CacheR: "3. row"
+  CacheR -> AppR: "4. value"
+}
+
+WT: "WRITE-THROUGH (cache writes to DB before ack)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+  AppW: "Application" { style: { fill: "#bbdefb" } }
+  CacheW: "CACHE LAYER" { style: { fill: "#fff59d" } }
+  DBW: "Database" { style: { fill: "#a5d6a7" } }
+
+  AppW -> CacheW: "1. PUT key=value"
+  CacheW -> DBW: "2. UPDATE row (synchronous, blocking)"
+  DBW -> CacheW: "3. OK"
+  CacheW -> AppW: "4. ACK\n(cache + DB both updated; consistent)"
+}
+
+WB: "WRITE-BEHIND (cache acks immediately; flushes later)" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+  AppB: "Application" { style: { fill: "#bbdefb" } }
+  CacheB: "CACHE + WRITE BUFFER" { style: { fill: "#fff59d" } }
+  DBB: "Database" { style: { fill: "#a5d6a7" } }
+
+  AppB -> CacheB: "1. PUT key=value"
+  CacheB -> AppB: "2. ACK (immediate, no DB wait)"
+  CacheB -> DBB: "3. flush batch later\n(async, may coalesce 100 writes \u2192 1)"
+}
+
+Risk: "WRITE-BEHIND RISK: if cache crashes between step 2 and step 3,\nthe write is LOST. The app thinks it succeeded; the DB doesn't have it.\nUse only when you can either: (a) tolerate loss (metrics, counters), or\n(b) the cache has its own durable WAL (Redis AOF, etc.)" {
+  shape: rectangle
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; border-radius: 8 }
+}
+
+WB -> Risk

@@ -1,0 +1,27 @@
+# Federation vs alternatives: schema stitching, BFF-per-graph, monolithic GraphQL
+direction: down
+
+Mono: "MONOLITHIC GraphQL\n(one GraphQL server that wraps all backend services)" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+  Detail: "One central team owns the schema and resolvers.\nEvery field addition goes through that team \u2192 bottleneck.\nGood for small orgs; collapses at scale."
+}
+
+Stitch: "SCHEMA STITCHING (older Apollo, GraphQL Tools)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Detail: "Gateway introspects all subgraph schemas, merges them.\nWhere types overlap, gateway needs CONFIG to resolve conflicts.\nWorks but coupling is heavy; deprecated in favor of Federation v1+v2."
+}
+
+Federation: "GRAPHQL FEDERATION (Apollo Federation v2, Cosmo, Hive)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 3; border-radius: 8 }
+  Detail: "Subgraphs declare their pieces via DIRECTIVES (@key, @external, @extends).\nGateway composes them deterministically into a supergraph.\nEach team owns its slice; cross-cutting reference via shared entity keys.\n\u2192 the current dominant approach"
+}
+
+BFFGraph: "GraphQL PER BFF" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Detail: "Each client (web, mobile) has its OWN GraphQL BFF.\nWeb-BFF and Mobile-BFF have different schemas (tailored).\nBoth might call the same backend microservices internally.\n\u2192 popular alternative when federation is overkill"
+}
+
+When: "WHEN TO USE WHICH:\n  \u2022 <10 services, one team           \u2192 MONOLITHIC GraphQL\n  \u2022 <30 services, few teams          \u2192 GraphQL PER BFF\n  \u2022 50+ services, many teams         \u2192 FEDERATION\n  \u2022 high integration with non-GraphQL world \u2192 plain BFFs + API composition" {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}

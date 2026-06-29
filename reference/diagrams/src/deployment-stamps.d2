@@ -1,0 +1,48 @@
+# Deployment Stamps (cells)
+direction: down
+
+Title: "DEPLOYMENT STAMP: replicate the entire application stack as independent 'cells';\nassign tenants/users to a specific stamp." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Router: "STAMP ROUTER\n(maps tenant\u2192stamp; usually a small DB or directory service)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 10 }
+}
+
+Stamp1: "STAMP 1 (us-east, 1000 tenants)" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Web1: "Web tier (full app)" { style: { fill: "#fff" } }
+  DB1: "DB cluster (only its tenants' data)" { style: { fill: "#fff" } }
+  Cache1: "Cache" { style: { fill: "#fff" } }
+  Queue1: "Queue / workers" { style: { fill: "#fff" } }
+  Web1 -> DB1; Web1 -> Cache1; Web1 -> Queue1
+}
+
+Stamp2: "STAMP 2 (us-east, 1000 tenants)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Web2: "Web tier (full app)" { style: { fill: "#fff" } }
+  DB2: "DB cluster (its tenants only)" { style: { fill: "#fff" } }
+  Cache2: "Cache" { style: { fill: "#fff" } }
+  Queue2: "Queue / workers" { style: { fill: "#fff" } }
+  Web2 -> DB2; Web2 -> Cache2; Web2 -> Queue2
+}
+
+Stamp3: "STAMP 3 (eu-west, 1000 tenants)" {
+  style: { fill: "#ffe0b2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Web3: "Web tier (full app)" { style: { fill: "#fff" } }
+  DB3: "DB cluster (its tenants only)" { style: { fill: "#fff" } }
+  Cache3: "Cache" { style: { fill: "#fff" } }
+  Queue3: "Queue / workers" { style: { fill: "#fff" } }
+  Web3 -> DB3; Web3 -> Cache3; Web3 -> Queue3
+}
+
+Properties: "KEY PROPERTIES\n  \u2022 each stamp is COMPLETE and INDEPENDENT (no shared infra except the router)\n  \u2022 scale by adding stamps, not by scaling stamps\n  \u2022 BLAST RADIUS = 1 stamp; outage of stamp 2 does not affect stamps 1 or 3\n  \u2022 stamp = unit of provisioning, deployment, compliance, billing, isolation\n  \u2022 also called: 'cells' (AWS), 'pods' (Salesforce), 'shards' (Slack), 'units of scale'" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Router
+Router -> Stamp1: "tenants A\u2013M \u2192"
+Router -> Stamp2: "tenants N\u2013Z \u2192"
+Router -> Stamp3: "EU tenants \u2192"
+Stamp1 -> Properties
+Stamp3 -> Properties

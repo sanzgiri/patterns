@@ -1,0 +1,22 @@
+# Four rate-limiting algorithms side by side
+direction: down
+
+Fixed: "FIXED WINDOW\n100 req / minute per key" {
+  style: { fill: "#e3f2fd"; stroke: "#1565c0"; border-radius: 8 }
+  Behavior: "+ simple counter (key, current minute)\n+ very cheap\n\u2212 burst at window boundary:\n  100 req at 11:59:59 + 100 req at 12:00:00\n  = 200 in 2 seconds"
+}
+
+Sliding_Log: "SLIDING LOG\nstore each request's timestamp" {
+  style: { fill: "#e8f5e9"; stroke: "#2e7d32"; border-radius: 8 }
+  Behavior: "+ exact: count timestamps in last 60s\n\u2212 O(N) memory per key (one entry per request)\n\u2212 expensive at scale"
+}
+
+Sliding_Window: "SLIDING WINDOW COUNTER\nweighted combination of 2 buckets" {
+  style: { fill: "#fff4c2"; stroke: "#f57c00"; border-radius: 8 }
+  Behavior: "+ smooth, no boundary burst\n+ constant memory\n+ approximate but good enough\n  (Cloudflare, Stripe defaults)"
+}
+
+Token_Bucket: "TOKEN BUCKET\nrefill at rate R, burst up to capacity C" {
+  style: { fill: "#fce4ec"; stroke: "#ad1457"; border-radius: 8 }
+  Behavior: "+ allows bursts (good UX)\n+ enforces average rate\n+ industry standard (AWS, GCP, Stripe)\n  same algorithm as TCP congestion control"
+}

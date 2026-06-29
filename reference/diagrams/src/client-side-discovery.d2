@@ -1,0 +1,31 @@
+# Client-side service discovery
+direction: right
+
+Client: "CALLER SERVICE\n(includes a 'discovery client'\nlibrary or sidecar)" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+Registry: "Service Registry\n(Eureka, Consul, etcd)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Entries: "orders-svc \u2192 [\n  10.0.0.5:8080 (healthy),\n  10.0.0.6:8080 (healthy),\n  10.0.0.9:8080 (sick)\n]"
+}
+
+Inst1: "orders-svc\n10.0.0.5:8080" { style: { fill: "#bbdefb" } }
+Inst2: "orders-svc\n10.0.0.6:8080" { style: { fill: "#bbdefb" } }
+Inst3: "orders-svc\n10.0.0.9:8080" { style: { fill: "#ef9a9a" } }
+
+Client -> Registry: "1. lookup 'orders-svc'\n(cached for ~30s, watch for changes)"
+Registry -> Client: "2. healthy instances\n[10.0.0.5, 10.0.0.6]"
+Client -> Inst1: "3. CLIENT picks one\n   (load-balancing strategy:\n    round-robin, random,\n    least-conn, latency-aware)"
+Client -> Inst2: "(or this one\n on next call)"
+
+Sick: "(instance 10.0.0.9 is sick \u2192\n registry omits it from lookup;\n client never sees it)" {
+  style: { fill: "#ffcdd2" }
+}
+
+Sick -> Inst3
+
+Properties: "CLIENT-SIDE PROPERTIES\nPROS:\n  \u2022 NO extra network hop (caller connects directly to instance)\n  \u2022 LB strategy can be smart \u2014 client knows e.g. its own zone\n  \u2022 simpler infrastructure \u2014 no LB to operate\n  \u2022 fine-grained control: caller can prefer same-AZ, retry to alternate, etc.\nCONS:\n  \u2022 every caller needs a discovery client library (per language!)\n  \u2022 cache freshness is the caller's problem \u2014 stale routes possible\n  \u2022 LB logic duplicated across all callers\n  \u2022 polyglot orgs maintain N implementations\nEXAMPLES: Netflix Eureka + Ribbon, Consul + DNS or client lib,\n  Spring Cloud LoadBalancer" {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}

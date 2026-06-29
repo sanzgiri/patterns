@@ -1,0 +1,32 @@
+# Quorum trade-offs: read-heavy vs write-heavy vs balanced
+direction: down
+
+Balanced: "BALANCED: W=3, R=3 (in N=5)" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+  Note: "+ tolerates 2 node failures for both reads and writes\n+ writes wait for 3 acks (medium latency)\n+ reads query 3 nodes (medium latency)\n+ Cassandra QUORUM, MongoDB majority"
+}
+
+ReadHeavy: "READ-OPTIMIZED: W=4, R=2 (in N=5)" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+  Note: "+ reads only need 2 acks \u2192 fast\n+ many nodes can serve reads\n\u2212 writes need 4 \u2192 slower & need 4 healthy nodes\n\u2212 only tolerates 1 write failure"
+}
+
+WriteHeavy: "WRITE-OPTIMIZED: W=2, R=4 (in N=5)" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+  Note: "+ writes need only 2 acks \u2192 fast\n+ tolerates 3 write failures\n\u2212 reads need 4 nodes \u2192 slow + sensitive to failures\n\u2212 used in Dynamo, voldemort for write-heavy workloads"
+}
+
+Unsafe: "EVENTUAL CONSISTENCY: W=1, R=1 (in N=5)" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+  Note: "1 + 1 = 2 \u2264 5 \u2717 W + R \u2264 N\n\u2192 NO QUORUM GUARANTEE \u2014 reads can see stale data\n\u2192 Cassandra ONE; only OK if app tolerates staleness\n\u2192 fastest, most available, weakest"
+}
+
+Strict: "STRICT: W=5, R=1 (in N=5)" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+  Note: "+ writes go to all nodes \u2192 any single read gets latest\n\u2212 a single failed node blocks all writes\n\u2192 unrealistic for fault tolerance"
+}
+
+Note: "The choice is per-operation in Cassandra and DynamoDB:\nyou can write with ONE for fast logging and read with QUORUM for correctness,\nor vice versa, on the same data \u2014 trading consistency for latency per query." {
+  shape: rectangle
+  style: { fill: "#e3f2fd"; stroke: "#0d47a1"; border-radius: 8 }
+}

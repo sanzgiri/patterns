@@ -1,0 +1,17 @@
+# Vector Clock comparison: causal vs concurrent
+direction: down
+
+Causal: "CAUSAL (happens-before)\nV1 < V2  iff  every component of V1 \u2264 V2, and at least one is strictly less" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 10; stroke-width: 2 }
+  Ex1: "V1 = [1, 2, 0]\nV2 = [3, 2, 1]\nEvery component V1 \u2264 V2: \u2713\nSome strictly less: \u2713\n\u2192 V1 happens-before V2"
+}
+
+Concurrent: "CONCURRENT\nNeither V1 \u2264 V2 nor V2 \u2264 V1" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 10; stroke-width: 2 }
+  Ex2: "V1 = [2, 1, 0]\nV2 = [1, 3, 0]\nV1[0] > V2[0] (2 > 1)\nV2[1] > V1[1] (3 > 1)\n\u2192 CONCURRENT updates\n\u2192 conflict! resolve by app logic\n  or by version vector merge"
+}
+
+Identical: "IDENTICAL\nV1 == V2" {
+  style: { fill: "#e3f2fd"; stroke: "#0d47a1"; border-radius: 10; stroke-width: 2 }
+  Ex3: "V1 = [2, 3, 1]\nV2 = [2, 3, 1]\n\u2192 same event\n  (or perfectly synchronized state)"
+}

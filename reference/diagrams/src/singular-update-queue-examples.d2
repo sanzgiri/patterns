@@ -1,0 +1,26 @@
+# Singular Update Queue: examples in real systems
+direction: down
+
+Raft: "RAFT LEADER\nupdate loop processes one entry at a time\n\u2022 single-threaded append to leader log\n\u2022 single-threaded commit handling\n\u2022 single-threaded apply to state machine\n\u2192 zero locks on the log/state\n\u2192 fan-out to network is parallel; queue serialization is the bottleneck" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+}
+
+Redis: "REDIS (single-threaded core)\nall commands processed by ONE thread on a queue\n\u2022 multiplexed network I/O (epoll/kqueue)\n\u2022 commands queued, executed serially\n\u2022 no GIL/lock concerns inside the main loop\n\u2192 millions of QPS on a single CPU core\n\u2192 simpler reasoning than concurrent Memcached" {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+Node: "NODE.JS EVENT LOOP\nentire user code runs on one thread\n\u2022 I/O handled by background pool\n\u2022 callbacks queued, executed serially\n\u2022 if you need concurrency, fork workers\n\u2192 no locks in user code, naturally serial" {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+Actor: "ACTOR MODEL (Akka, Erlang/OTP, Orleans)\neach actor has a mailbox queue\n\u2022 messages dequeued one at a time\n\u2022 actor's state never accessed concurrently\n\u2192 'singular update queue' per actor\n\u2192 thousands of actors, each independently serial" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+}
+
+LMAX: "LMAX DISRUPTOR\nspecial single-writer ring buffer\n\u2022 lock-free producer / single consumer\n\u2022 6M+ events/sec single-threaded\n\u2192 the LMAX trading platform's whole order book on one core" {
+  style: { fill: "#cfd8dc"; stroke: "#37474f"; stroke-width: 2; border-radius: 8 }
+}
+
+ScyllaDB: "SCYLLA DB / SEASTAR\nshared-nothing per-core architecture\n\u2022 each core owns a partition of data\n\u2022 cross-core via explicit message queues\n\u2192 singular update queue PER CORE\n\u2192 NUMA-friendly, near-linear scaling" {
+  style: { fill: "#b0bec5"; stroke: "#263238"; stroke-width: 2; border-radius: 8 }
+}

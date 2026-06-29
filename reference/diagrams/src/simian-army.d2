@@ -1,0 +1,48 @@
+# Netflix's Simian Army: a catalog of failure modes
+direction: down
+
+Title: "NETFLIX SIMIAN ARMY (the OG chaos toolkit)\nEach 'monkey' simulates a specific real-world failure mode." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 10 }
+}
+
+Chaos: "CHAOS MONKEY\nrandomly terminates instances\n\u2192 verifies graceful instance loss" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+}
+
+Gorilla: "CHAOS GORILLA\nsimulates entire AZ outage\n\u2192 verifies multi-AZ failover" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+}
+
+Kong: "CHAOS KONG\nsimulates entire REGION outage\n\u2192 verifies multi-region failover" {
+  style: { fill: "#ffcdd2"; stroke: "#b71c1c"; stroke-width: 2; border-radius: 8 }
+}
+
+Latency: "LATENCY MONKEY\ninjects artificial latency\n\u2192 verifies timeout / circuit-breaker handling" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+ConformityM: "CONFORMITY MONKEY\nfinds non-conforming instances\n(missing tags, security groups, autoscaling, etc.)\n\u2192 enforces ops standards" {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; stroke-width: 2; border-radius: 8 }
+}
+
+Doctor: "DOCTOR MONKEY\nperforms health checks\nreports unhealthy instances\n\u2192 keeps fleet healthy" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+Janitor: "JANITOR MONKEY\nfinds and cleans unused resources\n\u2192 cost / cleanliness" {
+  style: { fill: "#a5d6a7"; stroke: "#1b5e20"; stroke-width: 2; border-radius: 8 }
+}
+
+Security: "SECURITY MONKEY\nfinds security misconfigurations\n(open S3 buckets, expired certs, etc.)\n\u2192 enforces security baseline" {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+}
+
+Spread: "BEYOND NETFLIX: every major cloud / SRE org now does some form of this:\nGoogle DiRT (Disaster Recovery Testing), AWS Fault Injection Service,\nAzure Chaos Studio, GCP Chaos Toolkit, LinkedIn Waterbear, Gremlin (vendor),\nLitmus (CNCF), Chaos Mesh (CNCF), Pumba (Docker chaos), Toxiproxy (network)" {
+  style: { fill: "#fff59d"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+Title -> Chaos; Title -> Gorilla; Title -> Kong; Title -> Latency
+Title -> ConformityM; Title -> Doctor; Title -> Janitor; Title -> Security
+Chaos -> Spread
+Kong -> Spread
+Security -> Spread

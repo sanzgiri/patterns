@@ -1,0 +1,37 @@
+# Singular Update Queue: ONE writer thread handles all mutations
+direction: down
+
+Clients: "Many concurrent clients\n(N threads, possibly thousands)" {
+  shape: rectangle
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+  C1: "client 1" { style: { fill: "#90caf9" } }
+  C2: "client 2" { style: { fill: "#90caf9" } }
+  C3: "..." { style: { fill: "#90caf9" } }
+  CN: "client N" { style: { fill: "#90caf9" } }
+}
+
+Queue: "BOUNDED ORDERED QUEUE\n(thread-safe ingress)" {
+  shape: rectangle
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; stroke-width: 2; border-radius: 8 }
+}
+
+Updater: "SINGLE UPDATER THREAD" {
+  shape: rectangle
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; stroke-width: 3; border-radius: 10 }
+  Loop: "while running:\n  cmd = queue.take()  // blocking\n  apply(cmd, state)   // NO locks needed\n  respond(cmd)"
+}
+
+State: "Mutable state\n(B-tree, log, replicated state machine)" {
+  shape: rectangle
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; stroke-width: 2; border-radius: 8 }
+}
+
+Clients -> Queue: "submit command\n(enqueue is thread-safe)"
+Queue -> Updater: "FIFO dequeue, one at a time"
+Updater -> State: "mutate (single-threaded \u2192 no concurrent access)"
+Updater -> Clients: "respond to each submitter\n(via future / callback)"
+
+Properties: "Properties:\n\u2022 NO LOCKS on the mutable state \u2014 only one thread touches it\n\u2022 NO RACE CONDITIONS by construction\n\u2022 NO DEADLOCKS \u2014 only one thread doing mutation\n\u2022 EASY TO REASON ABOUT \u2014 strictly serial state machine\n\u2022 OBVIOUS ORDERING \u2014 FIFO commit order matches FIFO request order\n\u2022 NATURAL BACKPRESSURE \u2014 bounded queue rejects/blocks when full\n\u2022 EASY REPLICATION \u2014 just replicate the command log (\u2192 Raft/Paxos input)\n\nBOUNDED QUEUE: if updater is slow, queue fills up,\nproducers block or get rejected \u2014 sheds load BEFORE OOM." {
+  shape: rectangle
+  style: { fill: "#e3f2fd"; stroke: "#0d47a1"; border-radius: 8 }
+}

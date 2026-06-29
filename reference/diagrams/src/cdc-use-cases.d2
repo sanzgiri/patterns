@@ -1,0 +1,34 @@
+# CDC use cases: where it shines
+direction: down
+
+UC1: "1. SEARCH INDEX SYNC\n   Source DB has orders; Elasticsearch needs to mirror them.\n   CDC streams every change \u2192 indexer updates ES in near real time.\n   No dual-write; no full re-indexing." {
+  style: { fill: "#bbdefb"; stroke: "#0d47a1"; border-radius: 8 }
+}
+
+UC2: "2. CACHE INVALIDATION\n   CDC stream tells the cache layer 'customer 42 changed' \u2192 invalidate.\n   Eliminates stale-cache bugs from missed invalidations." {
+  style: { fill: "#c8e6c9"; stroke: "#1b5e20"; border-radius: 8 }
+}
+
+UC3: "3. EVENT-DRIVEN MICROSERVICES (Outbox CDC variant)\n   Service writes to outbox table; Debezium picks it up \u2192 Kafka.\n   Lower-latency alternative to Polling Publisher.\n   This is the most-cited modern CDC use case." {
+  style: { fill: "#fff4c2"; stroke: "#bf360c"; border-radius: 8 }
+}
+
+UC4: "4. DATA LAKE / WAREHOUSE INGESTION\n   Replicate operational DB into S3 / Snowflake / BigQuery as it changes.\n   Replaces nightly batch ETL with near-real-time pipelines.\n   Fivetran, Airbyte, Debezium are common implementations." {
+  style: { fill: "#e1bee7"; stroke: "#4a148c"; border-radius: 8 }
+}
+
+UC5: "5. DATABASE MIGRATION\n   Mirror legacy DB \u2192 new DB via CDC; cut over when caught up.\n   Used by AWS DMS, GoldenGate, Striim for zero-downtime migrations." {
+  style: { fill: "#ffe0b2"; stroke: "#e65100"; border-radius: 8 }
+}
+
+UC6: "6. AUDIT LOGGING\n   Stream all changes to an immutable audit log (Kafka with infinite retention).\n   Satisfies SOC 2 / HIPAA / SOX 'change history' requirements without app changes." {
+  style: { fill: "#d7ccc8"; stroke: "#3e2723"; border-radius: 8 }
+}
+
+UC7: "7. EVENT SOURCING BOOTSTRAP\n   Start with a normal CRUD app + CDC \u2192 events to Kafka.\n   New event-sourced services consume those events as the source of truth.\n   Gradual migration without rewrite." {
+  style: { fill: "#b2dfdb"; stroke: "#004d40"; border-radius: 8 }
+}
+
+UC8: "8. CROSS-REGION REPLICATION\n   CDC stream into Kafka; another region consumes \u2192 mirrored DB.\n   Underpins many active-passive geo-replication setups." {
+  style: { fill: "#cfd8dc"; stroke: "#263238"; border-radius: 8 }
+}
