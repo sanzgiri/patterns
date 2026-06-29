@@ -1,0 +1,68 @@
+/* SVG diagrams — make them fit nicely on all screen sizes */
+.md-content img[src$=".svg"],
+.md-content object[type="image/svg+xml"] {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5rem auto;
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  cursor: zoom-in;
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.md-content img[src$=".svg"]:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+  transform: translateY(-1px);
+}
+
+/* Caption hint on hover so users know to click */
+.md-content a.glightbox {
+  position: relative;
+  display: block;
+}
+.md-content a.glightbox::after {
+  content: "\1F50D click to zoom";  /* magnifier emoji */
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 0.7rem;
+  background: rgba(0,0,0,0.55);
+  color: white;
+  padding: 0.18rem 0.45rem;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.18s;
+  pointer-events: none;
+}
+.md-content a.glightbox:hover::after {
+  opacity: 1;
+}
+
+/* In dark mode, give SVGs a slight contrast frame */
+[data-md-color-scheme="slate"] .md-content img[src$=".svg"] {
+  background: #f5f5f5;
+}
+
+/* Tighter table styling for the implementations/companies tables */
+.md-typeset table:not([class]) {
+  font-size: 0.85rem;
+}
+
+/* Make the grid cards on the index page a bit cleaner */
+.md-typeset .grid.cards > ul > li {
+  border-radius: 8px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.md-typeset .grid.cards > ul > li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+/* Slight visual hint that diagram source links are "code-ish" */
+.md-typeset a[href$=".d2"] {
+  font-family: var(--md-code-font-family);
+  font-size: 0.85em;
+}

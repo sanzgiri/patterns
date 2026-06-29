@@ -1,0 +1,109 @@
+site_name: Patterns
+site_description: A curated reference of system-design and LLM/agentic patterns, with diagrams, current sources, and ELI5 explanations.
+site_url: https://sanzgiri.github.io/patterns/
+site_author: Ashutosh Sanzgiri
+repo_url: https://github.com/sanzgiri/patterns
+repo_name: sanzgiri/patterns
+edit_uri: edit/main/
+copyright: "Content licensed CC BY 4.0 · Code MIT · © Ashutosh Sanzgiri"
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.tracking
+    - navigation.path
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.tabs.link
+    - content.tooltips
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+
+plugins:
+  - search
+  - callouts          # converts GitHub-style > [!TIP] etc. to material admonitions
+  - awesome-pages     # honors .pages files for nav ordering
+  - glightbox:        # click-to-zoom for images (lightbox + pan)
+      touchNavigation: true
+      loop: false
+      effect: zoom
+      slide_effect: slide
+      width: 100%
+      height: auto
+      zoomable: true      # enable wheel/pinch zoom inside the lightbox
+      draggable: true     # pan around while zoomed
+      auto_caption: false
+      caption_position: bottom
+
+markdown_extensions:
+  # Python-Markdown core
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  # PyMdown extensions
+  - pymdownx.betterem
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/sanzgiri/patterns
+  generator: false
+
+extra_css:
+  - assets/extra.css
+
+# We let awesome-pages auto-generate nav from the folder structure.
+# .pages files in each directory (optional) override ordering.
+docs_dir: site_src
