@@ -1,0 +1,41 @@
+## Attention budget vs context size
+direction: down
+
+ctx_small: {
+  label: "Small context\n5 items\n\n5×5 = 25 attention\nrelationships\n(easy)"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+}
+
+ctx_medium: {
+  label: "Medium context\n50 items\n\n50×50 = 2,500\n(50×harder)"
+  shape: rectangle
+  style.fill: "#fef9c3"
+  style.stroke: "#ca8a04"
+}
+
+ctx_large: {
+  label: "Large context\n500 items\n\n500×500 = 250,000\n(10,000×harder)"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+}
+
+note1: {
+  shape: text
+  label: "n² growth: every token\nmust attend to every\nother token in the window"
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+note2: {
+  shape: text
+  label: "Training distribution skews short\n→ models have less learned\nbehavior for long-range attention"
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+ctx_small -> ctx_medium -> ctx_large
+ctx_large -> note1
+ctx_large -> note2

@@ -1,0 +1,44 @@
+## Grader taxonomy — three families
+direction: right
+
+code: {
+  label: "CODE GRADERS\n(deterministic)"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+  body: {label: "exact match\nregex / JSON schema\ntest suite pass-fail\ndiff equality"; shape: text}
+  pros: {label: "+ Cheap (microseconds)\n+ Reproducible\n+ Zero variance"; shape: text; style.font-color: "#16a34a"}
+  cons: {label: "- Only verifiable outputs\n- Brittle to format change"; shape: text; style.font-color: "#dc2626"}
+}
+
+model: {
+  label: "MODEL GRADERS\n(LLM-as-judge)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "LLM scores vs rubric\nor pairwise comparison"; shape: text}
+  pros: {label: "+ Scales\n+ Handles open-ended\n+ Captures nuance"; shape: text; style.font-color: "#16a34a"}
+  cons: {label: "- Costs tokens\n- Variance / bias\n- Needs calibration"; shape: text; style.font-color: "#dc2626"}
+}
+
+human: {
+  label: "HUMAN GRADERS\n(expert raters)"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+  body: {label: "trained annotators score\nor compare outputs;\noften via tools like\nScale, Surge, internal SMEs"; shape: text}
+  pros: {label: "+ Gold standard\n+ Captures real preference\n+ Calibration source"; shape: text; style.font-color: "#16a34a"}
+  cons: {label: "- Slow (hours-days)\n- Expensive\n- Doesn't scale\n- Inter-rater variance"; shape: text; style.font-color: "#dc2626"}
+}
+
+guide: {
+  shape: text
+  label: "Rule of thumb:\nuse code where you can,\nmodel where you must,\nhuman to calibrate the models."
+  style.italic: true
+  style.bold: true
+  style.font-color: "#7c3aed"
+}
+
+code -> model: "escalate when\ncode can't decide" {style.stroke: "#d97706"}
+model -> human: "escalate for\ncalibration or\ngold-standard truth" {style.stroke: "#dc2626"}
+human -> model: "labels train\nthe LLM judge" {style.stroke: "#7c3aed"}

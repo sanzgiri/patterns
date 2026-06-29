@@ -1,0 +1,49 @@
+## Anatomy of effective context (Anthropic's components)
+direction: down
+
+ctx: {
+  label: "Context Window\n(finite attention budget)"
+  shape: rectangle
+  style.fill: "#f0fdf4"
+  style.stroke: "#16a34a"
+  style.stroke-width: 3
+
+  sys: {
+    label: "System prompts\n— right altitude:\nnot brittle if/else,\nnot vague platitudes"
+    shape: rectangle
+    style.fill: "#dbeafe"
+  }
+  tools: {
+    label: "Tool definitions\n— minimal, distinct,\nnon-overlapping;\nbloated sets are the\n#1 failure mode"
+    shape: rectangle
+    style.fill: "#dbeafe"
+  }
+  examples: {
+    label: "Examples / few-shot\n— curate canonical cases,\nnot edge-case dumps"
+    shape: rectangle
+    style.fill: "#dbeafe"
+  }
+  history: {
+    label: "Message history\n— compact, summarize,\nor restart as it grows"
+    shape: rectangle
+    style.fill: "#dbeafe"
+  }
+  retrieved: {
+    label: "Retrieved data\n(RAG, MCP, files)\n— just-in-time, not pre-load"
+    shape: rectangle
+    style.fill: "#dbeafe"
+  }
+  state: {
+    label: "External state\n(notes, scratchpad, memory tool)\n— lightweight refs only"
+    shape: rectangle
+    style.fill: "#dbeafe"
+  }
+}
+
+principle: {
+  shape: text
+  label: "Goal: smallest set of high-signal tokens\nthat maximize the likelihood of the desired outcome"
+  style.italic: true
+  style.font-color: "#7c3aed"
+  near: bottom-center
+}

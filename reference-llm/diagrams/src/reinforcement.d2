@@ -1,0 +1,27 @@
+## Reinforcement — feed objective + state on every tool return
+direction: down
+
+loop: {
+  label: "Agent loop with reinforcement"
+  shape: rectangle
+  style.fill: "#f0fdf4"
+  style.stroke: "#16a34a"
+  style.stroke-width: 3
+
+  llm: {label: "LLM decides\nnext step"; shape: hexagon; style.fill: "#dbeafe"}
+  tool: {label: "Tool executes"; shape: rectangle; style.fill: "#fde68a"}
+  result_naive: {label: "Naive return\n→ just the tool result"; shape: rectangle; style.fill: "#fecaca"}
+  result_reinforced: {label: "Reinforced return\n→ tool result\n+ objective reminder\n+ TODO state\n+ progress percent\n+ relevant constraints"; shape: rectangle; style.fill: "#bbf7d0"; style.bold: true}
+
+  llm -> tool: "call(args)"
+  tool -> result_naive: "❌ minimal info"
+  tool -> result_reinforced: "✅ enriched"
+  result_reinforced -> llm: "next iteration\nhas full context"
+}
+
+claude_code: {
+  shape: text
+  label: "Claude Code does this implicitly:\nthe TODO list re-appears in context after each tool call.\nWorks like a reminder system."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}

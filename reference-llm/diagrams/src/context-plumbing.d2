@@ -1,0 +1,45 @@
+## Context Plumbing — sources → sinks
+direction: right
+
+sources: {
+  label: "SOURCES\n(where context appears)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+
+  user: {label: "User activity\n(messages, edits,\nfile changes)"; shape: cylinder}
+  env: {label: "Environment\n(emails, calendar,\ndocuments, weather)"; shape: cylinder}
+  tools: {label: "Tool updates\n(new MCP servers,\nschema changes)"; shape: cylinder}
+  state: {label: "External state\n(DB rows, API state,\nrunning jobs)"; shape: cylinder}
+}
+
+plumbing: {
+  label: "PLUMBING\n(the engineering work)"
+  shape: hexagon
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  style.bold: true
+
+  ops: {label: "• Watch / poll sources\n• Filter / dedupe\n• Format / structure\n• Route to right agent\n• Time-window selection"; shape: text}
+}
+
+sinks: {
+  label: "SINKS\n(where AI runs)"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+
+  agent_a: {label: "Agent A\n(coding assistant)"; shape: hexagon; style.fill: "#bbf7d0"}
+  agent_b: {label: "Agent B\n(research)"; shape: hexagon; style.fill: "#bbf7d0"}
+  agent_c: {label: "Agent C\n(scheduler)"; shape: hexagon; style.fill: "#bbf7d0"}
+}
+
+sources -> plumbing: "raw signal"
+plumbing -> sinks: "right context, right agent,\nright time"
+
+note: {
+  shape: text
+  label: "Matt Webb's framing (Nov 2025):\nthe AI runs as close to user intent as possible,\nbut context can appear anywhere.\nThe job is moving it."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}

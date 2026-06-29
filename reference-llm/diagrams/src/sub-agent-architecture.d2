@@ -1,0 +1,67 @@
+## Sub-agent architecture — fresh context, focused task
+direction: down
+
+parent: {
+  label: "Parent agent\n(LARGE accumulated context)"
+  shape: hexagon
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  style.bold: true
+
+  ctx: {label: "Context: 150K tokens\n• full conversation\n• many tool results\n• decisions, notes"; shape: text; style.italic: true}
+}
+
+spawn: {
+  label: "spawn_sub_agent(\n  task=\"specific subtask\",\n  context=\"only what's relevant\",\n  return_format=\"summary\"\n)"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+}
+
+sub1: {
+  label: "Sub-agent 1\n(FRESH context)"
+  shape: hexagon
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+
+  ctx: {label: "Context: 5K tokens\n• system prompt\n• specific subtask\n• minimal references"; shape: text; style.italic: true}
+}
+
+sub2: {
+  label: "Sub-agent 2\n(FRESH context)"
+  shape: hexagon
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+}
+
+sub3: {
+  label: "Sub-agent 3\n(FRESH context)"
+  shape: hexagon
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+}
+
+return: {
+  label: "Each sub-agent returns\na SUMMARY (1-2K tokens)\nback to parent"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  style.bold: true
+}
+
+parent -> spawn: "delegate"
+spawn -> sub1
+spawn -> sub2
+spawn -> sub3
+sub1 -> return
+sub2 -> return
+sub3 -> return
+return -> parent: "compact summaries\n→ keeps parent context small" {style.stroke: "#7c3aed"; style.bold: true}
+
+note: {
+  shape: text
+  label: "Each sub-agent's context is\nisolated. Failures don't pollute siblings.\nParent only sees curated outputs.\nThe parent can spawn dozens of subs\nwithout its own context exploding."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+parent -> note

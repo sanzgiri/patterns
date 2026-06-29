@@ -1,0 +1,33 @@
+## Agent-Computer Interface (ACI) design
+direction: right
+
+bad: {
+  label: "BAD tool design\n(LLM-unfriendly)"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+
+  ex: {label: "POST /api/v3/db/exec\n(opaque, error returns JSON\nlike: {\"code\":42,\"msg\":\"E_INVALID\"})\nManual format, brittle, untyped"; shape: text; style.italic: true}
+  fail: {label: "→ LLM guesses wrong args\n→ cryptic errors\n→ wastes turns"; shape: text; style.font-color: "#dc2626"}
+  ex -> fail
+}
+
+good: {
+  label: "GOOD tool design\n(LLM-friendly = human-friendly)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+
+  ex: {label: "search_orders(\n  customer_id: str,\n  status: 'pending' | 'shipped',\n  limit: int = 10\n) -> list[Order]\n\nDocstring: \"Returns customer orders\nfiltered by status. Use 'pending'\nfor open orders.\""; shape: text; style.italic: true}
+  win: {label: "→ Self-documenting\n→ Type-safe args\n→ Helpful error messages\n→ LLM succeeds on first try"; shape: text; style.font-color: "#16a34a"; style.bold: true}
+  ex -> win
+}
+
+rule: {
+  shape: text
+  label: "Anthropic rule:\n\"Tool design takes as much engineering as\nuser interface design.\"\n\nIf a thoughtful junior engineer\ncan't use the tool from the docstring,\nan LLM can't either."
+  style.bold: true
+  style.font-color: "#7c3aed"
+}
+
+bad -> good: "→ refactor toward" {style.stroke: "#16a34a"; style.stroke-width: 3}

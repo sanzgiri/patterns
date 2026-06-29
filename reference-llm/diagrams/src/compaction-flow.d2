@@ -1,0 +1,45 @@
+## Compaction — summarize and restart
+direction: down
+
+before: {
+  label: "BEFORE compaction\n(context nearing limit)"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+
+  sys: {label: "System prompt\n2K tokens"; style.fill: "#dbeafe"}
+  hist: {label: "Message history\n180K tokens\n(many tool calls,\nold tool results,\nresolved subtasks)"; style.fill: "#fecaca"}
+  tools: {label: "Tool defs\n8K tokens"; style.fill: "#dbeafe"}
+  total: {label: "≈ 190K / 200K\nDanger zone"; shape: text; style.font-color: "#dc2626"; style.bold: true}
+}
+
+compact_step: {
+  label: "COMPACT\n(LLM summarizes\nthe history)"
+  shape: hexagon
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  style.bold: true
+}
+
+summarizer_prompt: {
+  shape: text
+  label: "'Preserve: architectural decisions,\nunresolved bugs, in-progress steps,\ncritical constraints.\nDiscard: redundant tool outputs,\nresolved sub-tasks, duplicate\nretrievals.'"
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+after: {
+  label: "AFTER compaction\n(fresh context)"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+
+  sys: {label: "System prompt\n2K tokens"; style.fill: "#dbeafe"}
+  summary: {label: "Summary of\nprior conversation\n3K tokens"; style.fill: "#dcfce7"}
+  recent: {label: "5 most-recent\nfiles / actions\n5K tokens"; style.fill: "#dcfce7"}
+  tools: {label: "Tool defs\n8K tokens"; style.fill: "#dbeafe"}
+  total: {label: "≈ 18K / 200K\nPlenty of room"; shape: text; style.font-color: "#16a34a"; style.bold: true}
+}
+
+before -> compact_step -> after
+compact_step -> summarizer_prompt: "guided by"

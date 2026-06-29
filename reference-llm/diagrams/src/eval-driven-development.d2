@@ -1,0 +1,82 @@
+## Eval-driven development loop
+direction: down
+
+start: {
+  label: "New feature / change\n(prompt edit, tool addition,\nmodel swap, agent skill)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+evals_exist: {
+  label: "Do evals exist\nfor what's affected?"
+  shape: diamond
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+}
+
+write_eval: {
+  label: "Write the eval FIRST\n(define what 'success'\nlooks like, before coding)"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+  style.bold: true
+}
+
+run_baseline: {
+  label: "Run eval against\ncurrent system\n(establish baseline)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+}
+
+make_change: {
+  label: "Make the change\n(prompt, code, model, etc.)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#ea580c"
+}
+
+run_again: {
+  label: "Re-run the eval"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+}
+
+decision: {
+  label: "Did the metric\nimprove?"
+  shape: diamond
+  style.fill: "#fef3c7"
+}
+
+ship: {
+  label: "Ship\n(add to CI as\nregression eval)"
+  shape: circle
+  style.fill: "#22c55e"
+  style.stroke: "#16a34a"
+  style.bold: true
+}
+
+iterate: {
+  label: "Iterate\nor revert"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+}
+
+start -> evals_exist
+evals_exist -> write_eval: "no" {style.stroke: "#dc2626"; style.bold: true}
+evals_exist -> run_baseline: "yes"
+write_eval -> run_baseline
+run_baseline -> make_change
+make_change -> run_again
+run_again -> decision
+decision -> ship: "yes" {style.stroke: "#16a34a"; style.bold: true}
+decision -> iterate: "no" {style.stroke: "#dc2626"}
+iterate -> make_change
+
+note: {
+  shape: text
+  label: "Anthropic (Jan 2026):\n\"Without evals you cannot tell whether\na change helped, hurt, or did nothing.\nEvals come first, code follows.\""
+  style.italic: true
+  style.font-color: "#7c3aed"
+}

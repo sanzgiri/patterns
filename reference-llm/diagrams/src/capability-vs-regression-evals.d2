@@ -1,0 +1,36 @@
+## Capability vs Regression evals — two different jobs
+direction: right
+
+capability: {
+  label: "CAPABILITY EVALS"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  q: {label: "Question they answer:\n'Can the system handle\nNEW or harder cases?'"; shape: text}
+  ex: {label: "Examples:\n• Hard SWE-bench problems\n• Novel reasoning tasks\n• New tool integration\n• New language / domain"; shape: text}
+  cadence: {label: "Run when:\n• New model release\n• Major feature added\n• Quarterly capability review"; shape: text}
+  metric: {label: "Metric: pass@k or absolute score\n(want to see ceiling raised)"; shape: text; style.font-color: "#16a34a"}
+}
+
+regression: {
+  label: "REGRESSION EVALS"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  q: {label: "Question they answer:\n'Did the change BREAK\nanything that worked before?'"; shape: text}
+  ex: {label: "Examples:\n• Curated 'previously-passing' cases\n• Production-typical traffic\n• Known edge cases\n• Important customer flows"; shape: text}
+  cadence: {label: "Run when:\n• Every PR\n• Every deploy\n• Before every prompt edit"; shape: text}
+  metric: {label: "Metric: pass^k or score-delta\n(want to see no regressions)"; shape: text; style.font-color: "#d97706"}
+}
+
+both: {
+  label: "Mature teams run BOTH"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  style.bold: true
+  body: {label: "Capability evals tell you when to invest.\nRegression evals tell you when to ship.\nWithout capability: ceiling unknown.\nWithout regression: shipping breaks things."; shape: text}
+}
+
+capability -> both
+regression -> both

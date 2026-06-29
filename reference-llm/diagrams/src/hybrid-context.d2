@@ -1,0 +1,53 @@
+## Hybrid: pre-load anchors, JIT the rest
+direction: down
+
+ctx: {
+  label: "Context window"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+  style.stroke-width: 3
+
+  preload: {
+    label: "Pre-loaded\n(small, always-relevant)"
+    shape: rectangle
+    style.fill: "#dbeafe"
+
+    claude_md: {label: "CLAUDE.md\n(project conventions)"; shape: page}
+    sys: {label: "System prompt"; shape: page}
+    tools_list: {label: "Tool definitions"; shape: page}
+    state: {label: "STATE.json\n(current task)"; shape: page}
+  }
+
+  refs: {
+    label: "References\n(addresses, not content)"
+    shape: rectangle
+    style.fill: "#fef3c7"
+
+    files: {label: "File paths\n(src/, tests/, docs/)"; shape: page}
+    apis: {label: "MCP server names\n(github, gdrive, slack)"; shape: page}
+    queries: {label: "Saved queries\n(SQL templates, search)"; shape: page}
+  }
+}
+
+tools: {
+  label: "JIT tools the agent uses\nto fetch when needed"
+  shape: rectangle
+  style.fill: "#f3e8ff"
+
+  grep: {label: "grep / glob"}
+  read: {label: "read_file"}
+  mcp: {label: "mcp_call"}
+  query: {label: "db.query"}
+}
+
+external: {
+  label: "External data\n(filesystem, APIs, DBs)"
+  shape: cylinder
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+}
+
+ctx.refs -> tools: "agent decides\nto fetch X"
+tools -> external: "retrieve\nspecific slice"
+external -> ctx.preload: "specific slice\n(small, focused)" {style.stroke: "#16a34a"; style.bold: true}

@@ -1,0 +1,45 @@
+## Agent loop variants — ReAct vs Plan-Execute vs Reflexion
+direction: right
+
+react: {
+  label: "ReAct\n(Yao et al. 2022)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+
+  body: {label: "thought → action → observation\n→ thought → action → ...\n(interleaved; default for tool-use)"; shape: text}
+}
+
+plan_exec: {
+  label: "Plan-and-Execute\n(LangChain 2023)"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+
+  body: {label: "plan all steps up front\nthen execute each\n(faster, but rigid)"; shape: text}
+}
+
+reflexion: {
+  label: "Reflexion\n(Shinn et al. 2023)"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+
+  body: {label: "ReAct + self-reflection\nafter failure → retry with\nlessons-learned in context"; shape: text}
+}
+
+modern: {
+  label: "Modern (2025-2026)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#ea580c"
+  style.bold: true
+
+  body: {label: "ReAct loop +\nreasoning model thinks internally +\nstructured note-taking +\nperiodic compaction +\nreinforcement on every turn"; shape: text}
+}
+
+react -> plan_exec: "→ formalize"
+react -> reflexion: "→ add retry"
+react -> modern: "→ production-harden" {style.stroke: "#ea580c"; style.stroke-width: 3}
+plan_exec -> modern
+reflexion -> modern

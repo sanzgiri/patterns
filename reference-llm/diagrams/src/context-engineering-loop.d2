@@ -1,0 +1,43 @@
+## Context engineering — the discipline
+direction: right
+
+input: {
+  shape: rectangle
+  label: "Anything that could\nbe relevant to the\nnext LLM call"
+  style.fill: "#e0e7ff"
+  style.stroke: "#6366f1"
+}
+
+curate: {
+  shape: hexagon
+  label: "Curate\n(what to keep,\nwhat to drop)"
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  style.bold: true
+}
+
+context: {
+  shape: rectangle
+  label: "Context window\n(finite attention\nbudget)"
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+}
+
+llm: {
+  shape: cylinder
+  label: "LLM call"
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+input -> curate: "system prompts,\ntool defs, MCP,\nmessage history,\nretrieved docs,\ntool results,\nnotes, memory,\nexternal data" {style.stroke: "#6366f1"}
+curate -> context: "smallest set of\nhigh-signal tokens" {style.stroke: "#16a34a"; style.bold: true}
+context -> llm
+llm -> curate: "new outputs / tool results\nfeed the next round" {style.stroke: "#94a3b8"; style.stroke-dash: 3}
+
+note: {
+  shape: text
+  label: "Context engineering happens\nEVERY turn, not once upfront"
+  style.italic: true
+  style.font-color: "#7c3aed"
+}

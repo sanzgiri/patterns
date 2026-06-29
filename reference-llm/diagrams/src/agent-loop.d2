@@ -1,0 +1,52 @@
+## The agent loop — think, act, observe
+direction: down
+
+start: {
+  label: "Goal\n(user task or trigger)"
+  shape: circle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+think: {
+  label: "THINK\n(LLM decides next action\nbased on goal + state)"
+  shape: hexagon
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+  style.bold: true
+}
+
+decide: {
+  label: "Done?"
+  shape: diamond
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+}
+
+act: {
+  label: "ACT\n(call tool / write file /\nhit API / spawn sub-agent)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+}
+
+observe: {
+  label: "OBSERVE\n(append tool result to context;\noptionally reinforce state)"
+  shape: rectangle
+  style.fill: "#f3e8ff"
+  style.stroke: "#7c3aed"
+}
+
+stop: {
+  label: "Answer / Output\n(or escalate to human)"
+  shape: circle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+}
+
+start -> think
+think -> decide
+decide -> stop: "yes" {style.stroke: "#16a34a"; style.bold: true}
+decide -> act: "no — choose tool" {style.stroke: "#d97706"}
+act -> observe
+observe -> think: "loop with updated context" {style.stroke: "#7c3aed"; style.bold: true}

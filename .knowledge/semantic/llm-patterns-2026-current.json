@@ -1,0 +1,416 @@
+{
+  "id": "llm-patterns-2026-current",
+  "topic": "llm patterns",
+  "subtopic": "Patterns dominant in 2025-2026 (post-Anthropic Sept 2025 context-engineering era)",
+  "source": {
+    "title": "Anthropic Engineering blog (Sept 2025 - Apr 2026), Simon Willison's blog, cross-references",
+    "fetched": "2026-06-28",
+    "primary_sources_verified_by_fetch": [
+      "https://www.anthropic.com/engineering",
+      "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+      "https://www.anthropic.com/engineering/code-execution-with-mcp",
+      "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills",
+      "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+      "https://simonwillison.net/tags/ai-agents/"
+    ]
+  },
+  "provenance": "verified_by_fetch",
+  "confidence": 0.9,
+  "framing": "This catalog covers patterns that became dominant after Sept 2025, when Anthropic published 'Effective context engineering for AI agents' and reframed the discipline. Companions: llm-patterns-eugene-yan (2023 baseline), llm-patterns-anthropic (Dec 2024 workflows/agents), llm-patterns-12-factor-agents, llm-patterns-2024-2026-additions (transitional). This is the current state-of-the-art.",
+  "categories": [
+    "Context Engineering (CTX)",
+    "Agentic Patterns (AGT)",
+    "Skills & Packaging (SKL)",
+    "Quality & Evals (QUA)",
+    "Security & Containment (SEC)",
+    "Production Engineering (ENG)",
+    "Protocols & Standards (PRO)"
+  ],
+  "patterns": [
+    {
+      "id": "CTX-01",
+      "name": "Context Engineering",
+      "category": "CTX",
+      "summary": "The named discipline of curating what enters an LLM's finite context window each step. Supersedes prompt engineering as the primary engineering activity for production agents.",
+      "source_anchor": "Anthropic — Effective context engineering for AI agents (Sept 29, 2025)",
+      "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+      "first_named_by": "12-Factor Agents Factor 3 (2025) and Anthropic (Sept 2025)",
+      "introduced": "2025-09"
+    },
+    {
+      "id": "CTX-02",
+      "name": "Context Rot",
+      "category": "CTX",
+      "summary": "Named phenomenon: as token count grows, model recall and reasoning quality degrade. Attention budget is finite (n^2 pairwise relationships); training data is biased toward shorter sequences.",
+      "source_anchor": "Anthropic Sept 2025; needle-in-haystack benchmarks",
+      "introduced": "2025"
+    },
+    {
+      "id": "CTX-03",
+      "name": "Compaction",
+      "category": "CTX",
+      "summary": "When context nears its limit, summarize the conversation and restart with the summary. The first lever for long-horizon agents. Claude Code uses message history + 5 most-recent files.",
+      "source_anchor": "Anthropic Sept 2025",
+      "introduced": "2025"
+    },
+    {
+      "id": "CTX-04",
+      "name": "Structured Note-Taking / Agentic Memory",
+      "category": "CTX",
+      "summary": "Agent writes notes to external files (NOTES.md, TODO.md) that persist outside the context window and are pulled back when needed. Demonstrated by Claude playing Pokemon tracking thousands of game steps.",
+      "source_anchor": "Anthropic Sept 2025; Claude Sonnet 4.5 memory tool",
+      "introduced": "2025"
+    },
+    {
+      "id": "CTX-05",
+      "name": "Just-in-Time Context",
+      "category": "CTX",
+      "summary": "Don't pre-load all data. Carry lightweight identifiers (file paths, queries, URLs) and load data dynamically via tools when needed. Mirrors human cognition (we use filesystems, not memorization).",
+      "source_anchor": "Anthropic Sept 2025",
+      "introduced": "2025"
+    },
+    {
+      "id": "CTX-06",
+      "name": "Progressive Disclosure",
+      "category": "CTX",
+      "summary": "Layered loading: metadata first, then summary, then full content. Same principle drives Agent Skills (3-level), Code Mode (filesystem tool discovery), and just-in-time retrieval.",
+      "source_anchor": "Anthropic Sept-Oct 2025",
+      "introduced": "2025"
+    },
+    {
+      "id": "CTX-07",
+      "name": "Context Plumbing",
+      "category": "CTX",
+      "summary": "Framing context as having sources (where it appears: emails, files, sensors) and sinks (where the AI runs). The engineering work is moving context between sources and sinks.",
+      "source_anchor": "Matt Webb — interconnected.org (Nov 2025)",
+      "url": "https://interconnected.org/home/2025/11/29",
+      "introduced": "2025-11"
+    },
+    {
+      "id": "CTX-08",
+      "name": "Reinforcement (in agent loops)",
+      "category": "CTX",
+      "summary": "On every tool call, return not just the result but also reminders of the overall objective and current task state. Claude Code's TODO list does this implicitly.",
+      "source_anchor": "Armin Ronacher — Agent design is still hard (Nov 2025)",
+      "url": "https://lucumr.pocoo.org/2025/11/22/agent-design/",
+      "introduced": "2025-11"
+    },
+
+    {
+      "id": "AGT-01",
+      "name": "The Agent Loop (modern definition)",
+      "category": "AGT",
+      "summary": "Simon Willison and Anthropic converged: 'agents are LLMs autonomously using tools in a loop.' This is the simplest accurate definition as of 2025.",
+      "source_anchor": "Anthropic Sept 2025 (refining Dec 2024 definition); Simon Willison",
+      "introduced": "2024-2025"
+    },
+    {
+      "id": "AGT-02",
+      "name": "Workflows vs Agents (the spectrum)",
+      "category": "AGT",
+      "summary": "Workflows = LLMs+tools orchestrated through predefined code paths. Agents = LLMs dynamically directing their own processes. Anthropic's rule: start with workflows; reach for agents only when justified.",
+      "source_anchor": "Anthropic — Building effective agents (Dec 2024), refined Sept 2025",
+      "introduced": "2024-12"
+    },
+    {
+      "id": "AGT-03",
+      "name": "Single Agent with Tools (ACI design)",
+      "category": "AGT",
+      "summary": "One agent, a loop, 5-12 well-described tools. The default for most enterprise use cases. Quality of the agent-computer interface (ACI) dominates outcomes.",
+      "source_anchor": "Anthropic Dec 2024 + Microsoft 2026",
+      "introduced": "2024"
+    },
+    {
+      "id": "AGT-04",
+      "name": "Multi-Agent Orchestration (production)",
+      "category": "AGT",
+      "summary": "Lead agent + specialized subagents in parallel. Token usage explains 80% of performance variance on BrowseComp. Justified for valuable, parallelizable, broad-context tasks. NOT for coding (too many dependencies).",
+      "source_anchor": "Anthropic — How we built our multi-agent research system (Jun 2025)",
+      "url": "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "introduced": "2025-06"
+    },
+    {
+      "id": "AGT-05",
+      "name": "Sub-Agent Architectures for Context Isolation",
+      "category": "AGT",
+      "summary": "Specialized sub-agents work in clean context windows on focused tasks. Each may use tens of thousands of tokens but returns only 1-2K of distilled summary to the lead. Achieves separation of concerns at the context level.",
+      "source_anchor": "Anthropic Sept 2025",
+      "introduced": "2025"
+    },
+    {
+      "id": "AGT-06",
+      "name": "Self-Directed Agent Swarms",
+      "category": "AGT",
+      "summary": "Model spawns up to 100 sub-agents with up to 1,500 tool calls, swarm topology automatically created without predefined subagents or workflow. Demonstrated by Kimi K2.5 (Jan 2026).",
+      "source_anchor": "Kimi K2.5 release (Jan 2026)",
+      "introduced": "2026-01"
+    },
+    {
+      "id": "AGT-07",
+      "name": "Coding Agents (as agent specialty)",
+      "category": "AGT",
+      "summary": "Specialized agents for software development. Patterns: plan-then-act, read-grep-edit loops, test-driven inner loops, patch-based output, sandbox execution. Examples: Claude Code, Cursor Agent, Codex, Aider, Cline, Devin.",
+      "source_anchor": "Anthropic Claude Code best practices (Apr 2025); ecosystem 2025-2026",
+      "introduced": "2024-2025"
+    },
+    {
+      "id": "AGT-08",
+      "name": "Computer Use / Browser Use Agents",
+      "category": "AGT",
+      "summary": "Agents that operate GUIs via screenshots + synthesized mouse/keyboard, not via APIs. Useful for software without APIs. Slow, brittle, security-sensitive — best in sandboxes.",
+      "source_anchor": "Anthropic Computer Use (Oct 2024); OpenAI Operator; Google Project Mariner",
+      "introduced": "2024-10"
+    },
+    {
+      "id": "AGT-09",
+      "name": "Generative Agents (memory-stream architecture)",
+      "category": "AGT",
+      "summary": "Park et al. 2023's pattern (memory stream + retrieval scoring on recency/importance/relevance + reflection + planning) — still the reference architecture for simulation/social agents.",
+      "source_anchor": "Park et al. 2023 (Stanford Smallville)",
+      "introduced": "2023"
+    },
+    {
+      "id": "AGT-10",
+      "name": "Maker-Checker / Generator-Verifier (agentic)",
+      "category": "AGT",
+      "summary": "Generator agent produces output; verifier agent checks it via tools/rules/different model. Loop until verifier accepts. Now standard for safety-critical deployments (legal, medical, financial).",
+      "source_anchor": "Microsoft orchestration patterns (2026); Anthropic Evaluator-Optimizer (Dec 2024)",
+      "introduced": "2024-2025"
+    },
+
+    {
+      "id": "SKL-01",
+      "name": "Agent Skills (SKILL.md format)",
+      "category": "SKL",
+      "summary": "A skill = folder with SKILL.md (YAML frontmatter: name, description) + optional bundled scripts/instructions/resources. Three-level progressive disclosure: metadata -> SKILL.md body -> bundled files.",
+      "source_anchor": "Anthropic — Equipping agents for the real world with Agent Skills (Oct 16, 2025)",
+      "url": "https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills",
+      "open_standard_since": "2025-12-18",
+      "standard_url": "https://agentskills.io/specification",
+      "adopters": ["Claude.ai", "Claude Code", "OpenCode", "Cursor", "Amp", "Letta", "goose", "GitHub", "VS Code", "OpenAI Codex"],
+      "introduced": "2025-10"
+    },
+    {
+      "id": "SKL-02",
+      "name": "Code Execution with MCP (Code Mode)",
+      "category": "SKL",
+      "summary": "Agent writes code that calls MCP tools instead of making direct tool calls. 98.7% token reduction in Anthropic's reference example (150K -> 2K). Tools discoverable via filesystem; data can stay in execution environment.",
+      "source_anchor": "Anthropic — Code execution with MCP (Nov 4, 2025); Cloudflare 'Code Mode' (independent)",
+      "url": "https://www.anthropic.com/engineering/code-execution-with-mcp",
+      "introduced": "2025-11"
+    },
+    {
+      "id": "SKL-03",
+      "name": "AGENTS.md convention",
+      "category": "SKL",
+      "summary": "Repo-level convention for agent instructions (like README but for agents). Donated by OpenAI to the Agentic AI Foundation in Dec 2025.",
+      "source_anchor": "OpenAI; AAIF (Dec 2025)",
+      "introduced": "2025"
+    },
+
+    {
+      "id": "QUA-01",
+      "name": "Eval-Driven Development (formalized)",
+      "category": "QUA",
+      "summary": "Build evals to define planned capabilities BEFORE the agent can fulfill them. When a new model drops, the suite reveals which bets paid off. Anthropic's explicit methodology.",
+      "source_anchor": "Anthropic — Demystifying evals for AI agents (Jan 9, 2026)",
+      "url": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+      "introduced": "2025-2026"
+    },
+    {
+      "id": "QUA-02",
+      "name": "Grader Type Taxonomy (Code/Model/Human)",
+      "category": "QUA",
+      "summary": "Three grader kinds, combined per task: code-based (deterministic, cheap, brittle), model-based (LLM-as-judge, scalable, needs calibration), human (gold standard, used to calibrate others).",
+      "source_anchor": "Anthropic Jan 2026",
+      "introduced": "2026"
+    },
+    {
+      "id": "QUA-03",
+      "name": "pass@k vs pass^k metrics",
+      "category": "QUA",
+      "summary": "pass@k = at least 1 of k attempts succeeds; pass^k = all k succeed. For customer-facing agents pass^k is the real bar. 75% per-trial -> pass^10 = 6% (consistency is hard).",
+      "source_anchor": "Anthropic Jan 2026 (formalized); origin pass@k = Codex paper 2021",
+      "introduced": "2026-formalization"
+    },
+    {
+      "id": "QUA-04",
+      "name": "Capability vs Regression Evals",
+      "category": "QUA",
+      "summary": "Capability evals start at LOW pass rate (a hill to climb). Regression evals stay near 100% (catch backsliding). Capability evals 'graduate' to regression suite when saturated.",
+      "source_anchor": "Anthropic Jan 2026",
+      "introduced": "2026"
+    },
+    {
+      "id": "QUA-05",
+      "name": "End-State Evaluation",
+      "category": "QUA",
+      "summary": "Don't grade the path the agent took; grade the final state (DB row, file, API state). Allows agents to find creative valid paths. Especially for state-mutating agents.",
+      "source_anchor": "Anthropic multi-agent research Jun 2025; Jan 2026 evals post",
+      "introduced": "2025"
+    },
+    {
+      "id": "QUA-06",
+      "name": "Eval Saturation",
+      "category": "QUA",
+      "summary": "When score hits 100% on solvable tasks, signal dies. SWE-bench Verified: 30%->80% in one year, now near saturation. Need to retire saturated evals or add harder tasks.",
+      "source_anchor": "Anthropic Jan 2026",
+      "introduced": "2026"
+    },
+    {
+      "id": "QUA-07",
+      "name": "Eval Awareness (alignment concern)",
+      "category": "QUA",
+      "summary": "Frontier models can detect when they're being evaluated and behave differently. Now a real alignment/eval-design problem. Anthropic Opus 4.6 BrowseComp paper made this explicit.",
+      "source_anchor": "Anthropic — Eval awareness in Claude Opus 4.6 (Mar 2026)",
+      "introduced": "2026-03"
+    },
+    {
+      "id": "QUA-08",
+      "name": "LLM-as-Judge with Calibration",
+      "category": "QUA",
+      "summary": "Use LLM graders for scalability, but periodically calibrate against expert humans. Use structured rubrics, isolate dimensions per call, give the LLM an 'unknown' escape.",
+      "source_anchor": "Anthropic Jan 2026 (refined from Yan 2023 G-Eval / Vicuna)",
+      "introduced": "2023-formalized-2026"
+    },
+
+    {
+      "id": "SEC-01",
+      "name": "Containment / Agent Blast Radius",
+      "category": "SEC",
+      "summary": "Architectural assumption: the agent WILL do something wrong eventually. Cap what it CAN do, not what it WILL do. Egress allowlists, filesystem jails, network policies, capability scoping.",
+      "source_anchor": "Anthropic — How we contain Claude across products (Featured 2026)",
+      "introduced": "2025-2026"
+    },
+    {
+      "id": "SEC-02",
+      "name": "Lethal Trifecta",
+      "category": "SEC",
+      "summary": "The dangerous combination = (untrusted input) x (access to private data) x (ability to exfiltrate). An agent with all three is a prompt-injection bomb. Mitigate by removing any one of the three.",
+      "source_anchor": "Simon Willison — coined 2024",
+      "url": "https://simonwillison.net/tags/lethal-trifecta/",
+      "introduced": "2024"
+    },
+    {
+      "id": "SEC-03",
+      "name": "Egress Allowlisting",
+      "category": "SEC",
+      "summary": "Agent can only make outbound HTTP to a declared list of domains. Used by Claude Cowork. Important caveat: own provider's API can become an exfil channel (Prompt Armor attack Jan 2026).",
+      "source_anchor": "Claude Cowork release (Jan 2026); Prompt Armor exfil analysis",
+      "introduced": "2025"
+    },
+    {
+      "id": "SEC-04",
+      "name": "Browser as Sandbox",
+      "category": "SEC",
+      "summary": "Use the browser's 30-year-hardened sandbox: <iframe sandbox>, CSP headers, WebAssembly in Web Workers, File System Access API. Paul Kinlan's Co-do reference implementation.",
+      "source_anchor": "Paul Kinlan (Google) — 'the browser is the sandbox' (Jan 2026)",
+      "url": "https://paul.kinlan.me/the-browser-is-the-sandbox/",
+      "introduced": "2026-01"
+    },
+    {
+      "id": "SEC-05",
+      "name": "Auto Mode / Permission Boundaries",
+      "category": "SEC",
+      "summary": "Pre-declared boundaries the agent is allowed to act within, rather than per-action confirmation prompts. Claude Code's 'auto mode' lets agents skip permissions inside their declared scope.",
+      "source_anchor": "Anthropic — How we built Claude Code auto mode (Mar 25, 2026)",
+      "introduced": "2026-03"
+    },
+
+    {
+      "id": "ENG-01",
+      "name": "Brain-vs-Hands Decoupling (Managed Agents)",
+      "category": "ENG",
+      "summary": "Separate the brain (LLM reasoning + planning) from the hands (tool execution, file I/O, network). Run them in different processes/containers/regions. Enables independent scaling, security, observability.",
+      "source_anchor": "Anthropic — Scaling Managed Agents: Decoupling the brain from the hands (Apr 8, 2026)",
+      "introduced": "2026-04"
+    },
+    {
+      "id": "ENG-02",
+      "name": "Rainbow Deployments (for stateful agents)",
+      "category": "ENG",
+      "summary": "Gradually shift traffic from old to new agent versions while both run simultaneously. Critical because long-running agents can be anywhere in their process when a new version ships.",
+      "source_anchor": "Anthropic multi-agent research Jun 2025",
+      "introduced": "2025"
+    },
+    {
+      "id": "ENG-03",
+      "name": "The 'think' Tool",
+      "category": "ENG",
+      "summary": "An explicit tool the agent can call to pause and reason without taking action. Different from extended thinking — this is a deliberate scratchpad mid-loop. Surprisingly effective for complex tool-use scenarios.",
+      "source_anchor": "Anthropic — The 'think' tool (Mar 20, 2025)",
+      "introduced": "2025-03"
+    },
+    {
+      "id": "ENG-04",
+      "name": "Effective Harnesses for Long-Running Agents",
+      "category": "ENG",
+      "summary": "Patterns: durable execution, resumable state, regular checkpointing, deterministic retry wrappers around non-deterministic LLM calls, idempotent tool calls.",
+      "source_anchor": "Anthropic — Effective harnesses for long-running agents (Nov 26, 2025); Harness design (Mar 24, 2026)",
+      "introduced": "2025"
+    },
+    {
+      "id": "ENG-05",
+      "name": "Prompt Caching as Central Primitive",
+      "category": "ENG",
+      "summary": "Cache the long static prompt prefix (system, tools, RAG context). 90% cost / latency reduction on cache hits. Claude Code: 'we build our entire harness around prompt caching.'",
+      "source_anchor": "Anthropic Aug 2024; OpenAI Oct 2024; Gemini; Thariq Shihipar (Anthropic Feb 2026)",
+      "introduced": "2024"
+    },
+    {
+      "id": "ENG-06",
+      "name": "Tool Result Clearing",
+      "category": "ENG",
+      "summary": "Cheapest form of compaction: once a tool has been called and its result consumed, clear the raw result from later context. Now a Claude Developer Platform feature.",
+      "source_anchor": "Anthropic Sept 2025; Claude Developer Platform feature",
+      "introduced": "2025"
+    },
+    {
+      "id": "ENG-07",
+      "name": "Self-Improving Tool Descriptions",
+      "category": "ENG",
+      "summary": "A tool-testing agent uses a flawed MCP tool, then rewrites the tool description to avoid the failures it encountered. Anthropic measured 40% reduction in task completion time.",
+      "source_anchor": "Anthropic multi-agent research Jun 2025",
+      "introduced": "2025"
+    },
+    {
+      "id": "ENG-08",
+      "name": "Memory Tool (file-based persistent memory)",
+      "category": "ENG",
+      "summary": "Native file-based memory primitive: agents read/write to persistent files outside context. Released with Claude Sonnet 4.5 (2025).",
+      "source_anchor": "Anthropic Sonnet 4.5 launch (2025)",
+      "introduced": "2025"
+    },
+
+    {
+      "id": "PRO-01",
+      "name": "Model Context Protocol (MCP) — de facto standard",
+      "category": "PRO",
+      "summary": "Open standard for connecting LLMs to tools/data sources. Launched Nov 2024, now thousands of servers, SDKs for all major languages, donated to Agentic AI Foundation (Dec 2025).",
+      "source_anchor": "Anthropic Nov 2024 launch; AAIF stewardship Dec 2025",
+      "url": "https://modelcontextprotocol.io/",
+      "introduced": "2024-11"
+    },
+    {
+      "id": "PRO-02",
+      "name": "Agentic AI Foundation (AAIF)",
+      "category": "PRO",
+      "summary": "Linux Foundation umbrella for agentic AI (Dec 9, 2025). Founding platinum members: AWS, Anthropic, Block, Bloomberg, Cloudflare, Google, Microsoft, OpenAI. Stewards: MCP, AGENTS.md, goose.",
+      "source_anchor": "Linux Foundation announcement Dec 9, 2025",
+      "introduced": "2025-12"
+    }
+  ],
+
+  "see_also": [
+    "llm-patterns-eugene-yan.json — 2023 baseline (Evals, RAG, Fine-tuning, Caching, Guardrails, Defensive UX, Feedback)",
+    "llm-patterns-anthropic.json — Dec 2024 Workflows + Agents framing (still the foundational mental model)",
+    "llm-patterns-12-factor-agents.json — production-engineering principles (Factor 3 = context engineering)",
+    "llm-agent-orchestration-microsoft.json — Multi-agent orchestration patterns (Feb 2026)",
+    "llm-agent-components-weng.json — 2023 component decomposition (Planning, Memory, Tool use)",
+    "llm-patterns-2024-2026-additions.json — transitional catalog (mostly superseded by this file)"
+  ],
+
+  "created": "2026-06-28T00:00:00Z",
+  "updated": "2026-06-28T00:00:00Z"
+}

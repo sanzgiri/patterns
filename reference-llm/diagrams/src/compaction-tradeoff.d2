@@ -1,0 +1,34 @@
+## Compaction trade-off — recall vs precision
+direction: right
+
+aggressive: {
+  label: "Aggressive compaction\n(drop a lot)"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+
+  pro: {label: "✓ Tiny context\n✓ Long horizon possible\n✓ Low cost per turn"; shape: text; style.font-color: "#16a34a"}
+  con: {label: "✗ Lost critical detail\n✗ Agent re-discovers\nsame info\n✗ Inconsistent decisions"; shape: text; style.font-color: "#dc2626"}
+}
+
+balanced: {
+  label: "Balanced (recommended)\nrecall first,\nthen tune precision"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+  style.bold: true
+
+  approach: {label: "Step 1: prompt to capture\nEVERY relevant fact\n(maximize recall)\n\nStep 2: iterate to remove\nsuperfluous content\n(improve precision)"; shape: text}
+}
+
+conservative: {
+  label: "Conservative\n(keep most of it)"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+
+  pro: {label: "✓ Minimal info loss\n✓ Safe for unfamiliar\nfailure modes"; shape: text; style.font-color: "#16a34a"}
+  con: {label: "✗ Bloated context\n✗ Compaction triggers\nagain quickly\n✗ Higher cost"; shape: text; style.font-color: "#dc2626"}
+}
+
+aggressive -> balanced -> conservative: "axis →"

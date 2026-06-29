@@ -1,0 +1,34 @@
+## Notes survive compaction
+direction: right
+
+turn_1: {
+  label: "Turn 1-50\n(building context)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  ctx: {label: "Context\n(rich, growing)"; shape: rectangle; style.fill: "#dcfce7"}
+  notes: {label: "External notes\n(growing in parallel)"; shape: cylinder; style.fill: "#fef3c7"}
+}
+
+compact: {
+  label: "COMPACT\n(context summarized)"
+  shape: hexagon
+  style.fill: "#fde68a"
+  style.bold: true
+}
+
+turn_51: {
+  label: "Turn 51-100\n(after compaction)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  ctx: {label: "Context\n(summary only)"; shape: rectangle; style.fill: "#dcfce7"}
+  notes: {label: "External notes\nSAME AS BEFORE\n(unchanged!)"; shape: cylinder; style.fill: "#fef3c7"; style.stroke: "#16a34a"; style.bold: true}
+}
+
+turn_1 -> compact -> turn_51
+note: {
+  shape: text
+  label: "The summary may lose detail.\nThe notes do not.\nAgent re-reads notes via tools\nwhen it needs the full picture."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+turn_51 -> note

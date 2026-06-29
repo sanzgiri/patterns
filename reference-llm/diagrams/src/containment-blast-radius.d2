@@ -1,0 +1,54 @@
+## Blast-radius containment for agents
+direction: down
+
+agent: {
+  label: "Agent"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+trust_q: {
+  shape: diamond
+  label: "What can it touch\nif it goes wrong?"
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+}
+
+ring_inner: {
+  label: "Innermost ring\n(highest trust, smallest blast radius)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "• Sandbox FS only\n• No network\n• No real credentials\n• Disposable VM/container"; shape: text}
+}
+
+ring_mid: {
+  label: "Middle ring"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+  body: {label: "• Allowlisted egress (specific domains)\n• Read-only repo / data access\n• Scoped credentials (least privilege)\n• Resource quotas"; shape: text}
+}
+
+ring_outer: {
+  label: "Outer ring (BEWARE)"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+  body: {label: "• Write access to prod systems\n• Money-moving / external actions\n• Broad credentials\n• Open network egress\n→ requires human gating + audit"; shape: text}
+}
+
+principle: {
+  shape: text
+  label: "Principle (Anthropic, OpenAI, Simon Willison):\nPick the SMALLEST ring that still lets the agent do its job.\nDon't grant outer-ring permissions for inner-ring tasks."
+  style.italic: true
+  style.bold: true
+  style.font-color: "#7c3aed"
+}
+
+agent -> trust_q
+trust_q -> ring_inner: "low-risk"
+trust_q -> ring_mid: "moderate-risk"
+trust_q -> ring_outer: "high-risk + human"
+ring_outer -> principle

@@ -1,0 +1,37 @@
+## End-state evaluation — what to grade in an agent trace
+direction: down
+
+trace: {
+  label: "Agent trace\n(35 turns, 12 tool calls,\n3 sub-agent spawns)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "Turn 1: think...\nTurn 2: read_file('config.py')\nTurn 3: think...\nTurn 4: write_file('new_module.py')\n...\nTurn 35: 'Done. PR submitted.'"; shape: text}
+}
+
+trajectory_eval: {
+  label: "TRAJECTORY EVAL\n(grade every step)"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+  problem: {label: "Problems:\n• 35 graded calls per task\n• Many ways to succeed -\n  agent picks a different path\n  than the rubric expects\n• Penalizes legitimate variation\n• Expensive (35× the model-grader cost)\n• Brittle"; shape: text}
+}
+
+endstate_eval: {
+  label: "END-STATE EVAL\n(grade only the final result)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  good: {label: "Good:\n• Don't care HOW the agent got there\n• Compares against a verifiable\n  END STATE: tests pass, file exists,\n  ticket closed, output matches\n• 1 graded check per task\n• Cheaper, more reproducible\n• Allows agent variation = WHY we use agents"; shape: text}
+}
+
+trace -> trajectory_eval: "❌ heavy" {style.stroke: "#dc2626"}
+trace -> endstate_eval: "✅ recommended" {style.stroke: "#16a34a"; style.bold: true}
+
+note: {
+  shape: text
+  label: "Anthropic (Jan 2026): default to end-state evaluation\nfor agentic tasks. Inspect intermediate steps only\nwhen end-state passes/fails for the wrong reasons."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+endstate_eval -> note

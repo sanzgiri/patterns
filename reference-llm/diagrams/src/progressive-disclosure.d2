@@ -1,0 +1,54 @@
+## Progressive Disclosure — three levels of detail
+direction: down
+
+level1: {
+  label: "LEVEL 1 — Metadata / Index\n(always loaded)"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+  style.bold: true
+
+  desc: {label: "Tiny: name + 1-line description per item\n100 items × 30 tokens = 3,000 tokens"; shape: text}
+  ex: {label: "Examples:\n• Skill names + descriptions\n• File / folder names\n• MCP server names\n• Tool short signatures"; shape: text; style.italic: true}
+}
+
+level2: {
+  label: "LEVEL 2 — Body / Summary\n(loaded on demand when agent picks)"
+  shape: rectangle
+  style.fill: "#fef9c3"
+  style.stroke: "#ca8a04"
+
+  desc: {label: "Moderate: 500-2,000 tokens per item\nAgent typically loads 1-3 per run"; shape: text}
+  ex: {label: "Examples:\n• Full SKILL.md\n• File contents (small)\n• Tool .ts file with interface\n• Document summary"; shape: text; style.italic: true}
+}
+
+level3: {
+  label: "LEVEL 3+ — Referenced content\n(loaded only if needed by Level 2)"
+  shape: rectangle
+  style.fill: "#fed7aa"
+  style.stroke: "#ea580c"
+
+  desc: {label: "Large: bundled scripts, attached docs,\nfull file content. Often itself PD-able"; shape: text}
+  ex: {label: "Examples:\n• Bundled Python scripts\n• Attached PDFs\n• Full documentation\n• Raw data files"; shape: text; style.italic: true}
+}
+
+agent: {
+  label: "Agent"
+  shape: hexagon
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+agent -> level1: "always sees"
+level1 -> agent: "decides relevance\nfrom name+desc"
+agent -> level2: "fetches via tool\nwhen relevant"
+level2 -> agent: "may instruct\nfurther fetch"
+agent -> level3: "fetches only if\nLevel 2 says to"
+
+cost: {
+  shape: text
+  label: "Typical run cost: 14K tokens\n(vs 953K if all pre-loaded)\n→ 68× reduction"
+  style.italic: true
+  style.bold: true
+  style.font-color: "#7c3aed"
+}

@@ -1,0 +1,56 @@
+## Auto-mode permission boundaries — graduated trust by action class
+direction: down
+
+intro: {
+  shape: text
+  label: "Not all agent actions are equally risky.\nClassify actions, then auto-allow safe ones,\ngate medium-risk, REQUIRE approval for dangerous."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+tiers: {
+  direction: right
+
+  auto: {
+    label: "AUTO-ALLOW\n(no prompt)"
+    shape: rectangle
+    style.fill: "#bbf7d0"
+    style.stroke: "#16a34a"
+    body: {label: "Examples:\n• Read files in workspace\n• Search the web\n• Run linter / formatter\n• Open IDE panels\n• Query allowlisted APIs\n\nProperty: REVERSIBLE,\nlow-impact, no data leak"; shape: text}
+  }
+
+  notify: {
+    label: "NOTIFY + AUTO\n(toast / log, agent proceeds)"
+    shape: rectangle
+    style.fill: "#fef3c7"
+    style.stroke: "#d97706"
+    body: {label: "Examples:\n• Write/edit files in workspace\n• Install dev dependencies\n• Run tests\n• Local-only side effects\n\nProperty: REVERSIBLE in seconds,\nlimited to workspace"; shape: text}
+  }
+
+  gate: {
+    label: "GATE\n(prompt before action)"
+    shape: rectangle
+    style.fill: "#fed7aa"
+    style.stroke: "#ea580c"
+    body: {label: "Examples:\n• git commit / push\n• Shell commands with elevated perms\n• Modify config / env\n• Cross-system writes\n\nProperty: hard to reverse\nor visible to other parties"; shape: text}
+  }
+
+  approve: {
+    label: "REQUIRE APPROVAL\n(blocking; explicit OK)"
+    shape: rectangle
+    style.fill: "#fecaca"
+    style.stroke: "#dc2626"
+    body: {label: "Examples:\n• Deploy to prod\n• Money-moving / payment\n• Send external email\n• Delete data / drop tables\n• Change permissions / IAM\n• Force-push, rewrite history\n\nProperty: IRREVERSIBLE\nor high externalities"; shape: text}
+  }
+}
+
+defaults: {
+  label: "Recommended defaults"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "• Configure once, persist in repo / project config\n• Per-user overrides\n• Clear list of which actions are which tier\n• Log everything (even auto-allowed)\n• Easy 'always approve' / 'always deny' learning\n• Allow 'temporary YOLO mode' for trusted contexts"; shape: text}
+}
+
+intro -> tiers
+tiers -> defaults

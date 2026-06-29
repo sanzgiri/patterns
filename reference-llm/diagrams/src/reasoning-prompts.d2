@@ -1,0 +1,59 @@
+## Reasoning prompts — the family tree
+direction: down
+
+direct: {
+  label: "Direct answer\n(no reasoning shown)"
+  shape: rectangle
+  style.fill: "#e5e7eb"
+  style.stroke: "#6b7280"
+  body: {label: "Prompt: 'What is 19 × 24?'\nAnswer: '456'\n\nFast, cheap, error-prone on hard tasks."; shape: text}
+}
+
+cot: {
+  label: "Chain-of-Thought (CoT)\n(Wei et al. 2022)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "Prompt: 'Let's think step by step...'\nModel shows reasoning before answer.\n\nKey insight: making the model 'write\nout' its work dramatically improves\naccuracy on multi-step tasks."; shape: text}
+}
+
+sc: {
+  label: "Self-Consistency\n(Wang et al. 2022)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "Sample CoT K times at high temperature.\nMajority-vote the final answers.\n\nKey insight: many reasoning paths lead\nto the same right answer; voting cancels\nrandom errors."; shape: text}
+}
+
+tot: {
+  label: "Tree-of-Thought (ToT)\n(Yao et al. 2023)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Branch reasoning into multiple paths.\nEvaluate each. Backtrack and explore.\n\nKey insight: hard problems need SEARCH,\nnot just linear reasoning. Heavier and\nslower than CoT."; shape: text}
+}
+
+reflect: {
+  label: "Reflection / Self-Critique\n(Shinn et al. 2023, others)"
+  shape: rectangle
+  style.fill: "#fbcfe8"
+  style.stroke: "#db2777"
+  body: {label: "Produce answer → critique it →\nrevise. Iterate.\n\nKey insight: models often produce\nbetter answers when given their own\noutput as input to critique."; shape: text}
+}
+
+ttc: {
+  label: "Test-time compute / extended thinking\n(o1, o3, Claude 3.7+ extended thinking) (2024-2026)"
+  shape: rectangle
+  style.fill: "#a78bfa"
+  style.font-color: "#ffffff"
+  style.stroke: "#7c3aed"
+  body: {label: "The reasoning is BUILT INTO the model itself,\nnot prompted. Trained to think longer when needed.\n\n2024-2026: this internalized the patterns above."; shape: text; style.font-color: "#ffffff"}
+}
+
+direct -> cot: "add 'show your work'"
+cot -> sc: "sample many, vote"
+cot -> tot: "branch + search"
+cot -> reflect: "critique + revise"
+sc -> ttc: "all roads lead here"
+tot -> ttc
+reflect -> ttc

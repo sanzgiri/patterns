@@ -1,0 +1,55 @@
+## Egress allowlisting — break Leg 3 of the lethal trifecta
+direction: down
+
+agent: {
+  label: "Agent\n(potentially compromised\nby prompt injection)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+attempted: {
+  label: "Agent tries network calls"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+  body: {label: "• api.github.com  (work)\n• pypi.org  (work)\n• attacker.com/leak?token=XYZ  (exfil)\n• 8.8.8.8 / DNS subdomain encoding"; shape: text}
+}
+
+firewall: {
+  label: "Egress allowlist firewall"
+  shape: hexagon
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  style.bold: true
+}
+
+allowed: {
+  label: "Allowed destinations"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "✓ api.github.com\n✓ pypi.org\n✓ specific MCP endpoints"; shape: text}
+}
+
+blocked: {
+  label: "BLOCKED"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+  body: {label: "✗ attacker.com (not on list)\n✗ Arbitrary IPs / DNS\n✗ Any unapproved destination\n→ logged + alerted"; shape: text}
+}
+
+agent -> attempted
+attempted -> firewall
+firewall -> allowed
+firewall -> blocked
+
+note: {
+  shape: text
+  label: "Egress allowlisting is the most operationally\neffective mitigation: cheap to set up, hard to bypass\nwithout breaking out of the sandbox entirely."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+allowed -> note
+blocked -> note

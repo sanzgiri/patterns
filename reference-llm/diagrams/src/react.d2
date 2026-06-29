@@ -1,0 +1,59 @@
+## ReAct — Thought / Action / Observation loop
+direction: down
+
+prompt: {
+  label: "Prompt: 'Answer the user's question.\nYou have these tools available: ...'"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+loop: {
+  label: "ReAct loop body"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+
+  thought: {
+    label: "1. THOUGHT\n('I should look up X')"
+    shape: rectangle
+    style.fill: "#a78bfa"
+    style.font-color: "#ffffff"
+    style.stroke: "#7c3aed"
+  }
+  action: {
+    label: "2. ACTION\n(call tool: search('X'))"
+    shape: rectangle
+    style.fill: "#fde68a"
+    style.stroke: "#d97706"
+  }
+  observation: {
+    label: "3. OBSERVATION\n(tool returns result)"
+    shape: rectangle
+    style.fill: "#bbf7d0"
+    style.stroke: "#16a34a"
+  }
+
+  thought -> action
+  action -> observation
+  observation -> thought: "loop until done"
+}
+
+done: {
+  label: "Final answer to user"
+  shape: rectangle
+  style.fill: "#86efac"
+  style.stroke: "#16a34a"
+  style.bold: true
+}
+
+note: {
+  shape: text
+  label: "Yao et al. 2022. The single most important agentic\nprimitive: every tool-using agent variant is some\nrefinement of this loop. Modern reasoning models\ninternalize the THOUGHT step; the loop pattern remains."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+prompt -> loop
+loop -> done
+loop -> note

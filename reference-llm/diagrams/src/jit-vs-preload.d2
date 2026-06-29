@@ -1,0 +1,30 @@
+## Just-in-Time vs Pre-loaded Context
+direction: right
+
+preload: {
+  label: "PRE-LOAD\n(traditional RAG / 2023 style)"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+
+  step1: {label: "1. Fetch ALL plausibly\nrelevant data\nup front"; shape: rectangle; style.fill: "#fed7aa"}
+  step2: {label: "2. Embed it in\nthe context"; shape: rectangle; style.fill: "#fed7aa"}
+  step3: {label: "3. Ask LLM to\nuse what it needs"; shape: rectangle; style.fill: "#fed7aa"}
+  cost: {label: "Cost: large context\nmany tokens unused\ncontext rot kicks in"; shape: text; style.font-color: "#dc2626"}
+  step1 -> step2 -> step3 -> cost
+}
+
+jit: {
+  label: "JUST-IN-TIME\n(2025 style)"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+
+  step1: {label: "1. Carry lightweight\nidentifiers\n(paths, URLs, queries)"; shape: rectangle; style.fill: "#bbf7d0"}
+  step2: {label: "2. LLM decides what\nit needs"; shape: rectangle; style.fill: "#bbf7d0"}
+  step3: {label: "3. Fetch via tool\n(read_file, search, query)\nonly the relevant slice"; shape: rectangle; style.fill: "#bbf7d0"}
+  win: {label: "Win: small context\nfocused attention\nonly pay for what\nyou actually use"; shape: text; style.font-color: "#16a34a"; style.bold: true}
+  step1 -> step2 -> step3 -> win
+}
+
+preload -> jit: "→ shift" {style.stroke: "#7c3aed"; style.stroke-width: 3}

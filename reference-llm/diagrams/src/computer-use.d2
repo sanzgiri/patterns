@@ -1,0 +1,48 @@
+## Computer use — the agent loop with GUI tools
+direction: down
+
+agent: {
+  label: "LLM agent\n(vision-capable)"
+  shape: hexagon
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+  style.bold: true
+}
+
+tools: {
+  label: "Computer-use tools"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+
+  screenshot: {label: "screenshot()\n→ PNG bytes"; shape: rectangle; style.fill: "#fef9c3"}
+  click: {label: "click(x, y)"; shape: rectangle; style.fill: "#fef9c3"}
+  type_text: {label: "type(text)"; shape: rectangle; style.fill: "#fef9c3"}
+  key: {label: "key(combo)\ne.g. \"cmd+s\""; shape: rectangle; style.fill: "#fef9c3"}
+  scroll: {label: "scroll(direction)"; shape: rectangle; style.fill: "#fef9c3"}
+}
+
+vm: {
+  label: "Sandboxed environment\n(VM / browser / container)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#ea580c"
+
+  display: {label: "Display / framebuffer"; shape: rectangle}
+  apps: {label: "Real applications\n(browser, IDE, terminal,\nslack, gmail, ...)"; shape: rectangle}
+}
+
+agent -> tools: "1. screenshot()"
+tools -> vm: "captures display"
+vm -> agent: "2. image of current state"
+agent -> agent: "3. reason about pixels:\n'click submit button at (450, 320)'"
+agent -> tools: "4. click(450, 320)"
+tools -> vm: "5. injects event"
+vm -> agent: "loop: next screenshot..."
+
+note: {
+  shape: text
+  label: "Same ReAct loop.\nNew tools: pixels-in, mouse-out.\nThe hard part: getting the\nvision-language model to\nreliably ground UI elements\nin pixel coordinates."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}

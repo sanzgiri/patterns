@@ -1,0 +1,41 @@
+## pass@k vs pass^k — two ways to score multi-sample agents
+direction: down
+
+setup: {
+  label: "Setup: agent is run K times\non the same task. Each run\neither succeeds (1) or fails (0)."
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "Example: K=4 runs on task X\nRun 1: ✓  Run 2: ✗  Run 3: ✓  Run 4: ✗"; shape: text}
+}
+
+passk: {
+  label: "pass@k\n(any one succeeded)"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+  body: {label: "Score: 1 if any run succeeded, else 0\nIn the example: 1 (runs 1 & 3 passed)\n\nMeans: 'with K attempts and an oracle\npicking the best, can you solve it?'"; shape: text}
+  use: {label: "Use when:\n• You will retry / cherry-pick\n• Eval measures CAPABILITY\n('can the model solve it at all?')"; shape: text; style.font-color: "#16a34a"}
+}
+
+passpowerk: {
+  label: "pass^k\n(ALL runs succeeded)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Score: 1 only if every run succeeded\nIn the example: 0 (runs 2 & 4 failed)\n\nMeans: 'can you do this reliably,\nN times in a row, every time?'"; shape: text}
+  use: {label: "Use when:\n• Production deployment\n• No retry / no oracle\n• Eval measures RELIABILITY\n('will this work in real users' hands?')"; shape: text; style.font-color: "#d97706"}
+}
+
+verdict: {
+  shape: text
+  label: "Anthropic (Jan 2026): for production agents,\npass^k is the meaningful metric.\npass@k inflates capability numbers and\nhides reliability gaps in user-facing systems."
+  style.italic: true
+  style.bold: true
+  style.font-color: "#7c3aed"
+}
+
+setup -> passk
+setup -> passpowerk
+passk -> verdict
+passpowerk -> verdict

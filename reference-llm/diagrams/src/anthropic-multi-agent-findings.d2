@@ -1,0 +1,43 @@
+## Anthropic's multi-agent research findings
+direction: down
+
+finding: {
+  label: "Internal benchmark result"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+  style.bold: true
+
+  text: {label: "Multi-agent (Claude Opus 4 lead +\nClaude Sonnet 4 sub-agents) outperformed\nsingle-agent (Claude Opus 4) by 90.2%\non internal research benchmark"; shape: text}
+}
+
+cost: {
+  label: "...but at a cost"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+
+  text: {label: "Multi-agent uses ~15× more tokens than chat.\nOnly worth it when the value of the task\nclearly exceeds the cost."; shape: text}
+}
+
+when_yes: {
+  label: "WHEN multi-agent EARNS the cost"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+
+  text: {label: "• Embarrassingly parallel subtasks\n• Each subtask needs its own context\n• Heavy information synthesis\n• Open-ended research / exploration\n• Total value » token cost"; shape: text}
+}
+
+when_no: {
+  label: "WHEN multi-agent IS WRONG"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+
+  text: {label: "• Tightly coupled subtasks (shared context required)\n• Real-time chat / customer service\n• Cost-sensitive deployments\n• When a single agent + better tools would suffice"; shape: text}
+}
+
+finding -> cost
+cost -> when_yes
+cost -> when_no

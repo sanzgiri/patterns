@@ -1,0 +1,63 @@
+## Coding agent architecture — modern (2025-2026)
+direction: down
+
+user: {
+  label: "Developer\n(IDE / CLI / web)"
+  shape: person
+  style.fill: "#dbeafe"
+}
+
+agent: {
+  label: "Coding agent\n(single agent, ReAct loop)"
+  shape: hexagon
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+  style.bold: true
+}
+
+ctx: {
+  label: "Context layer"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+
+  claude_md: {label: "CLAUDE.md /\nAGENTS.md\n(conventions)"; shape: page}
+  todo: {label: "TODO list\n(reinforced)"; shape: page}
+  notes: {label: "Working notes"; shape: page}
+}
+
+tools: {
+  label: "Tool surface\n(JIT, progressive disclosure)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#ea580c"
+
+  file: {label: "Filesystem:\nglob, grep,\nread, write, edit"; shape: rectangle}
+  shell: {label: "Shell:\nrun build, tests,\nlinter, formatter"; shape: rectangle}
+  vcs: {label: "Git:\ndiff, commit,\nbranch, log"; shape: rectangle}
+  mcp: {label: "MCP servers:\nGitHub, Linear,\ndocs, etc."; shape: rectangle}
+  task: {label: "Task tool\n(spawn sub-agents)"; shape: rectangle}
+}
+
+codebase: {
+  label: "Codebase\n(repo, dependencies, infra)"
+  shape: cylinder
+  style.fill: "#f3e8ff"
+  style.stroke: "#7c3aed"
+}
+
+sandbox: {
+  label: "Containment\n(sandbox / permissions /\negress allowlist)"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+}
+
+user -> agent: "task / prompt"
+agent <-> ctx: "read/write notes"
+agent -> tools: "tool call"
+tools -> sandbox: "wrapped by"
+sandbox -> codebase: "controlled access"
+codebase -> sandbox: "results"
+sandbox -> agent: "observation"
+agent -> user: "diff / answer / PR"

@@ -1,0 +1,55 @@
+## Coding agent maturity ladder
+direction: right
+
+l0: {
+  label: "L0: Autocomplete\n(Copilot circa 2021)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  width: 200
+}
+
+l1: {
+  label: "L1: Chat with context\n(Copilot Chat, Cursor 2023)"
+  shape: rectangle
+  style.fill: "#bfdbfe"
+  width: 200
+}
+
+l2: {
+  label: "L2: Edit assistant\n(Cursor Edit, Aider 2023)"
+  shape: rectangle
+  style.fill: "#a7c7f7"
+  width: 200
+}
+
+l3: {
+  label: "L3: Agent in IDE\n(Cursor agent, Cody, Cline 2024)"
+  shape: rectangle
+  style.fill: "#86efac"
+  width: 200
+}
+
+l4: {
+  label: "L4: CLI / headless agent\n(Claude Code, Codex CLI 2025)"
+  shape: rectangle
+  style.fill: "#4ade80"
+  width: 200
+}
+
+l5: {
+  label: "L5: Long-horizon autonomous\n(Devin, Replit Agent 2025-2026)"
+  shape: rectangle
+  style.fill: "#22c55e"
+  style.bold: true
+  width: 200
+}
+
+l6: {
+  label: "L6: Self-directed / fleet\n(2026+ emergent)"
+  shape: rectangle
+  style.fill: "#16a34a"
+  style.bold: true
+  width: 200
+}
+
+l0 -> l1 -> l2 -> l3 -> l4 -> l5 -> l6

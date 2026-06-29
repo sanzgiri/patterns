@@ -1,0 +1,65 @@
+## Prompting fundamentals — the building blocks
+direction: down
+
+system: {
+  label: "System prompt"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "Sets ROLE, CONSTRAINTS, FORMAT,\nTONE for the entire conversation.\nUsually persistent, not user-editable.\nThe single biggest lever on behavior."; shape: text}
+}
+
+user: {
+  label: "User message"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "The actual task or question.\nVariable per call.\nWhat the user wants."; shape: text}
+}
+
+fewshot: {
+  label: "Few-shot examples\n(in system or user)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Examples of input → output.\nShow what 'good' looks like.\nReduces ambiguity better than\ndescription alone."; shape: text}
+}
+
+persona: {
+  label: "Persona / role priming"
+  shape: rectangle
+  style.fill: "#fbcfe8"
+  style.stroke: "#db2777"
+  body: {label: "'You are a senior security engineer...'\nNot just stylistic — shifts the\nmodel into a more capable mode\nfor that domain. Surprisingly\npowerful."; shape: text}
+}
+
+context: {
+  label: "Retrieved context\n(RAG output, files, history)"
+  shape: rectangle
+  style.fill: "#a78bfa"
+  style.font-color: "#ffffff"
+  style.stroke: "#7c3aed"
+  body: {label: "Relevant external info brought in\nat inference time.\nThe 'augmented' in augmented LLM."; shape: text; style.font-color: "#ffffff"}
+}
+
+final: {
+  label: "Final assembled prompt → LLM"
+  shape: rectangle
+  style.fill: "#e5e7eb"
+  style.stroke: "#374151"
+  style.bold: true
+}
+
+system -> final
+user -> final
+fewshot -> final
+persona -> final
+context -> final
+
+note: {
+  shape: text
+  label: "Every prompt is a layered composition of these primitives.\nUnderstanding each, and how they interact, is the\nfoundation of all prompt engineering."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+final -> note

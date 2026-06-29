@@ -1,0 +1,60 @@
+## Workflow building blocks (Anthropic's 5)
+direction: down
+
+augmented: {
+  label: "1. AUGMENTED LLM\n(LLM + retrieval + tools + memory)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+chained: {
+  label: "2. PROMPT CHAINING\n(serial calls; each step\nuses the previous output)"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+}
+
+routed: {
+  label: "3. ROUTING\n(classifier dispatches\nto a specialized chain)"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+}
+
+parallel: {
+  label: "4. PARALLELIZATION\n(many LLM calls in parallel:\nsectioning or voting)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#ea580c"
+}
+
+eval: {
+  label: "5. EVALUATOR-OPTIMIZER\n(generate → critique → revise loop)"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+}
+
+orchestrator: {
+  label: "6. ORCHESTRATOR-WORKERS\n(central LLM plans;\nworkers execute subtasks)"
+  shape: rectangle
+  style.fill: "#f3e8ff"
+  style.stroke: "#7c3aed"
+}
+
+agent: {
+  label: "AGENT\n(LLM directs its own loop)"
+  shape: hexagon
+  style.fill: "#a7f3d0"
+  style.stroke: "#16a34a"
+  style.bold: true
+}
+
+augmented -> chained: "needed for any\nmultistep work"
+augmented -> routed
+augmented -> parallel
+augmented -> eval
+augmented -> orchestrator
+chained -> agent: "→ when path\nbecomes data-dependent" {style.stroke: "#dc2626"}
+orchestrator -> agent: "→ when workers also\nneed to plan"

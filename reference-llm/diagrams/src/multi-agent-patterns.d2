@@ -1,0 +1,90 @@
+## Multi-agent orchestration — 5 Microsoft patterns
+direction: down
+
+sequential: {
+  label: "1. SEQUENTIAL\n(pipeline of specialists)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+
+  flow: {
+    direction: right
+    a1: {label: "Researcher"; shape: hexagon}
+    a2: {label: "Writer"; shape: hexagon}
+    a3: {label: "Editor"; shape: hexagon}
+    a1 -> a2 -> a3
+  }
+}
+
+concurrent: {
+  label: "2. CONCURRENT\n(specialists work in parallel,\nresults aggregated)"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+
+  flow: {
+    in: {label: "Input"; shape: circle}
+    a1: {label: "Security review"; shape: hexagon}
+    a2: {label: "Perf review"; shape: hexagon}
+    a3: {label: "Style review"; shape: hexagon}
+    agg: {label: "Aggregate"; shape: rectangle}
+    in -> a1 -> agg
+    in -> a2 -> agg
+    in -> a3 -> agg
+  }
+}
+
+handoff: {
+  label: "3. HANDOFF\n(triage agent routes to specialist,\nor specialists hand off to peers)"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+
+  flow: {
+    direction: right
+    triage: {label: "Triage"; shape: hexagon}
+    refund: {label: "Refunds"; shape: hexagon}
+    tech: {label: "Technical"; shape: hexagon}
+    triage -> refund: "if refund issue"
+    triage -> tech: "if technical issue"
+    refund -> tech: "escalate (cross-handoff)"
+  }
+}
+
+orchestrator: {
+  label: "4. ORCHESTRATOR-WORKERS\n(lead plans + dispatches;\nworkers execute subtasks)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#ea580c"
+
+  flow: {
+    lead: {label: "Lead agent\n(plans)"; shape: hexagon; style.bold: true}
+    w1: {label: "Worker 1"; shape: hexagon}
+    w2: {label: "Worker 2"; shape: hexagon}
+    w3: {label: "Worker 3"; shape: hexagon}
+    lead -> w1
+    lead -> w2
+    lead -> w3
+    w1 -> lead: "result"
+    w2 -> lead: "result"
+    w3 -> lead: "result"
+  }
+}
+
+groupchat: {
+  label: "5. GROUP CHAT\n(N agents converse via\nshared message channel)"
+  shape: rectangle
+  style.fill: "#f3e8ff"
+  style.stroke: "#7c3aed"
+
+  flow: {
+    direction: down
+    channel: {label: "Shared channel"; shape: rectangle; style.fill: "#e9d5ff"; style.bold: true}
+    a1: {label: "Agent A"; shape: hexagon}
+    a2: {label: "Agent B"; shape: hexagon}
+    a3: {label: "Agent C"; shape: hexagon}
+    a1 <-> channel
+    a2 <-> channel
+    a3 <-> channel
+  }
+}

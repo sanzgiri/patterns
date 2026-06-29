@@ -1,0 +1,66 @@
+## Self-directed swarm — agents spawn agents
+direction: down
+
+seed: {
+  label: "Seed agent\n(top-level goal)"
+  shape: hexagon
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  style.bold: true
+}
+
+decision: {
+  label: "Should I spawn?"
+  shape: diamond
+  style.fill: "#fef3c7"
+}
+
+a1: {label: "Agent A1\n(sub-goal 1)"; shape: hexagon; style.fill: "#dcfce7"}
+a2: {label: "Agent A2\n(sub-goal 2)"; shape: hexagon; style.fill: "#dcfce7"}
+a3: {label: "Agent A3\n(sub-goal 3)"; shape: hexagon; style.fill: "#dcfce7"}
+
+b1: {label: "B1"; shape: hexagon; style.fill: "#bbf7d0"}
+b2: {label: "B2"; shape: hexagon; style.fill: "#bbf7d0"}
+b3: {label: "B3"; shape: hexagon; style.fill: "#bbf7d0"}
+b4: {label: "B4"; shape: hexagon; style.fill: "#bbf7d0"}
+
+shared: {
+  label: "Shared note store\n(files, blackboard, DB)"
+  shape: cylinder
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+}
+
+guardrails: {
+  label: "Guardrails\n(token budget, depth cap,\nspawn rate limit, halt condition)"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+  style.bold: true
+}
+
+seed -> decision
+decision -> a1: "yes"
+decision -> a2: "yes"
+decision -> a3: "yes"
+a1 -> b1: "spawn B1"
+a1 -> b2: "spawn B2"
+a3 -> b3: "spawn B3"
+a3 -> b4: "spawn B4"
+
+a1 <-> shared: "read/write"
+a2 <-> shared
+a3 <-> shared
+b1 <-> shared
+b2 <-> shared
+b3 <-> shared
+b4 <-> shared
+
+guardrails -> decision: "checks budget,\ndepth, rate" {style.stroke: "#dc2626"; style.bold: true}
+
+note: {
+  shape: text
+  label: "Unlike orchestrator-workers, the seed agent\ndoesn't pre-plan the tree. Each agent decides\nlocally whether to spawn children.\nWithout strict guardrails: token costs explode.\nWith guardrails: emergent parallelism."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}

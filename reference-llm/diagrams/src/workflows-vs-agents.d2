@@ -1,0 +1,50 @@
+## Workflows vs Agents (Anthropic Dec 2024 framing)
+direction: right
+
+workflow: {
+  label: "WORKFLOW\nhuman pre-defined path"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+
+  flow: {
+    direction: down
+    s1: {label: "Step 1\n(LLM call)"; shape: rectangle; style.fill: "#bfdbfe"}
+    s2: {label: "Step 2\n(tool call)"; shape: rectangle; style.fill: "#bfdbfe"}
+    s3: {label: "Step 3\n(LLM call)"; shape: rectangle; style.fill: "#bfdbfe"}
+    out: {label: "Output"; shape: circle; style.fill: "#bbf7d0"}
+    s1 -> s2 -> s3 -> out
+  }
+
+  desc: {label: "Predictable.\nDebuggable.\nCheap.\nLLM choreographed by code."; shape: text; style.italic: true}
+}
+
+agent: {
+  label: "AGENT\nLLM chooses path itself"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+
+  flow: {
+    direction: down
+    llm: {label: "LLM"; shape: hexagon; style.fill: "#bbf7d0"}
+    tool: {label: "Tool"; shape: rectangle; style.fill: "#fef9c3"}
+    state: {label: "State"; shape: cylinder; style.fill: "#fde68a"}
+    out: {label: "Output\n(when LLM decides)"; shape: circle; style.fill: "#a7f3d0"}
+    llm -> tool: "chosen by LLM"
+    tool -> state: "observed"
+    state -> llm: "next decision"
+    llm -> out: "halt"
+  }
+
+  desc: {label: "Flexible.\nNondeterministic.\nExpensive (many LLM calls).\nLLM in the driver's seat."; shape: text; style.italic: true}
+}
+
+rule: {
+  shape: text
+  label: "Anthropic's rule:\n\"Start with the simplest solution.\nOnly add agentic systems when workflows\nare proven insufficient.\""
+  style.bold: true
+  style.font-color: "#dc2626"
+}
+
+workflow -> agent: "→ add only if needed" {style.stroke: "#dc2626"; style.stroke-width: 3}

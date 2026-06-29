@@ -1,0 +1,53 @@
+## Augmented LLM — Anthropic's atomic unit
+direction: down
+
+intro: {
+  shape: text
+  label: "Anthropic (Dec 2024): the AUGMENTED LLM is the\nbuilding block of every agentic system.\nWorkflows compose augmented LLMs in fixed paths.\nAgents drive their own loop over augmented LLMs."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+llm: {
+  label: "LLM CORE"
+  shape: circle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  style.bold: true
+}
+
+retrieval: {
+  label: "RETRIEVAL\n(read context\nat inference)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+}
+
+tools: {
+  label: "TOOLS\n(act on the world,\nread fresh data)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+}
+
+memory: {
+  label: "MEMORY\n(carry state across\nturns / sessions)"
+  shape: rectangle
+  style.fill: "#fbcfe8"
+  style.stroke: "#db2777"
+}
+
+retrieval -> llm: "context"
+tools -> llm: "tool results"
+memory -> llm: "history"
+llm -> tools: "tool calls"
+llm -> memory: "writes"
+
+footer: {
+  shape: text
+  label: "All three augmentations are OPTIONAL but\nINDEPENDENTLY composable. Most useful augmented\nLLMs in production have at least two of three."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+intro -> llm
+memory -> footer

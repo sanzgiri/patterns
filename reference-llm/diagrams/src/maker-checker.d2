@@ -1,0 +1,68 @@
+## Maker-checker — adversarial verification
+direction: right
+
+input: {
+  label: "Task / input"
+  shape: circle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+maker: {
+  label: "MAKER (generator)\nproduces output"
+  shape: hexagon
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+  style.bold: true
+}
+
+output: {
+  label: "Candidate output"
+  shape: rectangle
+  style.fill: "#fef9c3"
+  style.stroke: "#d97706"
+}
+
+checker: {
+  label: "CHECKER (verifier)\nchecks for errors,\nbias, completeness,\npolicy violations"
+  shape: hexagon
+  style.fill: "#fde68a"
+  style.stroke: "#ea580c"
+  style.bold: true
+}
+
+verdict: {
+  label: "Pass / Fail\n(+ specific issues)"
+  shape: diamond
+  style.fill: "#f3e8ff"
+  style.stroke: "#7c3aed"
+}
+
+accept: {
+  label: "Output accepted"
+  shape: circle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+}
+
+revise: {
+  label: "Maker revises\nwith critique"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+}
+
+input -> maker
+maker -> output
+output -> checker
+checker -> verdict
+verdict -> accept: "pass" {style.stroke: "#16a34a"; style.bold: true}
+verdict -> revise: "fail (with specific issues)" {style.stroke: "#dc2626"}
+revise -> maker: "retry with critique\nin context" {style.stroke: "#dc2626"}
+
+note: {
+  shape: text
+  label: "Anthropic's name: \"evaluator-optimizer\".\nKey: maker and checker should be\nseparate prompts (often separate models)\nto avoid confirmation bias.\nThe critique must be actionable, not just\nthumbs-up/thumbs-down."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}

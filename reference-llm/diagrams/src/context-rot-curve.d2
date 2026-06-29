@@ -1,0 +1,46 @@
+## Context Rot — performance degrades as context grows
+direction: right
+
+x_axis: {
+  label: "Tokens in context"
+  shape: rectangle
+  style.stroke: "#cbd5e1"
+  style.fill: "#f8fafc"
+}
+
+short: {
+  label: "Short context\n~1K-8K tokens\n\nFull attention,\ngolden recall"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+}
+
+medium: {
+  label: "Medium\n~32K-128K\n\nStill strong,\noccasional miss"
+  shape: rectangle
+  style.fill: "#fef9c3"
+  style.stroke: "#ca8a04"
+}
+
+long: {
+  label: "Long\n~200K-500K\n\nNeedle-in-haystack\nstarts failing"
+  shape: rectangle
+  style.fill: "#fed7aa"
+  style.stroke: "#ea580c"
+}
+
+very_long: {
+  label: "Very long\n~1M+\n\nAttention dilution,\nposition-encoding\nextrapolation"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+}
+
+short -> medium -> long -> very_long: "tokens →"
+
+cause: {
+  shape: text
+  label: "Causes:\n• n² attention cost\n• Training-data length distribution\n• Position-encoding extrapolation\n• Distractor accumulation"
+  near: bottom-left
+  style.font-color: "#7c3aed"
+}

@@ -1,0 +1,47 @@
+## Structured outputs — three implementation tiers
+direction: down
+
+problem: {
+  shape: text
+  label: "Problem: programs need PARSEABLE output\nfrom LLMs, but LLMs natively produce free text.\nThree levels of strictness, increasing reliability."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+tier1: {
+  label: "Tier 1 — Prompt only\n('respond in JSON with these fields...')"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Cheapest, works on any model.\nFails ~5-15% on bad days:\nmalformed JSON, missing fields,\ntrailing commentary, markdown fences."; shape: text}
+}
+
+tier2: {
+  label: "Tier 2 — JSON mode / function calling\n(model 'tries' to produce valid JSON)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "OpenAI 'json_mode', basic tool-calling.\nMuch more reliable - server validates\nJSON syntax. But schema content can\nstill be wrong (missing keys, wrong types)."; shape: text}
+}
+
+tier3: {
+  label: "Tier 3 — Constrained decoding / Structured outputs\n(model CAN'T emit invalid output)"
+  shape: rectangle
+  style.fill: "#86efac"
+  style.stroke: "#16a34a"
+  style.bold: true
+  body: {label: "OpenAI structured outputs, Anthropic\ntool use with strict mode, Outlines,\nGuidance, llguidance, XGrammar.\nThe sampling step itself respects the\nschema. 100% schema-valid by construction.\nMild quality cost in some cases."; shape: text}
+}
+
+guidance: {
+  label: "Recommendation"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "• 2026 default: use the platform's structured output\n  feature (Tier 3 if available, Tier 2 fallback)\n• Always validate with Pydantic/zod even at Tier 3\n• Always retry-with-fix on validation failure\n• Tier 1 is for prototyping only"; shape: text}
+}
+
+problem -> tier1
+tier1 -> tier2: "harden →"
+tier2 -> tier3: "harden →"
+tier3 -> guidance

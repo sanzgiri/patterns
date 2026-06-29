@@ -1,0 +1,58 @@
+## Generative agents — memory stream architecture
+direction: down
+
+agent: {
+  label: "Generative agent\n(simulated character)"
+  shape: hexagon
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  style.bold: true
+}
+
+memory_stream: {
+  label: "Memory stream\n(append-only log of observations\n+ reflections + plans)"
+  shape: cylinder
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+
+  obs: {label: "Observation: 'Klaus is at the bar.'\n(timestamp, importance: 3)"; shape: page; style.fill: "#fef9c3"}
+  refl: {label: "Reflection: 'Klaus seems lonely\nafter the breakup.'\n(importance: 8)"; shape: page; style.fill: "#fef9c3"}
+  plan: {label: "Plan: 'Tomorrow I'll invite\nKlaus to coffee.'\n(importance: 6)"; shape: page; style.fill: "#fef9c3"}
+}
+
+retrieval: {
+  label: "Retrieval scoring\n(recency × importance × relevance)"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+}
+
+reflection: {
+  label: "Reflection module\n(periodic: 'what patterns\nshould I extract?')"
+  shape: rectangle
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+}
+
+planning: {
+  label: "Planning module\n('what should I do today?')"
+  shape: rectangle
+  style.fill: "#f3e8ff"
+  style.stroke: "#7c3aed"
+}
+
+env: {
+  label: "Simulated environment\n(Smallville, Stanford Town)"
+  shape: cylinder
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+}
+
+env -> memory_stream: "new observations"
+memory_stream -> retrieval: "scored, top-K returned"
+retrieval -> agent: "relevant memories"
+agent -> reflection: "trigger every N events"
+reflection -> memory_stream: "writes higher-level reflections"
+agent -> planning: "daily / hourly"
+planning -> memory_stream: "writes plans"
+agent -> env: "actions"

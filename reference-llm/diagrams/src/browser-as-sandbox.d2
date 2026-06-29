@@ -1,0 +1,47 @@
+## Browser-as-sandbox: existing security model, repurposed for agents
+direction: down
+
+intro: {
+  shape: text
+  label: "Browser security has 25+ years of\nbattle-tested isolation: same-origin policy,\nCORS, sandboxed iframes, OS process sandbox,\ncross-site cookie isolation, etc."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+setups: {
+  direction: right
+  agent_local: {
+    label: "❌ Local-machine agent\n(traditional model)"
+    shape: rectangle
+    style.fill: "#fecaca"
+    style.stroke: "#dc2626"
+    body: {label: "Agent has access to:\n• Your OS shell\n• Your file system\n• Your installed credentials\n• All your apps\n\nBlast radius:\n= your whole computer"; shape: text}
+  }
+  agent_browser: {
+    label: "✅ Browser-sandboxed agent\n(Operator, browser-use-style)"
+    shape: rectangle
+    style.fill: "#bbf7d0"
+    style.stroke: "#16a34a"
+    body: {label: "Agent runs in a browser tab\n(usually remote / cloud).\n\nIt can ONLY do what a browser\ntab can do: navigate URLs, click,\ntype, see DOM.\n\nBlast radius:\n= what that tab's logged-in\n  sessions can do"; shape: text}
+  }
+}
+
+benefits: {
+  label: "Benefits of browser-as-sandbox"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "• Cross-site isolation is FREE (browser built-in)\n• No access to your local filesystem\n• No access to your local credentials/keys\n• Easy to revoke (close tab, end session)\n• Compatible with existing 2FA / OAuth\n• User can WATCH the agent work"; shape: text}
+}
+
+risks: {
+  label: "Remaining risks"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+  body: {label: "• Agent reads untrusted web pages\n  (Leg 2 of lethal trifecta still present)\n• If logged into apps, Leg 1 still present\n• Agent can take actions in those apps\n  (so Leg 3 effectively present too)\n→ still need per-action permission gating"; shape: text}
+}
+
+intro -> setups
+setups -> benefits
+benefits -> risks

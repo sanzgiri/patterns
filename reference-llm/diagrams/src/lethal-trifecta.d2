@@ -1,0 +1,59 @@
+## The Lethal Trifecta (Simon Willison, 2024)
+direction: down
+
+intro: {
+  shape: text
+  label: "Any AI agent that combines all THREE of these capabilities\nis at high risk of being weaponized via prompt injection.\nRemove ANY ONE of them and the attack class largely collapses."
+  style.bold: true
+  style.font-color: "#7c3aed"
+}
+
+private_data: {
+  label: "1. Access to PRIVATE DATA"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+  body: {label: "Examples:\n• User's emails, files, calendar\n• Internal documents, codebase\n• Auth tokens, credentials\n• Customer records"; shape: text}
+}
+
+untrusted: {
+  label: "2. Exposure to UNTRUSTED CONTENT"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+  body: {label: "Examples:\n• Web pages, search results\n• Inbound emails / messages\n• User-uploaded files\n• Tool outputs from 3rd parties\n• MCP server responses"; shape: text}
+}
+
+exfil: {
+  label: "3. Ability to EXTERNALLY COMMUNICATE"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+  body: {label: "Examples:\n• Send email, post to web\n• Open URLs, image fetches\n• Webhooks, API calls\n• Markdown image rendering(!)\n• Code execution → network"; shape: text}
+}
+
+danger: {
+  label: "⚠ ALL THREE = exfiltration risk"
+  shape: rectangle
+  style.fill: "#7f1d1d"
+  style.stroke: "#dc2626"
+  style.font-color: "#ffffff"
+  style.bold: true
+  body: {label: "Attacker poisons untrusted content (2)\n→ agent reads it via tool call\n→ instructions tell agent to read private data (1)\n→ instructions tell agent to send data out (3)\n→ data is exfiltrated. Game over."; shape: text; style.font-color: "#ffffff"}
+}
+
+mitigations: {
+  label: "Mitigations (break any one leg)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "• Read-only private data (no edit/exfil ability)\n• Trusted-only sources (no web ingest)\n• No external communication (sandbox + no egress)\n• OR human-in-loop gates on any of (1)(2)(3)"; shape: text}
+}
+
+private_data -> danger
+untrusted -> danger
+exfil -> danger
+danger -> mitigations: "→ remove any leg"
+intro -> private_data
+intro -> untrusted
+intro -> exfil

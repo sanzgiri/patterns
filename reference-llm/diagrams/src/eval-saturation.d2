@@ -1,0 +1,47 @@
+## Eval saturation — when benchmarks stop telling you anything
+direction: down
+
+phase1: {
+  label: "Phase 1 — Useful eval\n(early years)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "Models score 20-60% on the eval.\nGap between models is large.\nImprovements visible.\nThe eval is INFORMATIVE."; shape: text}
+}
+
+phase2: {
+  label: "Phase 2 — Approaching ceiling"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+  body: {label: "Models score 75-90%.\nGap shrinking (1-3 points).\nVariance approaches gap size.\nThe eval is GETTING NOISY."; shape: text}
+}
+
+phase3: {
+  label: "Phase 3 — SATURATED"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+  style.bold: true
+  body: {label: "Models score 95%+ (or 100%).\nNew models score the same as old.\nThe eval can no longer distinguish.\nHuman raters disagree on remaining 5%.\nThe eval is USELESS for ranking."; shape: text}
+}
+
+responses: {
+  label: "What to do"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "1. Build harder eval (capability-frontier)\n2. Retire saturated eval (or move to regression suite)\n3. Beware Goodhart's law:\n   metric optimization continues even\n   after eval stopped being useful"; shape: text}
+}
+
+phase1 -> phase2: "models improve"
+phase2 -> phase3: "ceiling reached"
+phase3 -> responses: "→ refresh or retire"
+
+examples: {
+  shape: text
+  label: "Saturated examples (2025-2026):\nHumanEval (2021 - now ~99% top models)\nMMLU (2020 - now ~92%)\nGSM8K (2021 - now ~98%)\nMBPP (2021 - now ~95%)\nBoolQ, ARC-Easy, more"
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+phase3 -> examples

@@ -1,0 +1,52 @@
+## Single agent with tools — the default architecture
+direction: down
+
+user: {
+  label: "User goal"
+  shape: cylinder
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+agent: {
+  label: "Single agent\n(one LLM, one loop)"
+  shape: hexagon
+  style.fill: "#dcfce7"
+  style.stroke: "#16a34a"
+  style.bold: true
+}
+
+tools: {
+  label: "Tool registry\n(curated for this agent)"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+
+  retrieval: {label: "Retrieval\n(search, RAG, MCP)"; shape: rectangle; style.fill: "#fef9c3"}
+  io: {label: "I/O\n(read/write file, query DB)"; shape: rectangle; style.fill: "#fef9c3"}
+  external: {label: "External actions\n(send email, hit API, exec code)"; shape: rectangle; style.fill: "#fef9c3"}
+  meta: {label: "Meta\n(planning, note-taking, halt)"; shape: rectangle; style.fill: "#fef9c3"}
+}
+
+env: {
+  label: "Environment\n(files, DB, APIs, internet)"
+  shape: cylinder
+  style.fill: "#fde68a"
+  style.stroke: "#ea580c"
+}
+
+state: {
+  label: "Persistent state\n(notes, TODO, decisions)"
+  shape: cylinder
+  style.fill: "#f3e8ff"
+  style.stroke: "#7c3aed"
+}
+
+user -> agent: "task description"
+agent -> tools: "chooses tool"
+tools -> env: "executes"
+env -> tools: "result"
+tools -> agent: "observation"
+agent -> state: "write notes"
+state -> agent: "read on demand"
+agent -> user: "result\nwhen done"
