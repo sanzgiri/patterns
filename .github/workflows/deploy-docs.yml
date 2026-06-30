@@ -33,6 +33,11 @@ jobs:
         with:
           python-version: '3.12'
           cache: pip
+          cache-dependency-path: requirements-docs.txt
+
+      - name: Install d2 (for diagram check, optional)
+        run: |
+          curl -fsSL https://d2lang.com/install.sh | sh -s -- || true
 
       - name: Install dependencies
         run: |
