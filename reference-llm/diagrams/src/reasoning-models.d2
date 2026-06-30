@@ -1,0 +1,37 @@
+## Reasoning models - test-time compute revolution (2024-2026)
+direction: down
+
+intro: {
+  shape: text
+  label: "Sept 2024: OpenAI o1. The model THINKS before responding.\nUnlike CoT prompting, the reasoning happens at inference time\nas a model behavior, not a prompt technique. Output: hidden\nor visible 'thinking' tokens before the final answer."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+family: {
+  label: "The reasoning-model family (2024-2026)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "OpenAI: o1 (Sept 2024) -> o1-pro -> o3 (Dec 2024) -> o3-pro -> o4-mini\nAnthropic: Claude extended thinking (Feb 2025) on Sonnet/Opus 3.7+\nGoogle: Gemini 2.0 Flash Thinking, 2.5 Pro/Ultra Thinking\nDeepSeek: R1 (Jan 2025) - open-weights reasoning\nAlibaba: QwQ-32B (Nov 2024), Qwen-3-Thinking (2025)\nxAI: Grok 4 Thinking\nMeta, Mistral, AI21: various reasoning-tuned variants"; shape: text}
+}
+
+mechanism: {
+  label: "How they work"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Trained (via RL on reasoning traces) to produce a long\ninternal monologue BEFORE the final answer.\nThe monologue: tries approaches, catches errors, backtracks,\nself-verifies, decomposes problems.\n\nUsage cost: 5-100x more tokens at inference (thinking tokens).\nQuality: large gains on math, code, planning, scientific reasoning.\nLatency: 10s-minutes per response."; shape: text}
+}
+
+whenToUse: {
+  label: "When to use vs not use"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "USE for: hard math, complex coding tasks, scientific analysis,\n  multi-step planning, RL agents, ambiguous decisions.\nDON'T use for: simple lookups, chat, formatting, summarization,\n  anything where speed and cost matter more than quality.\nMixed strategy: route simple to fast models, hard to reasoning.\n  See brain-vs-hands.md."; shape: text}
+}
+
+intro -> family
+family -> mechanism
+mechanism -> whenToUse

@@ -1,0 +1,38 @@
+## 12-Factor Agents (Dex Horthy, 2024)
+direction: down
+
+intro: {
+  shape: text
+  label: "The '12-Factor App' for LLM-powered software.\nProduction LLM apps are CONVENTIONAL software with a probabilistic core.\nLessons from years of agent building, distilled to 12 factors."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+control: {
+  label: "CONTROL FACTORS (you own these)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "1. Natural language -> tool calls\n2. Own your prompts\n3. Own your context window\n4. Tools are just structured outputs\n5. Unify execution + business state\n6. Launch / pause / resume with simple APIs"; shape: text}
+}
+
+design: {
+  label: "DESIGN FACTORS (architectural choices)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "7. Contact humans with tool calls\n8. Own your control flow\n9. Compact errors into context\n10. Small focused agents\n11. Trigger from anywhere, meet users where they are\n12. Make your agent a stateless reducer"; shape: text}
+}
+
+bigidea: {
+  label: "Big idea"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Most agent frameworks abstract too much.\nYou end up fighting the framework when you need control.\n\nThe 12 factors: own the pieces that matter (prompts, context,\ncontrol flow, error handling). Use frameworks for plumbing,\nnot for the agent's brain."; shape: text}
+}
+
+intro -> control
+intro -> design
+control -> bigidea
+design -> bigidea

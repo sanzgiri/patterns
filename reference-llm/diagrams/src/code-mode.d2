@@ -1,0 +1,47 @@
+## Code Mode - agents call MCP tools by writing code
+direction: down
+
+intro: {
+  shape: text
+  label: "Traditional tool-using agent: emit one tool call -> wait -> parse result -> emit next.\nN steps = N round-trips, lots of intermediate tokens, slow.\nCode Mode: emit ONE PROGRAM that orchestrates ALL the tool calls, run it, return result."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+traditional: {
+  label: "TRADITIONAL TOOL USE (turn-by-turn)"
+  shape: rectangle
+  style.fill: "#fee2e2"
+  style.stroke: "#dc2626"
+  body: {label: "Turn 1: call list_files(.)\n         -> result: 12 files\nTurn 2: call read_file('a.py')\n         -> result: 200 lines\nTurn 3: call read_file('b.py')\n         -> result: 150 lines\nTurn 4: call analyze(a, b)\n         -> result: report\n...10 turns, 10 LLM calls,\nall context-heavy."; shape: text}
+}
+
+codemode: {
+  label: "CODE MODE (Anthropic Nov 2025)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "Turn 1: agent emits PYTHON program:\n\n  files = list_files('.')\n  contents = {f: read_file(f) for f in files}\n  result = analyze_all(contents)\n  print(result)\n\nProgram runs in sandbox.\nMCP tools called from code.\nResult returned in ONE LLM call.\n\n1 LLM call instead of 10.\n~3x speed, ~10x lower token cost."; shape: text}
+}
+
+mechanism: {
+  label: "Mechanism"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "1. MCP servers expose tools (resources/tools/prompts).\n2. Code mode wraps each tool as a function in the\n   sandbox's runtime (Python / TypeScript / etc.).\n3. Agent writes code that calls the wrapped functions.\n4. Code runs in sandboxed runtime (E2B, Modal, Pyodide).\n5. Output captured and returned to agent."; shape: text}
+}
+
+tradeoffs: {
+  label: "Trade-offs"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "+ Far fewer round-trips\n+ Loops, conditionals, error handling in code\n+ Composable: tools chained naturally\n+ Easier audit (the code is the plan)\n- Sandbox infrastructure required\n- Harder for non-coding tasks\n- Less interactive UX (no per-step progress)"; shape: text}
+}
+
+intro -> traditional
+intro -> codemode
+traditional -> mechanism: "vs"
+codemode -> mechanism
+mechanism -> tradeoffs

@@ -1,0 +1,38 @@
+## Rainbow deployments - parallel variant rollout
+direction: down
+
+intro: {
+  shape: text
+  label: "Deploying agent changes (new prompt, new model, new tools) is RISKY.\nQuality is hard to measure pre-deployment; users notice changes.\n\nRainbow deployment: run K variants IN PRODUCTION, each on a slice of traffic.\nCollect per-variant metrics. Promote the winner; roll back the rest."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+oldway: {
+  label: "BIG BANG (risky)"
+  shape: rectangle
+  style.fill: "#fee2e2"
+  style.stroke: "#dc2626"
+  body: {label: "Deploy new prompt / model / tools to 100% of traffic.\nIf it's worse, you find out from user complaints.\nRollback takes hours; damage is done."; shape: text}
+}
+
+rainbow: {
+  label: "RAINBOW (parallel variants)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "Variant A (control): 70% of traffic, current prompt + Sonnet\nVariant B: 10% of traffic, new prompt + Sonnet\nVariant C: 10% of traffic, current prompt + new Sonnet version\nVariant D: 10% of traffic, new prompt + new model\n\nPer-variant metrics:\n  Cost / query\n  Latency p50, p95\n  Eval score\n  User feedback\n  Error rate"; shape: text}
+}
+
+decisions: {
+  label: "Decision flow"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Daily: review per-variant metrics.\nA variant wins -> promote (shift traffic).\nA variant fails -> roll back (drop traffic to 0).\nA variant ties -> keep running until significance.\n\nLike feature flags + experimentation,\nadapted to LLM-specific axes (model, prompt, tools)."; shape: text}
+}
+
+intro -> oldway
+intro -> rainbow
+oldway -> decisions: "vs"
+rainbow -> decisions

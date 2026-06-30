@@ -1,0 +1,46 @@
+## Basic RAG - the embed/retrieve/generate triangle
+direction: down
+
+indexing: {
+  label: "INDEXING (offline, one-time)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  style.bold: true
+  flow: {
+    direction: right
+    docs: {label: "Source docs"; shape: cylinder; style.fill: "#e0e7ff"}
+    chunk: {label: "Chunker"; shape: rectangle; style.fill: "#fef3c7"}
+    embed: {label: "Embedding\nmodel"; shape: rectangle; style.fill: "#fde68a"}
+    vdb: {label: "Vector DB\n(+ metadata)"; shape: cylinder; style.fill: "#bbf7d0"}
+    docs -> chunk -> embed -> vdb
+  }
+}
+
+querying: {
+  label: "QUERYING (per request)"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+  style.bold: true
+  flow: {
+    direction: right
+    q: {label: "User query"; shape: rectangle; style.fill: "#dbeafe"}
+    qemb: {label: "Embedding\nmodel\n(same one)"; shape: rectangle; style.fill: "#fde68a"}
+    search: {label: "Vector\nsearch\n(top-K)"; shape: rectangle; style.fill: "#fde68a"}
+    chunks: {label: "Top-K\nchunks"; shape: rectangle; style.fill: "#bbf7d0"}
+    llm: {label: "LLM\n(query + chunks)"; shape: rectangle; style.fill: "#fde68a"}
+    ans: {label: "Answer\nw/ citations"; shape: rectangle; style.fill: "#bbf7d0"}
+    q -> qemb -> search -> chunks -> llm -> ans
+  }
+}
+
+note: {
+  shape: text
+  label: "Two phases:\n1. INDEXING: chunk docs, embed each chunk, store vectors\n2. QUERYING: embed query, find nearest chunks, give chunks + query to LLM\nSame embedding model is critical - mismatch breaks recall."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+indexing -> querying: "(answers come from the index)"
+querying -> note

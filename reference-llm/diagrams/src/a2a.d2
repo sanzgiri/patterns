@@ -1,0 +1,46 @@
+## A2A - Agent-to-Agent Protocol (Google, Apr 2025)
+direction: down
+
+intro: {
+  shape: text
+  label: "Problem: MCP is about agent-to-TOOL communication.\nBut what about agent-to-AGENT? Multi-agent systems need agents from\ndifferent vendors / frameworks / clouds to discover, negotiate, collaborate.\nGoogle's A2A (Apr 9, 2025) is the answer."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+architecture: {
+  label: "A2A architecture (peer agents)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "Agent A (LangGraph, OpenAI, Anthropic, custom...)\n   |\n   |  JSON-RPC + SSE over HTTP\n   |  (with agent cards, tasks, messages, artifacts)\n   |\nAgent B (CrewAI, AutoGen, custom, Vertex Agent Builder...)\n\nAgents are peers - either side can request, either side can fulfill.\nDifferent from MCP (which is asymmetric client / server)."; shape: text}
+}
+
+primitives: {
+  label: "Core primitives"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "AGENT CARD: discovery metadata (capabilities, skills, auth)\n            served at /.well-known/agent-card.json\nTASKS:     work units; long-running with status updates\nMESSAGES:  conversational exchanges within a task\nARTIFACTS: structured outputs the agent produces"; shape: text}
+}
+
+vsMcp: {
+  label: "MCP vs A2A"
+  shape: rectangle
+  style.fill: "#fbcfe8"
+  style.stroke: "#db2777"
+  body: {label: "MCP: agent -> TOOL (asymmetric, RPC-style)\n  Use for: file access, DB queries, API calls\n\nA2A: agent -> AGENT (symmetric, conversational)\n  Use for: delegating a sub-task to a specialist agent,\n           multi-agent collaboration, cross-org workflows\n\nNOT competitors - complementary. Common stack:\n  An agent uses MCP for tools AND A2A for sub-agents."; shape: text}
+}
+
+adoption: {
+  label: "Adoption"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "Apr 9, 2025:  Google launches A2A spec\nApr 2025:     50+ launch partners (SAP, Salesforce, ServiceNow,\n              Cohere, LangChain, Atlassian, MongoDB...)\nJun 2025:     Donated to Linux Foundation\n2025-2026:    Specifications continue evolving;\n              A2A SDK across major frameworks;\n              less mature than MCP but growing fast."; shape: text}
+}
+
+intro -> architecture
+architecture -> primitives
+primitives -> vsMcp
+vsMcp -> adoption

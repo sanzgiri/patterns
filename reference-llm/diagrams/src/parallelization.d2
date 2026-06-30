@@ -1,0 +1,47 @@
+## Parallelization — two flavors: sectioning and voting
+direction: down
+
+intro: {
+  shape: text
+  label: "Run multiple LLM calls IN PARALLEL.\nTwo distinct shapes, very different uses:"
+  style.italic: true
+  style.bold: true
+  style.font-color: "#7c3aed"
+}
+
+sectioning: {
+  label: "SECTIONING\n(decompose into independent subtasks)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "Split work into N independent parts.\nEach part runs as its own LLM call.\nAggregate results at the end.\n\nExamples:\n• Translate K paragraphs in parallel\n• Analyze K files of a repo at once\n• Generate K sections of a report"; shape: text}
+}
+
+voting: {
+  label: "VOTING\n(same task, K times, aggregate)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "Run the SAME task K times at temperature.\nAggregate via majority vote / averaging /\nbest-of-K selection.\n\nExamples:\n• Self-Consistency for reasoning\n• Multiple safety checks per output\n• Best-of-N for generation"; shape: text}
+}
+
+merge: {
+  label: "Aggregation step\n(reduce K outputs → 1)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Sectioning: stitch back together\nVoting: pick majority / average / best"; shape: text}
+}
+
+note: {
+  shape: text
+  label: "Both improve quality. Both cost K× the tokens.\nSectioning improves SCALE; voting improves RELIABILITY."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+intro -> sectioning
+intro -> voting
+sectioning -> merge
+voting -> merge
+merge -> note

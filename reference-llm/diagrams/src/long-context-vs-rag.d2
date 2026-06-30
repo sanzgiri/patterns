@@ -1,0 +1,47 @@
+## Long-context vs RAG - the 2024-2026 trade-off
+direction: down
+
+intro: {
+  shape: text
+  label: "Question: 'I have a 200-page doc. Do I use RAG, or do I just stuff it in the context window?'\n2024-2026 answer: both can work. Choice depends on size, query patterns, cost, latency."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+longctx: {
+  label: "LONG-CONTEXT (stuff it all in)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "Works for: small-to-medium corpora (under ~500k tokens).\nGemini 2.5 / Claude Sonnet 4: 1M-2M token windows.\n+ No retrieval setup.\n+ No retrieval misses (the model sees everything).\n+ Pairs with PROMPT CACHING (90% cost reduction).\n- Context rot above ~30-50k tokens.\n- Expensive per call without caching.\n- Slow first call (entire doc must be processed)."; shape: text}
+}
+
+rag: {
+  label: "RAG"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "Works for: large corpora (>1M tokens), changing data.\n+ Scales to billions of chunks.\n+ Cheap per query (only K chunks in context).\n+ Easy to update (re-embed new docs).\n- Setup complexity (chunking, embedder, vector DB, reranker).\n- Retrieval misses (relevant chunk not in top-K = wrong answer).\n- Loss of holistic understanding."; shape: text}
+}
+
+hybrid: {
+  label: "HYBRID (the production default)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Long-context for things that fit + need holistic view.\nRAG for the long tail of large corpus.\nCAG (Cache-Augmented Generation): long-context + prompt caching\n  = fits intermediate-sized cases cheaply.\nAgentic RAG: the model decides when to retrieve vs trust its context."; shape: text}
+}
+
+decisionTree: {
+  label: "Decision tree"
+  shape: rectangle
+  style.fill: "#fbcfe8"
+  style.stroke: "#db2777"
+  body: {label: "Fits in 200k tokens + stable? -> LONG-CONTEXT + cache (CAG)\nFits in 1M tokens + needs aggregation? -> LONG-CONTEXT + cache\nBigger than 1M tokens or changing fast? -> RAG\nNeeds both breadth and depth? -> HYBRID"; shape: text}
+}
+
+intro -> longctx
+intro -> rag
+longctx -> hybrid
+rag -> hybrid
+hybrid -> decisionTree

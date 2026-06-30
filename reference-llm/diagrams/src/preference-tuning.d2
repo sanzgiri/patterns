@@ -1,0 +1,46 @@
+## Preference tuning - DPO and successors
+direction: down
+
+intro: {
+  shape: text
+  label: "Alignment from preferences. Given pairs of (preferred, rejected) outputs,\ntrain the model to favor preferred. Replaces the complex RLHF pipeline\n(reward model + PPO) with simpler direct training. The 2023-2025 evolution\nof model alignment."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+before: {
+  label: "RLHF (the predecessor, 2022)"
+  shape: rectangle
+  style.fill: "#fee2e2"
+  style.stroke: "#dc2626"
+  body: {label: "Step 1: Train a separate REWARD MODEL on (preferred, rejected) pairs.\nStep 2: Use PPO (reinforcement learning) to optimize the LLM to maximize reward.\nProblems: unstable PPO training, separate reward model, expensive,\n         many hyperparameters, hard to reproduce."; shape: text}
+}
+
+dpo: {
+  label: "DPO (Direct Preference Optimization, May 2023)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "Rafailov et al. - 'Your language model is secretly a reward model.'\nDirectly optimize the LLM on preferences with a simple classifier-style loss.\nNo separate reward model, no PPO, much simpler.\nMatches or beats RLHF quality at fraction of complexity.\nBecame the default by 2024."; shape: text}
+}
+
+successors: {
+  label: "DPO successors (2024-2025)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "KTO (Kahneman-Tversky Optimization, Feb 2024):\n  Works on UNPAIRED data - just 'good' / 'bad' labels per example.\n  Easier data collection.\nORPO (Hong et al. Mar 2024):\n  Combines preference + SFT in one stage. No reference model needed.\nIPO, SimPO, CPO: assorted refinements.\nGRPO (DeepSeek): group-relative; behind R1's reasoning training."; shape: text}
+}
+
+ecosystem: {
+  label: "Production ecosystem"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Libraries: TRL (HuggingFace), Axolotl, LLaMA-Factory, Unsloth.\nUsed by: Llama 3.1+, Mistral, Qwen, Gemma 2+, DeepSeek-V3, etc.\nData sources: human preferences, AI-feedback (RLAIF),\n  rejection sampling from a strong model.\nCost: cheaper than RLHF; still expensive (multi-GPU training).\nFor most app developers: not your problem; the base model already\n  went through preference tuning."; shape: text}
+}
+
+intro -> before
+intro -> dpo
+dpo -> successors
+successors -> ecosystem

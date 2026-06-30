@@ -1,0 +1,50 @@
+## Advanced RAG techniques (2024-2026 stack)
+direction: down
+
+input: {
+  label: "User query"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+preretrieval: {
+  label: "PRE-RETRIEVAL (improve the query)"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+  body: {label: "- Query rewriting (clean, expand)\n- Multi-query (LLM emits K queries)\n- HyDE (LLM writes a fake answer; embed THAT)\n- Step-back prompting (more general version)\n- Decomposition (split into sub-queries)"; shape: text}
+}
+
+retrieval: {
+  label: "RETRIEVAL (hybrid > dense alone)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "- Dense (vector) search\n- BM25 (keyword) search\n- Combine via RRF (Reciprocal Rank Fusion)\n- Metadata filtering (date, source, type)\n- Parent-doc retrieval (chunk for search,\n  return parent for context)"; shape: text}
+}
+
+postretrieval: {
+  label: "POST-RETRIEVAL (improve the chunks)"
+  shape: rectangle
+  style.fill: "#fbcfe8"
+  style.stroke: "#db2777"
+  body: {label: "- Reranker (cross-encoder / LLM)\n- Compression (drop irrelevant sentences)\n- Diversity (MMR - avoid redundancy)\n- Context window assembly (order matters)"; shape: text}
+}
+
+generation: {
+  label: "GENERATION"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "LLM with query + filtered/reranked chunks\nStructured citations\nGuardrails on hallucination"; shape: text}
+}
+
+note: {
+  shape: text
+  label: "Basic RAG = just retrieval + generation.\nAdvanced RAG = each phase enhanced.\nMost real production systems use SOME of each, not all."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+input -> preretrieval -> retrieval -> postretrieval -> generation -> note

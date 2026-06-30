@@ -1,0 +1,75 @@
+## Prompt chaining — break the task into sequential LLM calls
+direction: down
+
+intro: {
+  shape: text
+  label: "Sequential decomposition: each LLM call's output\nfeeds the next call. Optional GATE between any pair\nto validate or short-circuit. Use when the task has\nclear sequential structure."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+input: {
+  label: "User input\n(e.g. 'Write a blog post about X')"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+step1: {
+  label: "LLM call 1\n(e.g. 'Generate outline')"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+}
+
+gate: {
+  label: "Programmatic gate\n(optional)"
+  shape: diamond
+  style.fill: "#fbcfe8"
+  style.stroke: "#db2777"
+}
+
+step2: {
+  label: "LLM call 2\n(e.g. 'Expand outline into draft')"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+}
+
+step3: {
+  label: "LLM call 3\n(e.g. 'Polish the draft')"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+}
+
+output: {
+  label: "Final output"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  style.bold: true
+}
+
+fail: {
+  label: "Fail / retry / re-prompt"
+  shape: rectangle
+  style.fill: "#fecaca"
+  style.stroke: "#dc2626"
+}
+
+input -> step1
+step1 -> gate
+gate -> step2: "passes"
+gate -> fail: "fails"
+step2 -> step3
+step3 -> output
+intro -> input
+
+footer: {
+  shape: text
+  label: "Anthropic (Dec 2024): chaining is the workflow\nyou should reach for FIRST when the task has\nidentifiable sub-steps. Cheaper, simpler, more\nreliable than a single big prompt."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+output -> footer

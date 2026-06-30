@@ -1,0 +1,47 @@
+## Speculative decoding - draft model + verifier
+direction: down
+
+intro: {
+  shape: text
+  label: "Decoding LLMs one token at a time is autoregressive: each token waits for the previous.\nGPUs are underutilized (memory-bandwidth bound).\nSpeculative decoding: a SMALL draft model proposes K tokens in advance,\nthe BIG target model verifies them in ONE forward pass.\nResult: 2-4x latency improvement at unchanged output quality."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+without: {
+  label: "Standard decoding"
+  shape: rectangle
+  style.fill: "#fee2e2"
+  style.stroke: "#dc2626"
+  body: {label: "Token 1: big model -> 't'\nToken 2: big model -> 'h'\nToken 3: big model -> 'e'\nToken 4: big model -> ' '\n... one forward pass per token.\nLatency = N forward passes."; shape: text}
+}
+
+with: {
+  label: "Speculative decoding"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "Step 1: DRAFT model proposes 'the_quick_brown_fox' (4 tokens)\nStep 2: BIG model verifies all 4 in ONE forward pass.\nIf big model agrees with first 3: accept those 3.\nIf big model disagrees on token 4: replace with big-model's choice.\nResult: in best case, 4 tokens per forward pass.\nLatency typically halves (or better) at IDENTICAL output."; shape: text}
+}
+
+family: {
+  label: "Variants"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "- Vanilla speculative decoding (Leviathan et al. 2022)\n- Medusa heads (multi-head proposal model)\n- EAGLE (more accurate drafting)\n- Lookahead decoding (no draft model; speculate from history)\n- Predicted Outputs (OpenAI Nov 2024 - user provides the prediction)\n- Self-speculative (big model drafts cheaply, big model verifies)"; shape: text}
+}
+
+uses: {
+  label: "Where it matters"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "Inference platforms: vLLM, TGI, llama.cpp, TensorRT-LLM all support.\nAPI providers: implemented behind-the-scenes (Anthropic, OpenAI, etc).\nUse cases that benefit most:\n  - Code completion (high token-acceptance rate)\n  - Translation (predictable next tokens)\n  - Long structured outputs\nUse cases that benefit less:\n  - Creative generation (low acceptance)\n  - Reasoning models (thinking tokens are hard to predict)"; shape: text}
+}
+
+intro -> without
+intro -> with
+without -> family: "vs"
+with -> family
+family -> uses

@@ -1,0 +1,46 @@
+## Contextual Retrieval - prepend context BEFORE embedding
+direction: down
+
+intro: {
+  shape: text
+  label: "Problem: a chunk like 'Revenue grew 3%' is meaningless without knowing\nWHICH COMPANY, WHICH QUARTER, etc. Traditional RAG destroys this context."
+  style.italic: true
+  style.font-color: "#dc2626"
+}
+
+traditional: {
+  label: "TRADITIONAL RAG"
+  shape: rectangle
+  style.fill: "#fee2e2"
+  style.stroke: "#dc2626"
+  body: {label: "chunk: 'Revenue grew 3% over\nthe previous quarter.'\n\nEmbedded as-is - lost context.\nQuery 'ACME Q2 2023 growth' fails."; shape: text}
+}
+
+contextual: {
+  label: "CONTEXTUAL RETRIEVAL (Anthropic Sept 2024)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "STEP 1: For each chunk, ask cheap LLM (Haiku):\n  'Given this whole document, write a short context\n   that situates this chunk for search.'\n\nSTEP 2: PREPEND the context to the chunk text.\n  'This chunk is from an SEC filing on ACME corp's\n   prev quarter revenue was 314M USD.\n   The company's revenue grew by 3%...'\n\nSTEP 3: Embed (for vector) AND index (for BM25)\n  the contextualized chunk."; shape: text}
+}
+
+results: {
+  label: "RESULTS (Anthropic benchmarks)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "- Contextual Embeddings alone: -35% retrieval failures\n- Contextual + BM25: -49% retrieval failures\n- Contextual + BM25 + Rerank: -67% retrieval failures\n\nCost: one Haiku call per chunk at indexing time,\nfully cacheable with prompt caching (~1.02 USD per 1M tokens)."; shape: text}
+}
+
+note: {
+  shape: text
+  label: "Key insight: indexing-time cost is one-time.\nQuery-time cost is unchanged. Best ROI single move in RAG 2024-2025."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+intro -> traditional
+intro -> contextual
+traditional -> results: "(baseline)"
+contextual -> results: "(improvement)"
+results -> note

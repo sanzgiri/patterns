@@ -1,0 +1,29 @@
+## Harness design - the agent OS
+direction: down
+
+intro: {
+  shape: text
+  label: "A 'harness' is the code surrounding the LLM call.\nIt's what turns a raw model API into a production agent.\nUnsexy but critical - bad harness = bad agent."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+user: {label: "User input"; shape: rectangle; style.fill: "#dbeafe"}
+step1: {label: "1. Context assembly (system + memory + RAG + tools)"; shape: rectangle; style.fill: "#fef3c7"; style.stroke: "#d97706"}
+step2: {label: "2. Input validation + safety filters"; shape: rectangle; style.fill: "#fef3c7"; style.stroke: "#d97706"}
+step3: {label: "3. Router / model selection (brain vs hands)"; shape: rectangle; style.fill: "#fef3c7"; style.stroke: "#d97706"}
+step4: {label: "4. LLM call with retry + timeout + cost cap"; shape: rectangle; style.fill: "#fde68a"; style.stroke: "#d97706"}
+step5: {label: "5. Structured output parsing + schema check"; shape: rectangle; style.fill: "#fef3c7"; style.stroke: "#d97706"}
+step6: {label: "6. Tool execution (sandboxed, with feedback loop)"; shape: rectangle; style.fill: "#fef3c7"; style.stroke: "#d97706"}
+step7: {label: "7. Output guardrails + post-hoc verification"; shape: rectangle; style.fill: "#fef3c7"; style.stroke: "#d97706"}
+step8: {label: "8. Telemetry / trace logging (every step)"; shape: rectangle; style.fill: "#fbcfe8"; style.stroke: "#db2777"}
+out: {label: "Output to user"; shape: rectangle; style.fill: "#bbf7d0"}
+
+note: {
+  shape: text
+  label: "The harness is where production reliability lives.\nThe LLM is the engine; the harness is the chassis.\nGood frameworks (Vercel AI SDK, Mastra, LangGraph, etc.) handle most of this.\nBad ones leave you to build it from scratch."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+intro -> user -> step1 -> step2 -> step3 -> step4 -> step5 -> step6 -> step7 -> step8 -> out -> note

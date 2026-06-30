@@ -1,0 +1,63 @@
+## Reranking - precision pass after coarse retrieval
+direction: down
+
+input: {
+  label: "User query"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+retrieval: {
+  label: "STAGE 1: First-stage retrieval"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Cheap, fast, high-recall:\nvector + BM25, top-N (N = 50-100)\nGoal: don't miss the relevant doc"; shape: text}
+}
+
+candidates: {
+  label: "N candidate chunks\n(too many to all fit in context)"
+  shape: rectangle
+  style.fill: "#fef3c7"
+}
+
+reranker: {
+  label: "STAGE 2: RERANKER"
+  shape: rectangle
+  style.fill: "#fbcfe8"
+  style.stroke: "#db2777"
+  style.bold: true
+  body: {label: "Cross-encoder: scores each (query, chunk) PAIR.\nFar more accurate than bi-encoder (the embedding model)\nbecause query and chunk attend to EACH OTHER.\nCost: scales with N, but N is small.\nLatency: ~50-200ms for N=50."; shape: text}
+}
+
+topK: {
+  label: "Top-K (K = 3-10)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  style.bold: true
+}
+
+llm: {
+  label: "Generation LLM"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+}
+
+answer: {
+  label: "Answer"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+}
+
+input -> retrieval -> candidates -> reranker -> topK -> llm -> answer
+
+note: {
+  shape: text
+  label: "Two-stage retrieve-then-rerank is the dominant production pattern.\nStage 1 is cheap and high-recall; stage 2 is expensive and high-precision.\nDifferent reranker families: cross-encoder, LLM judge, ColBERT (late interaction)."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+answer -> note

@@ -1,0 +1,58 @@
+## Memory architectures for LLM agents
+direction: down
+
+intro: {
+  shape: text
+  label: "LLMs are STATELESS. 'Memory' is whatever survives across calls / sessions.\nFive layers, borrowed loosely from cognitive science:"
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+types: {
+  direction: right
+  working: {
+    label: "WORKING / SHORT-TERM\n(the context window)"
+    shape: rectangle
+    style.fill: "#fde68a"
+    style.stroke: "#d97706"
+    body: {label: "Lives one conversation.\n200k-2M tokens today.\nDies at session end.\nThe 'RAM' of the agent."; shape: text}
+  }
+  episodic: {
+    label: "EPISODIC\n(past interactions)"
+    shape: rectangle
+    style.fill: "#dbeafe"
+    style.stroke: "#2563eb"
+    body: {label: "Stores past conversations.\nVector-indexed events.\nRetrieved by similarity.\n'What did we discuss last week?'"; shape: text}
+  }
+  semantic: {
+    label: "SEMANTIC\n(facts about the world/user)"
+    shape: rectangle
+    style.fill: "#bbf7d0"
+    style.stroke: "#16a34a"
+    body: {label: "Structured facts.\n'User prefers metric units.'\n'User's pet is named Rex.'\nUpdated, not just appended."; shape: text}
+  }
+  procedural: {
+    label: "PROCEDURAL\n(skills / how-to)"
+    shape: rectangle
+    style.fill: "#fbcfe8"
+    style.stroke: "#db2777"
+    body: {label: "Learned routines.\nSKILL.md files.\nCustom system prompts.\nTool configurations."; shape: text}
+  }
+  archival: {
+    label: "ARCHIVAL\n(everything else, retrievable)"
+    shape: rectangle
+    style.fill: "#e5e7eb"
+    style.stroke: "#6b7280"
+    body: {label: "Long-tail storage.\nDocs, emails, code.\nRetrieved via RAG.\nCold storage."; shape: text}
+  }
+}
+
+flow: {
+  shape: text
+  label: "Working memory is the only one the LLM sees DIRECTLY each turn.\nThe others get loaded INTO working memory on demand (retrieval / injection)."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+intro -> types
+types -> flow

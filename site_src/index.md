@@ -31,7 +31,7 @@ Each pattern page follows the same structure: a plain-English **ELI5 callout** f
 | Section | Pages | Diagrams | Coverage |
 |---|---|---|---|
 | [System Design](system-design/README.md) | 86 | 170 | **Complete** — phases A–G |
-| [LLM / Agentic](llm/README.md) | 33 | 44 | Phases 2026-A–E (Context, Agentic, Evals, Security, Foundations) shipped; workflows/retrieval/memory/skills/eng/model/protocols next |
+| [LLM / Agentic](llm/README.md) | 60 | 71 | **Complete** — phases 2026-A through 2026-F.7: Context, Agentic, Evals, Security, Foundations, Workflows, Retrieval, Memory, Skills, Engineering, Model patterns, Protocols |
 
 ## Format conventions
 

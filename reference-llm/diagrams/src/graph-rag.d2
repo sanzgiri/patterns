@@ -1,0 +1,38 @@
+## GraphRAG - retrieval over a knowledge graph
+direction: down
+
+indexing: {
+  label: "INDEXING (build the graph)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "1. Chunk docs\n2. LLM extracts entities + relationships per chunk\n   (ACME Corp HAS_CEO Jane Doe; Jane Doe REPORTS_TO Board)\n3. Build knowledge graph (nodes = entities, edges = relations)\n4. Run community detection (Leiden algorithm)\n5. LLM generates per-community SUMMARIES at multiple levels\n   (whole graph -> sub-communities -> leaf entities)"; shape: text}
+}
+
+querying: {
+  label: "QUERYING (two modes)"
+  shape: rectangle
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+  body: {label: "LOCAL search: 'who is the CEO of ACME?'\n  -> entity lookup -> nearby graph traversal -> chunks\n\nGLOBAL search: 'what are the main themes in this corpus?'\n  -> use community summaries (already-LLM-generated)\n  -> map-reduce over summaries\n  -> final answer assembled from summary outputs"; shape: text}
+}
+
+vsBasic: {
+  label: "vs Basic RAG"
+  shape: rectangle
+  style.fill: "#fbcfe8"
+  style.stroke: "#db2777"
+  body: {label: "Basic RAG: vector similarity on chunks.\n  Good at: 'what does it say about X?'\n  Bad at:  'what are the main themes?'\n           'how is X connected to Y?'\n           multi-hop questions.\n\nGraphRAG: structural traversal + LLM summaries.\n  Better at: aggregation, relationships, themes.\n  Worse at: cost, indexing time, simple lookups."; shape: text}
+}
+
+cost: {
+  label: "COST (the catch)"
+  shape: rectangle
+  style.fill: "#fee2e2"
+  style.stroke: "#dc2626"
+  body: {label: "Indexing: O(corpus size) LLM calls for entity extraction\n         + O(communities) LLM calls for summaries.\nFor a moderate corpus: 100x-1000x more expensive than basic RAG to build.\nQuery cost: similar to basic RAG.\nBest for: high-value, stable corpora (research, legal, intel)."; shape: text}
+}
+
+indexing -> querying
+querying -> vsBasic
+vsBasic -> cost

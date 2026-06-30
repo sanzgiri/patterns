@@ -1,0 +1,67 @@
+## Orchestrator-workers — orchestrator plans, workers execute
+direction: down
+
+input: {
+  label: "User task\n(e.g. 'Refactor this codebase to remove\nthe legacy auth system')"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+orchestrator: {
+  label: "ORCHESTRATOR LLM"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  style.bold: true
+  body: {label: "Looks at the task.\nDecides how to break it down.\nDispatches subtasks to workers.\nCollects worker outputs.\nMay iterate (re-plan, more workers)."; shape: text}
+}
+
+workers: {
+  direction: right
+  w1: {
+    label: "Worker 1"
+    shape: rectangle
+    style.fill: "#bbf7d0"
+    style.stroke: "#16a34a"
+    body: {label: "e.g. 'find all uses\nof old_auth()'"; shape: text}
+  }
+  w2: {
+    label: "Worker 2"
+    shape: rectangle
+    style.fill: "#bbf7d0"
+    style.stroke: "#16a34a"
+    body: {label: "e.g. 'rewrite this\nspecific file'"; shape: text}
+  }
+  w3: {
+    label: "Worker 3"
+    shape: rectangle
+    style.fill: "#bbf7d0"
+    style.stroke: "#16a34a"
+    body: {label: "e.g. 'verify tests\nstill pass'"; shape: text}
+  }
+}
+
+synthesis: {
+  label: "Orchestrator synthesizes results"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+note: {
+  shape: text
+  label: "Key difference from sectioning:\nthe ORCHESTRATOR LLM decides what to do.\nThe number of workers and the subtask\ndefinitions are NOT fixed in code -\nthey emerge from the orchestrator's plan."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+input -> orchestrator
+orchestrator -> workers.w1: "plan step 1"
+orchestrator -> workers.w2: "plan step 2"
+orchestrator -> workers.w3: "plan step 3"
+workers.w1 -> synthesis
+workers.w2 -> synthesis
+workers.w3 -> synthesis
+synthesis -> orchestrator: "loop: more subtasks?"
+synthesis -> note

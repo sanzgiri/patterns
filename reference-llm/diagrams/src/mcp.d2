@@ -1,0 +1,37 @@
+## MCP - Model Context Protocol (Anthropic, Nov 2024)
+direction: down
+
+intro: {
+  shape: text
+  label: "Problem: every LLM app re-implemented its own tool-integration layer.\nEach (app, tool) pair was bespoke. Tools couldn't move across apps.\nNov 2024: Anthropic launches MCP - 'USB-C for AI tools.'\n2025: adopted by OpenAI, Google, Microsoft - now universal."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+architecture: {
+  label: "MCP architecture (client-server)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "CLIENT (an LLM app):  Claude Desktop, Cursor, VS Code,\n                       OpenAI Agents, custom apps...\n     |\n     |  JSON-RPC over stdio / HTTP / SSE\n     |\nSERVER (a tool provider):  filesystem, GitHub, Slack, Notion,\n                            Postgres, custom internal tools...\n\nMany clients can connect to many servers.\nOne server can serve many clients."; shape: text}
+}
+
+primitives: {
+  label: "Three primitives"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "RESOURCES: read-only data (files, DB rows, API responses).\n          Client can list / read; updates push to subscribers.\nTOOLS:    callable functions with typed args.\n          The LLM picks one to call; server executes.\nPROMPTS:  named, parameterized prompt templates the server\n          exposes for the client to use."; shape: text}
+}
+
+adoption: {
+  label: "Adoption timeline"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "Nov 25, 2024:  Anthropic launches MCP open spec\nDec 2024:      Claude Desktop ships with MCP support\nQ1 2025:       Cursor, Continue, Zed adopt\nMar 26, 2025:  OpenAI announces MCP adoption (Agents SDK)\nApr 2025:      Google announces MCP support (Gemini)\nMay 2025:      Microsoft commits MCP (Copilot Studio)\n2025-2026:     hundreds of public MCP servers\n               (filesystem, GitHub, Slack, Notion, Linear,\n               Postgres, Brave Search, Puppeteer, etc.)"; shape: text}
+}
+
+intro -> architecture
+architecture -> primitives
+primitives -> adoption

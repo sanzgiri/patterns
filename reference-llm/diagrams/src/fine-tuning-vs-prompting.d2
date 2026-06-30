@@ -1,0 +1,48 @@
+## Fine-tuning vs prompting vs RAG - the trinity
+direction: down
+
+intro: {
+  shape: text
+  label: "Three ways to specialize an LLM for your use case.\nMost teams confuse these or pick the wrong one.\nThe right choice depends on WHAT you're trying to change."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+prompt: {
+  label: "PROMPTING (start here)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "Change how the model responds via prompt:\n- System prompt (role, tone, constraints)\n- Few-shot examples\n- Chain-of-thought / reasoning prompts\n\nCheap (no training), fast iteration,\nbut limited - can't really teach new facts\nor very different behavior."; shape: text}
+}
+
+rag: {
+  label: "RAG (for facts)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "Inject facts at query time.\nFor: domain knowledge, private docs,\n  changing data, citations.\n\nDoesn't change model behavior - just\nwhat info it has access to.\nSee ret/basic-rag.md."; shape: text}
+}
+
+ft: {
+  label: "FINE-TUNING (for behavior)"
+  shape: rectangle
+  style.fill: "#fbcfe8"
+  style.stroke: "#db2777"
+  body: {label: "Update model weights on your examples.\nFor: format consistency, style/tone, specialized\n  task behavior, smaller models matching bigger\n  models on narrow task.\n\nDoesn't reliably teach facts (use RAG for that).\nExpensive, slow iteration, but bakes-in behavior.\nLoRA / QLoRA make it cheaper (only some weights updated)."; shape: text}
+}
+
+decision: {
+  label: "Decision rule"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Need access to current/private FACTS?    -> RAG\nNeed consistent FORMAT or BEHAVIOR?       -> Fine-tune\nJust want better outputs from base model? -> Better prompt\n\nCommonly: combine. Fine-tune for format,\nRAG for facts, prompt for orchestration.\nStart with prompting; add others as evidence demands."; shape: text}
+}
+
+intro -> prompt
+intro -> rag
+intro -> ft
+prompt -> decision
+rag -> decision
+ft -> decision

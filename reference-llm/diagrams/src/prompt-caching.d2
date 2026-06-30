@@ -1,0 +1,47 @@
+## Prompt caching - cache the unchanging prefix
+direction: down
+
+intro: {
+  shape: text
+  label: "Most LLM calls share a HUGE unchanging prefix (system prompt, docs, tools, examples).\nWithout caching: that prefix is RE-PROCESSED on every single call. Expensive and slow.\nWith caching: the provider stores the KV cache for the prefix and reuses it."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+without: {
+  label: "WITHOUT prompt caching"
+  shape: rectangle
+  style.fill: "#fee2e2"
+  style.stroke: "#dc2626"
+  body: {label: "Call 1: [10k system + tools] + 'hello' -> 10,003 input tokens billed\nCall 2: [10k system + tools] + 'goodbye' -> 10,003 input tokens billed\n...100 calls = 1M input tokens billed"; shape: text}
+}
+
+with: {
+  label: "WITH prompt caching"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "Call 1: WRITE 10k cache (1.25x cost) + 'hello' -> 12,503 tokens billed\nCall 2: READ 10k cache (0.1x cost) + 'goodbye' -> 1,003 tokens billed\n...100 calls = 12,500 + 99x 1,003 = ~111k input tokens billed\n\n~90% cost reduction. >2x latency reduction.\nCache valid for 5 min (Anthropic) or longer."; shape: text}
+}
+
+providers: {
+  label: "Provider implementations (2024-2025)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Anthropic (Aug 2024): explicit cache_control breakpoints.\nGemini (Feb 2024): context caching API; longer TTL.\nOpenAI (Oct 2024): automatic for >1024 tokens prefix.\nAll providers: cache key = prefix HASH. Any change invalidates."; shape: text}
+}
+
+usecases: {
+  label: "Where it changes the economics"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "- Coding agents (huge unchanging codebase context)\n- Customer support (unchanging KB + tools)\n- RAG systems (cache the system prompt + tools)\n- Long documents (CAG: cache the whole doc instead of RAG)\n- Few-shot heavy prompts (cache the examples)"; shape: text}
+}
+
+intro -> without
+intro -> with
+without -> providers: "vs"
+with -> providers
+providers -> usecases

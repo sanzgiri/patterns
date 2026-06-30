@@ -1,0 +1,65 @@
+## Routing — classifier picks the right specialized branch
+direction: down
+
+input: {
+  label: "Input\n(customer query, code task, etc.)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+classifier: {
+  label: "Router LLM\n(or rules-based classifier)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Decides: which downstream branch?\nOften constrained to enum output\nvia structured outputs."; shape: text}
+}
+
+branches: {
+  direction: right
+  branchA: {
+    label: "Branch A\n(specialized prompt)"
+    shape: rectangle
+    style.fill: "#bbf7d0"
+    style.stroke: "#16a34a"
+    body: {label: "e.g. 'simple Q&A' prompt\non a small / cheap model"; shape: text}
+  }
+  branchB: {
+    label: "Branch B\n(specialized prompt)"
+    shape: rectangle
+    style.fill: "#bbf7d0"
+    style.stroke: "#16a34a"
+    body: {label: "e.g. 'refund request' prompt\non a tool-using agent"; shape: text}
+  }
+  branchC: {
+    label: "Branch C\n(specialized prompt)"
+    shape: rectangle
+    style.fill: "#bbf7d0"
+    style.stroke: "#16a34a"
+    body: {label: "e.g. 'technical bug report'\non a strong reasoning model"; shape: text}
+  }
+}
+
+merged: {
+  label: "Response back to caller"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+input -> classifier
+classifier -> branches.branchA: "category A"
+classifier -> branches.branchB: "category B"
+classifier -> branches.branchC: "category C"
+branches.branchA -> merged
+branches.branchB -> merged
+branches.branchC -> merged
+
+note: {
+  shape: text
+  label: "Use when types of input warrant different handling\nand combining them into one prompt would degrade\neach. Common: cheap-vs-expensive model routing,\ncustomer-support triage, agent skill dispatch."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+merged -> note

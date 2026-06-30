@@ -44,9 +44,15 @@ Four 2026 themes get their own large sections:
 | **2026-C** | Quality & Evals (`qua/`) | 6 | ✅ complete |
 | **2026-D** | Security & Containment (`sec/`) | 5 | ✅ complete |
 | **2026-E** | Foundations (`fnd/`) | 5 | ✅ complete |
-| **2026-F** | Workflows / Retrieval / Memory / Skills / Eng / Model / Protocols | ~30 | ⏳ planned |
+| **2026-F.1** | Workflows (`wf/`) | 5 | ✅ complete |
+| **2026-F.2** | Retrieval (`ret/`) | 5 | ✅ complete |
+| **2026-F.3** | Memory (`mem/`) | 3 | ✅ complete |
+| **2026-F.4** | Skills (`skills/`) | 3 | ✅ complete |
+| **2026-F.5** | Engineering (`eng/`) | 5 | ✅ complete |
+| **2026-F.6** | Model patterns (`model/`) | 4 | ✅ complete |
+| **2026-F.7** | Protocols (`proto/`) | 2 | ✅ complete |
 
-**Target:** ~63 pages total when complete. **Current:** 33 pages, 44 diagrams.
+**Target reached:** 60 LLM pages, 71 diagrams.
 
 ---
 
@@ -88,22 +94,55 @@ Four 2026 themes get their own large sections:
 - [Browser-as-sandbox](sec/browser-as-sandbox.md)
 - [Auto-mode permission boundaries](sec/auto-mode-permission-boundaries.md)
 
+### Workflows (`wf/`)
+- [Prompt chaining](wf/prompt-chaining.md)
+- [Routing](wf/routing.md)
+- [Parallelization (sectioning & voting)](wf/parallelization.md)
+- [Orchestrator-workers](wf/orchestrator-workers.md)
+- [Evaluator-optimizer](wf/evaluator-optimizer.md)
+
+### Retrieval (`ret/`)
+- [Basic RAG](ret/basic-rag.md) (embed + retrieve + generate)
+- [Advanced RAG](ret/advanced-rag.md) (HyDE, hybrid, multi-query, MMR)
+- [Contextual Retrieval](ret/contextual-retrieval.md) (Anthropic Sept 2024; –49% retrieval failures)
+- [GraphRAG](ret/graph-rag.md) (Microsoft Apr 2024; aggregation-friendly)
+- [Reranking](ret/reranking.md) (cross-encoder, LLM, ColBERT)
+
+### Memory (`mem/`)
+- [Memory architectures](mem/memory-architectures.md) (working / episodic / semantic / procedural / archival)
+- [Prompt caching](mem/prompt-caching.md) (Anthropic Aug 2024; ~90% cost reduction)
+- [Long-context vs RAG](mem/long-context-vs-rag.md) (and CAG; the 2024–2026 trade-off)
+
+### Skills & Packaging (`skills/`)
+- [SKILL.md format](skills/skill-md-format.md) (Anthropic Agent Skills, Oct 2025)
+- [Code Mode](skills/code-mode.md) (code execution with MCP; Anthropic Nov 2025)
+- [AGENTS.md](skills/agents-md.md) (project-level standing instructions; 60k+ projects)
+
+### Production Engineering (`eng/`)
+- [12-Factor Agents](eng/12-factor-agents.md) (Dex Horthy methodology)
+- [Brain vs Hands](eng/brain-vs-hands.md) (reasoning model + executor model split)
+- [Harness Design](eng/harness-design.md) (the 'agent OS' — 8 standard layers)
+- [Rainbow Deployments](eng/rainbow-deployments.md) (parallel-variant rollouts)
+- [LLM Observability](eng/llm-observability.md) (LangSmith, Braintrust, Helicone, Langfuse, Phoenix, OTel GenAI)
+
+### Model-level (`model/`)
+- [Reasoning Models](model/reasoning-models.md) (o1/o3, Claude extended thinking, DeepSeek R1, Gemini Thinking)
+- [Speculative Decoding](model/speculative-decoding.md) (draft + verifier; 2–4× speedup)
+- [Fine-Tuning vs Prompting vs RAG](model/fine-tuning-vs-prompting.md) (the specialization trinity)
+- [Preference Tuning](model/preference-tuning.md) (DPO, KTO, ORPO, GRPO)
+
+### Protocols (`proto/`)
+- [MCP (Model Context Protocol)](proto/mcp.md) (Anthropic Nov 2024; universally adopted by 2025)
+- [A2A (Agent-to-Agent)](proto/a2a.md) (Google Apr 2025; Linux Foundation governance)
+
 ### Foundations (`fnd/`)
 - [Augmented LLM](fnd/augmented-llm.md) (Anthropic's atom)
 - [Reasoning prompts](fnd/reasoning-prompts.md) (CoT, ToT, Self-Consistency, Reflection)
 - [Structured outputs / function calling](fnd/structured-outputs.md)
 - [ReAct (Thought / Action / Observation)](fnd/react.md)
 - [Prompting fundamentals](fnd/prompting-fundamentals.md)
-- The "think" tool
 
-### Coming later
-- **Workflows** (`wf/`) — the 5 Anthropic workflows (prompt chaining, routing, parallelization, evaluator-optimizer, orchestrator-workers)
-- **Retrieval** (`ret/`) — RAG, agentic RAG, GraphRAG, long-context vs RAG
-- **Memory** (`mem/`) — memory architectures, vector search, prompt caching
-- **Skills & Packaging** (`skills/`) — SKILL.md format, Code Mode (code execution with MCP), AGENTS.md
-- **Production Engineering** (`eng/`) — 12-Factor Agents, brain-vs-hands decoupling, rainbow deployments, harnesses
-- **Model-level** (`mod/`) — reasoning models, speculative decoding, fine-tuning, DPO/KTO/ORPO
-- **Protocols** (`prot/`) — MCP, AAIF
+*LLM corpus COMPLETE — 60 pages, 71 diagrams, ~115k words.*
 
 ---
 

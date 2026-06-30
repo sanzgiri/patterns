@@ -1,0 +1,38 @@
+## Brain vs hands - decouple reasoning from execution
+direction: down
+
+intro: {
+  shape: text
+  label: "Production agents use TWO models, not one:\n- BRAIN: expensive reasoning model (plans, decides, reflects)\n- HANDS: cheap/fast model (executes tool calls, parses, formats)\nDifferent strengths, different cost profiles, different SLAs."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+oneModel: {
+  label: "ONE MODEL (naive)"
+  shape: rectangle
+  style.fill: "#fee2e2"
+  style.stroke: "#dc2626"
+  body: {label: "Single LLM does everything:\n- High-level planning\n- Code generation\n- Tool call formatting\n- Response synthesis\n\nProblem: pay reasoning-model prices for\nstring formatting; pay reasoning latency\nfor parse tasks; one bottleneck for all."; shape: text}
+}
+
+twoModel: {
+  label: "BRAIN + HANDS (decoupled)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "BRAIN (Claude Opus / o3 / Gemini Ultra):\n- Plans the task\n- Decides next action\n- Reflects on results\n- Long-horizon reasoning\n\nHANDS (Haiku / Flash / Mini):\n- Formats tool calls\n- Extracts structured data\n- Summarizes results\n- Routes / classifies\n\nResult: 5-10x cost reduction, lower latency\non hot path, better quality everywhere."; shape: text}
+}
+
+orchestration: {
+  label: "Orchestration"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Brain produces a plan ('do X, then Y').\nHarness routes each step to brain or hands.\nHands handles deterministic / formatting steps.\nBrain handles reasoning / decision steps.\n\nCommon split:\n  ~20% of calls = brain\n  ~80% of calls = hands\n  ~80% of cost  = brain"; shape: text}
+}
+
+intro -> oneModel
+intro -> twoModel
+oneModel -> orchestration: "vs"
+twoModel -> orchestration

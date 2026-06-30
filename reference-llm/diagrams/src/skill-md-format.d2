@@ -1,0 +1,46 @@
+## SKILL.md format - portable agent capability packaging
+direction: down
+
+intro: {
+  shape: text
+  label: "A SKILL is a folder + a markdown file with frontmatter.\nPortable across agent harnesses (Claude Code, pi, etc.).\nLoaded on demand by description matching, not all-at-once."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+structure: {
+  label: "SKILL folder structure"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "my-skill/\n  SKILL.md       <- required (frontmatter + body)\n  scripts/       <- optional helper scripts\n  templates/     <- optional file templates\n  reference.md   <- optional deep-dive docs\n  examples/      <- optional usage examples"; shape: text}
+}
+
+frontmatter: {
+  label: "SKILL.md frontmatter"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "---\nname: my-skill\ndescription: One-paragraph trigger\n  describing exactly WHEN this skill\n  should be loaded. Used by the\n  agent's router to match user intent.\n---"; shape: text}
+}
+
+body: {
+  label: "SKILL.md body (instructions)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "The actual SOP for the agent:\n- Workflow steps\n- Tool calls / scripts to invoke\n- Templates to use\n- Anti-patterns to avoid\n- Verification steps"; shape: text}
+}
+
+loading: {
+  label: "How the agent loads it (progressive disclosure)"
+  shape: rectangle
+  style.fill: "#fbcfe8"
+  style.stroke: "#db2777"
+  body: {label: "1. At startup: scan ALL skill descriptions (cheap, small).\n2. On user query: match description to intent.\n3. Load matched SKILL.md body into context.\n4. As needed: load scripts/, templates/, reference.md.\nThis is PROGRESSIVE DISCLOSURE - only pay for what's relevant."; shape: text}
+}
+
+intro -> structure
+structure -> frontmatter
+frontmatter -> body
+body -> loading

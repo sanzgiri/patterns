@@ -1,0 +1,61 @@
+## Evaluator-optimizer — generator/critic refinement loop
+direction: down
+
+input: {
+  label: "Input / task"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+}
+
+generator: {
+  label: "GENERATOR LLM\n('write the answer')"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+}
+
+evaluator: {
+  label: "EVALUATOR LLM\n('critique the answer')"
+  shape: rectangle
+  style.fill: "#fbcfe8"
+  style.stroke: "#db2777"
+  body: {label: "Scores against rubric.\nProvides specific feedback.\nDecides: pass or revise?"; shape: text}
+}
+
+decision: {
+  shape: diamond
+  label: "Quality\nthreshold met?"
+  style.fill: "#fef3c7"
+  style.stroke: "#d97706"
+}
+
+output: {
+  label: "Final answer"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  style.bold: true
+}
+
+input -> generator
+generator -> evaluator: "candidate answer"
+evaluator -> decision
+decision -> output: "yes"
+decision -> generator: "no - here's what to fix"
+
+note: {
+  shape: text
+  label: "Closed-loop quality control.\nDifferent from maker-checker (which is one-shot):\nthis pattern ITERATES until threshold met or cap hit.\nUse for tasks where critique-then-revise is cheaper\nthan re-generation from scratch."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+output -> note
+
+cap: {
+  shape: text
+  label: "Cap iterations (typically 2-4).\nDiminishing returns after 2-3 cycles.\nAlways have a max-iteration fallback."
+  style.italic: true
+  style.font-color: "#dc2626"
+}
+decision -> cap: "or cap reached"

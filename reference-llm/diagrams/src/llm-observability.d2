@@ -1,0 +1,37 @@
+## LLM observability - what to instrument
+direction: down
+
+intro: {
+  shape: text
+  label: "LLM apps fail silently. The model says something wrong with confidence.\nWithout observability, you find out from user complaints, days later.\nObservability for LLMs has unique axes beyond traditional APM."
+  style.italic: true
+  style.font-color: "#7c3aed"
+}
+
+instrument: {
+  label: "What to instrument (per call AND per session)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Per call:\n- Full prompt + response (with PII redaction)\n- Model, version, temperature, parameters\n- Input tokens, output tokens, cost\n- Latency: TTFT, total\n- Cache hit rate\n- Tool calls made + results\n- Eval score (if available)\n- Error / refusal / blocked\n\nPer session / trace:\n- Multi-step trace tree (parent / child spans)\n- Total session cost / latency\n- User feedback signal (thumbs up/down, escalation)\n- A/B variant assignment"; shape: text}
+}
+
+tools: {
+  label: "Tooling landscape (2024-2026)"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "LangSmith    - LangChain-native; tracing + evals + datasets\nBraintrust   - eval-first; great for prompt experimentation\nHelicone     - drop-in proxy; cost analysis\nLangfuse     - open-source; tracing + analytics\nPhoenix      - Arize OSS; tracing + eval\nWeights & Biases Weave - traditional MLOps + LLM tracing\nOpenTelemetry GenAI semantic conventions - standard schema\n\nMost tools support OpenTelemetry GenAI now,\nso you can mix-and-match."; shape: text}
+}
+
+uses: {
+  label: "Why it matters"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "- Debugging: WHY did the agent do that? Replay the trace.\n- Cost: which prompt/model is the cost driver?\n- Quality: how does prod traffic score vs eval set?\n- Drift: are users asking different things over time?\n- Regression detection: did a new release degrade?"; shape: text}
+}
+
+intro -> instrument
+instrument -> tools
+tools -> uses

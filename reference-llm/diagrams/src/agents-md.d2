@@ -1,0 +1,46 @@
+## AGENTS.md - shared instructions for coding agents
+direction: down
+
+intro: {
+  shape: text
+  label: "Problem: every coding tool wanted its own config file.\n  Cursor: .cursorrules / .cursor/rules/*.mdc\n  Aider: .aider.conf.yml\n  Continue: .continue/config.json\n  Claude Code: CLAUDE.md\n  ...repos had to ship FIVE config files for the same context.\nSolution: AGENTS.md - one file, adopted by 60k+ projects, supported by all major coding agents."
+  style.italic: true
+  style.font-color: "#dc2626"
+}
+
+location: {
+  label: "WHERE it lives"
+  shape: rectangle
+  style.fill: "#dbeafe"
+  style.stroke: "#2563eb"
+  body: {label: "Project root: AGENTS.md\nSubdirectories: nested AGENTS.md\n  (closest one wins for files in that subtree)"; shape: text}
+}
+
+content: {
+  label: "WHAT it contains (free-form markdown)"
+  shape: rectangle
+  style.fill: "#bbf7d0"
+  style.stroke: "#16a34a"
+  body: {label: "- Project overview & goals\n- Coding conventions (style, naming, structure)\n- Build / test / lint commands\n- Architecture notes\n- File-level guidance\n- 'Don't touch' areas\n- Common pitfalls"; shape: text}
+}
+
+adoption: {
+  label: "WHO consumes it (as of 2026)"
+  shape: rectangle
+  style.fill: "#fde68a"
+  style.stroke: "#d97706"
+  body: {label: "Coding agents:\n  Cursor, Continue, Aider, Cline, Roo Code\n  Claude Code (with CLAUDE.md fallback)\n  OpenAI Codex CLI, Codex on web\n  Replit Agent, Codeium\n  Devin (Cognition)\n  GitHub Copilot Workspace\n\nGoverned by community spec at agents.md\n60,000+ open-source projects use it."; shape: text}
+}
+
+vsOther: {
+  label: "vs SKILL.md"
+  shape: rectangle
+  style.fill: "#fbcfe8"
+  style.stroke: "#db2777"
+  body: {label: "AGENTS.md = project-level standing context (always loaded)\n  'Here's how this repo works.'\n\nSKILL.md = task-specific capability (loaded on demand)\n  'Here's how to do X.'\n\nThey COMPOSE - a project has one AGENTS.md\nand zero-or-more SKILL.md files."; shape: text}
+}
+
+intro -> location
+location -> content
+content -> adoption
+adoption -> vsOther
