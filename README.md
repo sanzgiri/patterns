@@ -139,6 +139,8 @@ Start with:
 
 If you're learning, the **Themes** section in the reference README is the best starting point — it maps how patterns compose into families (the dual-write trilogy, resilience trinity, building blocks composition, etc.).
 
+For a guided, case-study-driven path across both corpora, see the [System Design and LLM Patterns Curriculum](docs/curriculum.md).
+
 ---
 
 ## License

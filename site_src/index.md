@@ -26,6 +26,10 @@ Each pattern page follows the same structure: a plain-English **ELI5 callout** f
 
 </div>
 
+## Learn interactively
+
+The [Guided Tutorial](tutorial/index.md) turns the reference into a self-paced, case-study-driven curriculum. Each lesson teaches the concepts first, walks through a company problem, and then presents practice questions and interview drills.
+
 ## What's in here
 
 | Section | Pages | Diagrams | Coverage |

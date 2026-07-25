@@ -1,4 +1,5 @@
 nav:
   - index.md
+  - Guided Tutorial: tutorial
   - System Design: system-design
   - LLM & Agentic: llm
